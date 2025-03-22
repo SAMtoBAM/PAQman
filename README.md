@@ -41,6 +41,7 @@ Optional parameters:
 -s --slide        Number of basepairs for the window to slide for coverage (default: 10000)
 -p --prefix       Prefix for output (default: name -g before the fasta prefix)
 -p --prefix       Prefix for output (default: genomeeval_output)
+-t --threads      Number of threads for tools that accept this option (Default: 1)
 ```
 
 
