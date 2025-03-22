@@ -20,13 +20,13 @@ Contiguity: Quast (great easy tool for quick asembly evaluation) <br/>
 Gene content: BUSCO (measure of how well coding sequences have been assembled) <br/>
 Completeness and Error rate: Merqury (k-mer based approach for both stats) <br/>
 Correctness: Filtlong + CRAQ (long-read downsampling + read alignment detection of potential assembly error) <br/>
-Coverage: bwa-mem/minimap2 + samtools/bedtools + local R script for visualising (alignment + processing of coverage + visualising relative coverage for each contig) <br/>
-Telomerality: seqkit + local script (identifying telomere sequences for indications of telomerality) <br/>
+Coverage: bwa-mem/minimap2 + samtools/bedtools + genomeval-specific (alignment + processing of coverage + visualising relative coverage for each contig) <br/>
+Telomerality: seqkit + genomeval-specific (identifying telomere sequences for indications of telomerality) <br/>
 
 Note: I am using telomerality as a term to describe stats about how many of the assembled contig have reached telomere sequences giving confidence of structural completeness at contig ends in repeat regions.
 
 ```
-genomeval -g genome.fa -l long-reads.fq.gz -x ont -1 illumina.R1.fq.gz -2 illumina.R2.fq.gz -b eukaryota -w 30000 -s 10000 -p genome -o genomeval_output
+genomeval -g genome.fa -l long-reads.fq.gz -x ont -1 illumina.R1.fq.gz -2 illumina.R2.fq.gz -b eukaryota -w 30000 -s 10000 -r TTAGGG -p genome -o genomeval_output
 
 Required inputs:
 -g -genome        Genome assemly in fasta format (*.fa / *.fasta / *.fna) and can be gzipped (*.gz)
@@ -39,6 +39,7 @@ Optional parameters:
 -b --busco        Name of BUSCO database to be used (default: eukaryota)
 -w --window       Number of basepairs for window averaging for coverage (default: 30000)
 -s --slide        Number of basepairs for the window to slide for coverage (default: 10000)
+-r --repeat       Telomeric repeat pattern (Default: TTAGGG)
 -p --prefix       Prefix for output (default: name -g before the fasta prefix)
 -p --prefix       Prefix for output (default: genomeeval_output)
 -t --threads      Number of threads for tools that accept this option (Default: 1)
