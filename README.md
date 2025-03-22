@@ -1,4 +1,4 @@
-# genomEval
+# GenomEval
 GenomEval is a compilation of tools designed to comprehensively evaluate a genome assembly using a range of different and important metrics
 
 
@@ -8,7 +8,7 @@ Although there exists tools for the job, they are often used sporadically <br/>
 Because of this the different and important metrics that they calculate are often overlooked making it difficult to fully evaluate an assembly and have a complete image of quality  <br/>
 This is where GenomEval steps in: 
 
-GenomeEval combines a set of tools that each evaluate their own important metrics and provides you with a summary of the compiled results <br/>
+GenomeEval primarily combines a set of tools that each evaluate their own important metrics and provides you with a summary of the compiled results <br/>
 Now if you ever run an assembler, GenomEval can be your next step for comprehensive genome evaluation statistics <br/>
 Additionally GenomEval only requires what most people already has access to for the assembly process so there is not need to gather more data <br/>
 
