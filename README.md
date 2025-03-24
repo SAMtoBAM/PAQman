@@ -31,7 +31,7 @@ Telomerality*: seqkit + genomeval-specific (identifying telomere sequences + det
 genomeval -g genome.fa -l long-reads.fq.gz -x ont -1 illumina.R1.fq.gz -2 illumina.R2.fq.gz -b eukaryota -w 30000 -s 10000 -r TTAGGG -p genome -o genomeval_output
 
 Required inputs:
--g -genome        Genome assemly in fasta format (*.fa / *.fasta / *.fna) and can be gzipped (*.gz)
+-a --assembly        Genome assemly in fasta format (*.fa / *.fasta / *.fna) and can be gzipped (*.gz)
 -l --longreads    Long reads used for assembly in fastq or fasta format  (*.fa / *.fasta / *.fna / *.fastq / *.fq) and can be gzipped (*.gz)
 
 Optional parameters:
