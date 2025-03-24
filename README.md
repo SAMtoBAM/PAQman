@@ -1,29 +1,31 @@
 # GenomEval
-GenomEval is a compilation of tools designed to comprehensively evaluate a genome assembly using a range of different and important metrics
-
+GenomEval is combines a set of tools (and a few in-house scripts) designed to comprehensively evaluate a de-novo genome assembly using a range of important metrics and without the need for a reference <br/>
+<i/>Note: GenomEval has been primarily designed for long-read reference quality assemblies </i>
 
 The ease of assembling a reference-quality genome has improved dramatically in the past few years <br/>
 However, good practices on how to evaluate and compare the resulting assembly has lagged behind <br/>
 Although there exists tools for the job, they are often used sporadically <br/>
-Because of this the different and important metrics that they calculate are often overlooked making it difficult to fully evaluate an assembly and have a complete image of quality  <br/>
+Because of this the important metrics that they calculate are often overlooked making it difficult to fully evaluate an assembly and have a complete image of quality  <br/>
 This is where GenomEval steps in: 
 
-GenomeEval primarily combines a set of tools that each evaluate their own important metrics and provides you with a summary of the compiled results <br/>
+GenomeEval combines a set of tools (and a few in-house scripts) that each evaluate their own important metrics; and provides you with a summary of the compiled results <br/>
 Now if you ever run an assembler, GenomEval can be your next step for comprehensive genome evaluation statistics <br/>
-Additionally GenomEval only requires what most people already has access to for the assembly process so there is not need to gather more data <br/>
+The summary statistics can be used to comprehensively evaluate different assemblies for the same dataset/sample <br/>
+And no reference genome is required for any of the statistics <br/>
+Laslty, GenomEval only requires what most people already have access to for the assembly process, long- and (or not) short reads, so there is not need to gather more data <br/>
 
-Note: GenomEval has been designed for long-read reference quality assemblies
 
 The 6 important metrics and the tools chosen to evaluate them:
 
 Contiguity: Quast (great easy tool for quick asembly evaluation) <br/>
-Gene content: BUSCO (measure of how well coding sequences have been assembled) <br/>
-Completeness and Error rate: Merqury (k-mer based approach for both stats) <br/>
-Correctness: Filtlong + CRAQ (long-read downsampling + read alignment detection of potential assembly error) <br/>
+Gene content: BUSCO (uses commonly conserved genes to measure of how well coding sequences have been assembled) <br/>
+Completeness and Error rate: Merqury (a k-mer based approach to determine how much of the entire genomic material has been assembled and the rate of error) <br/>
+Correctness: Filtlong + CRAQ (long-read downsampling + read alignment detection of structural assembly error) <br/>
 Coverage: bwa-mem/minimap2 + samtools/bedtools + genomeval-specific (alignment + processing of coverage + visualising relative coverage for each contig) <br/>
-Telomerality: seqkit + genomeval-specific (identifying telomere sequences for indications of telomerality) <br/>
+Telomerality*: seqkit + genomeval-specific (identifying telomere sequences + determining if contigs have terminal telomeric repeats) <br/>
 
-Note: I am using telomerality as a term to describe stats about how many of the assembled contig have reached telomere sequences giving confidence of structural completeness at contig ends in repeat regions.
+<i>*I am using 'Telomerality' as a term to describe stats about how many of the assembled contig have reached telomere sequences giving confidence of structural completeness at contig ends in repeat regions </i>
+
 
 ```
 genomeval -g genome.fa -l long-reads.fq.gz -x ont -1 illumina.R1.fq.gz -2 illumina.R2.fq.gz -b eukaryota -w 30000 -s 10000 -r TTAGGG -p genome -o genomeval_output
@@ -44,6 +46,60 @@ Optional parameters:
 -p --prefix       Prefix for output (default: genomeeval_output)
 -t --threads      Number of threads for tools that accept this option (Default: 1)
 ```
+
+
+## Installation and quick start
+
+### Conda installation
+```
+```
+
+### Quick run
+```
+```
+
+
+## The output:
+
+### Summary stats: 'summary_stats.tsv':
+Column 01: 'strain': prefix given to the output files so you can easily compare across samples
+Column 02: 'assembly':  prefix from the fasta file used as input so you can easily compare across assemblies
+Column 03: 'quast_#contigs': Number of total contigs
+Column 04: 'quast_#contigs>10kb': Number of contigs >10kb in size
+Column 05: 'quast_assembly_N50': Assembly N50
+Column 06: 'quast_assembly_N90': Assembly N90
+Column 07: 'quast_largest_contig': Largest contig in the assembly
+Column 08: 'BUSCO_db': The BUSCO database used to evaluate the assembly (easy to be sure of comparing BUSCO values from the same database)
+Column 09: 'BUSCO_total': Total number of BUSCOs in the database
+Column 10: 'BUSCO_complete_single': BUSCOs identified as complete and as a single copy
+Column 11: 'BUSCO_fragmented': BUSCOs identified as fragmented
+Column 12: 'BUSCO_missing': BUSCOs not identified
+Column 13: 'merqury_completeness(%)': A k-mer estimation of the amount of total genomic material assembled
+Column 14: 'merqury_qv(phred)': A k-mer estimation of the genome wide error rate
+Column 15: 'CRAQ_average_CRE(%)': An estimation of the total assembly without any small regional errors
+Column 16: 'CRAQ_average_CSE(%)': An estimation of the total assembly without any large structural errors
+Column 17: 'telomeric_ends': Number of contig ends identified with telomeric repeats
+Column 18: 'telomeric_ends(%)': Percentage of contig ends with telomeric repeats
+Column 19: 't2t_contigs': Number of contigs with telomeric repeats at both ends
+
+
+
+## Telomerality steps:
+1. All exact single repeats are identified (seqkit locate --ignore-case -p ${telomererepeat})
+2. Coordinates of single repeats are merged if withint 7 bp (allowing for 1 repeat to deviate mildly)
+3. Only keep regions where at least two consecutive repeats were found (i.e. only keep region > 2\*repeat length)
+Can find all the coordinates for telomeric regions (including interstitial) in the bed file with explanatory header: 'telomerality/telomeres.bed'
+4. Contig ends are labelled in 3 ways
+       A. 'telomeric': Coordinates for a telomeric repeat are at least within 0.75\*length from the end (e.g. a 100 bp long telomeric repeat region with within 75bp of a contig end)
+       B. 'distant': >0.75\*length bp away but within 5kb
+       C. 'absent': >5kb from the end or no repeats identified in contig
+Can find these classifications (and coordinates/distance from edge etc) for each contig end in the tsv file with explanatory header: 'telomerality/telomeres.classification.tsv'
+
+
+
+
+
+
 
 
 
