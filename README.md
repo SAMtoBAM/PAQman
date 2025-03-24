@@ -62,38 +62,38 @@ Optional parameters:
 ## The output:
 
 ### Summary stats: 'summary_stats.tsv':
-Column 01: 'strain': prefix given to the output files so you can easily compare across samples
-Column 02: 'assembly':  prefix from the fasta file used as input so you can easily compare across assemblies
-Column 03: 'quast_#contigs': Number of total contigs
-Column 04: 'quast_#contigs>10kb': Number of contigs >10kb in size
-Column 05: 'quast_assembly_N50': Assembly N50
-Column 06: 'quast_assembly_N90': Assembly N90
-Column 07: 'quast_largest_contig': Largest contig in the assembly
-Column 08: 'BUSCO_db': The BUSCO database used to evaluate the assembly (easy to be sure of comparing BUSCO values from the same database)
-Column 09: 'BUSCO_total': Total number of BUSCOs in the database
-Column 10: 'BUSCO_complete_single': BUSCOs identified as complete and as a single copy
-Column 11: 'BUSCO_fragmented': BUSCOs identified as fragmented
-Column 12: 'BUSCO_missing': BUSCOs not identified
-Column 13: 'merqury_completeness(%)': A k-mer estimation of the amount of total genomic material assembled
-Column 14: 'merqury_qv(phred)': A k-mer estimation of the genome wide error rate
-Column 15: 'CRAQ_average_CRE(%)': An estimation of the total assembly without any small regional errors
-Column 16: 'CRAQ_average_CSE(%)': An estimation of the total assembly without any large structural errors
-Column 17: 'telomeric_ends': Number of contig ends identified with telomeric repeats
-Column 18: 'telomeric_ends(%)': Percentage of contig ends with telomeric repeats
-Column 19: 't2t_contigs': Number of contigs with telomeric repeats at both ends
+Column 01: 'strain': prefix given to the output files so you can easily compare across samples <br/>
+Column 02: 'assembly':  prefix from the fasta file used as input so you can easily compare across assemblies <br/>
+Column 03: 'quast_#contigs': Number of total contigs <br/>
+Column 04: 'quast_#contigs>10kb': Number of contigs >10kb in size <br/>
+Column 05: 'quast_assembly_N50': Assembly N50 <br/>
+Column 06: 'quast_assembly_N90': Assembly N90 <br/>
+Column 07: 'quast_largest_contig': Largest contig in the assembly <br/>
+Column 08: 'BUSCO_db': The BUSCO database used to evaluate the assembly (easy to be sure of comparing BUSCO values from the same database) <br/>
+Column 09: 'BUSCO_total': Total number of BUSCOs in the database <br/>
+Column 10: 'BUSCO_complete_single': BUSCOs identified as complete and as a single copy <br/>
+Column 11: 'BUSCO_fragmented': BUSCOs identified as fragmented <br/>
+Column 12: 'BUSCO_missing': BUSCOs not identified <br/>
+Column 13: 'merqury_completeness(%)': A k-mer estimation of the amount of total genomic material assembled <br/>
+Column 14: 'merqury_qv(phred)': A k-mer estimation of the genome wide error rate <br/>
+Column 15: 'CRAQ_average_CRE(%)': An estimation of the total assembly without any small regional errors <br/>
+Column 16: 'CRAQ_average_CSE(%)': An estimation of the total assembly without any large structural errors <br/>
+Column 17: 'telomeric_ends': Number of contig ends identified with telomeric repeats <br/>
+Column 18: 'telomeric_ends(%)': Percentage of contig ends with telomeric repeats <br/>
+Column 19: 't2t_contigs': Number of contigs with telomeric repeats at both ends <br/>
 
 
 
 ## Telomerality steps:
-1. All exact single repeats are identified (seqkit locate --ignore-case -p ${telomererepeat})
-2. Coordinates of single repeats are merged if withint 7 bp (allowing for 1 repeat to deviate mildly)
-3. Only keep regions where at least two consecutive repeats were found (i.e. only keep region > 2\*repeat length)
-Can find all the coordinates for telomeric regions (including interstitial) in the bed file with explanatory header: 'telomerality/telomeres.bed'
-4. Contig ends are labelled in 3 ways
-       A. 'telomeric': Coordinates for a telomeric repeat are at least within 0.75\*length from the end (e.g. a 100 bp long telomeric repeat region with within 75bp of a contig end)
-       B. 'distant': >0.75\*length bp away but within 5kb
-       C. 'absent': >5kb from the end or no repeats identified in contig
-Can find these classifications (and coordinates/distance from edge etc) for each contig end in the tsv file with explanatory header: 'telomerality/telomeres.classification.tsv'
+1. All exact single repeats are identified (seqkit locate --ignore-case -p ${telomererepeat}) <br/>
+2. Coordinates of single repeats are merged if withint 7 bp (allowing for 1 repeat to deviate mildly) <br/>
+3. Only keep regions where at least two consecutive repeats were found (i.e. only keep region > 2\*repeat length) <br/>
+Can find all the coordinates for telomeric regions (including interstitial) in the bed file with explanatory header: 'telomerality/telomeres.bed' <br/>
+4. Contig ends are labelled in 3 ways <br/>
+       A. 'telomeric': Coordinates for a telomeric repeat are at least within 0.75\*length from the end (e.g. a 100 bp long telomeric repeat region with within 75bp of a contig end) <br/>
+       B. 'distant': >0.75\*length bp away but within 5kb <br/>
+       C. 'absent': >5kb from the end or no repeats identified in contig <br/>
+Can find these classifications (and coordinates/distance from edge etc) for each contig end in the tsv file with explanatory header: 'telomerality/telomeres.classification.tsv' <br/>
 
 
 
