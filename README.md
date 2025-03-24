@@ -35,7 +35,7 @@ Required inputs:
 -l --longreads    Long reads used for assembly in fastq or fasta format  (*.fa / *.fasta / *.fna / *.fastq / *.fq) and can be gzipped (*.gz)
 
 Optional parameters:
--x --platform     Long-read technology. Choose between 'ont' or 'pacbio' (default: ont)
+-x --platform     Long-read technology to determine mapping mapping parameters. Choose between 'ont' or 'pacbio-hifi' or 'pacbio-clr' (default: ont)
 -1 --pair1        Paired end illumina reads; first pair. Used by Merqury, CRAQ and coverage analysis
 -2 --pair2        Paired end illumina reads; second pair. Used by Merqury, CRAQ and coverage analysis
 -b --buscodb      Name of BUSCO database to be used (default: eukaryota)
