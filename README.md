@@ -28,7 +28,7 @@ Telomerality*: seqkit + genomeval-specific (identifying telomere sequences + det
 
 
 ```
-genomeval -g genome.fa -l long-reads.fq.gz -x ont -1 illumina.R1.fq.gz -2 illumina.R2.fq.gz -b eukaryota -w 30000 -s 10000 -r TTAGGG -p genome -o genomeval_output
+genomeval -g genome.fa -l long-reads.fq.gz -x ont -1 illumina.R1.fq.gz -2 illumina.R2.fq.gz -b eukaryota -w 30000 -s 10000 -r TTAGGG -p genome -o genomeval_output -c yes
 
 Required inputs:
 -a --assembly        Genome assemly in fasta format (*.fa / *.fasta / *.fna) and can be gzipped (*.gz)
@@ -36,15 +36,16 @@ Required inputs:
 
 Optional parameters:
 -x --platform     Long-read technology. Choose between 'ont' or 'pacbio' (default: ont)
--1                Paired end illumina reads; first pair. Used by Merqury, CRAQ and coverage analysis
--2                Paired end illumina reads; second pair. Used by Merqury, CRAQ and coverage analysis
--b --busco        Name of BUSCO database to be used (default: eukaryota)
+-1 --pair1        Paired end illumina reads; first pair. Used by Merqury, CRAQ and coverage analysis
+-2 --pair2        Paired end illumina reads; second pair. Used by Merqury, CRAQ and coverage analysis
+-b --buscodb      Name of BUSCO database to be used (default: eukaryota)
 -w --window       Number of basepairs for window averaging for coverage (default: 30000)
 -s --slide        Number of basepairs for the window to slide for coverage (default: 10000)
--r --repeat       Telomeric repeat pattern (Default: TTAGGG)
--p --prefix       Prefix for output (default: name -g before the fasta prefix)
--p --prefix       Prefix for output (default: genomeeval_output)
--t --threads      Number of threads for tools that accept this option (Default: 1)
+-r --repeat       Telomeric repeat pattern (default: TTAGGG)
+-p --prefix       Prefix for output (default: name -a before the fasta prefix)
+-o --output       Prefix for output (default: genomeeval_output)
+-t --threads      Number of threads for tools that accept this option (default: 1)
+-c --cleanup      Remove a large number of files produced by each of the tools. Choose between 'yes' or 'no' (default: 'yes')
 ```
 
 
