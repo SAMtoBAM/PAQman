@@ -47,7 +47,7 @@ Optional parameters:
 -s | --slide        Number of basepairs for the window to slide for coverage (default: 10000)
 -p | --prefix       Prefix for output (default: name of assembly file (-a) before the fasta suffix)
 -o | --output       Name of output folder for all results (default: genomeeval_output)
--c | --cleanup      Remove a large number of files produced by each of the tools. Choose between 'yes' or 'no' (default: 'yes')
+-c | --cleanup      Remove a large number of files produced by each of the tools that can take up a lot of space. Choose between 'yes' or 'no' (default: 'yes')
 -h | --help         Print this help message
 ```
 
@@ -56,35 +56,37 @@ Optional parameters:
 
 ### Conda installation
 ```
+conda install genomeeval
 ```
 
 ### Quick run
 ```
+genomeval -g genome.fa -l long-reads.fq.gz
 ```
 
 
 ## The output:
 
 ### Summary stats: 'summary_stats.tsv':
-Column 01: 'strain': prefix given to the output files so you can easily compare across samples <br/>
-Column 02: 'assembly':  prefix from the fasta file used as input so you can easily compare across assemblies <br/>
-Column 03: 'quast_#contigs': Number of total contigs <br/>
-Column 04: 'quast_#contigs>10kb': Number of contigs >10kb in size <br/>
-Column 05: 'quast_assembly_N50': Assembly N50 <br/>
-Column 06: 'quast_assembly_N90': Assembly N90 <br/>
-Column 07: 'quast_largest_contig': Largest contig in the assembly <br/>
-Column 08: 'BUSCO_db': The BUSCO database used to evaluate the assembly (easy to be sure of comparing BUSCO values from the same database) <br/>
-Column 09: 'BUSCO_total': Total number of BUSCOs in the database <br/>
-Column 10: 'BUSCO_complete_single': BUSCOs identified as complete and as a single copy <br/>
-Column 11: 'BUSCO_fragmented': BUSCOs identified as fragmented <br/>
-Column 12: 'BUSCO_missing': BUSCOs not identified <br/>
-Column 13: 'merqury_completeness(%)': A k-mer estimation of the amount of total genomic material assembled <br/>
-Column 14: 'merqury_qv(phred)': A k-mer estimation of the genome wide error rate <br/>
-Column 15: 'CRAQ_average_CRE(%)': An estimation of the total assembly without any small regional errors <br/>
-Column 16: 'CRAQ_average_CSE(%)': An estimation of the total assembly without any large structural errors <br/>
-Column 17: 'telomeric_ends': Number of contig ends identified with telomeric repeats <br/>
-Column 18: 'telomeric_ends(%)': Percentage of contig ends with telomeric repeats <br/>
-Column 19: 't2t_contigs': Number of contigs with telomeric repeats at both ends <br/>
+Column 01: <b>strain</b>: prefix given to the output files so you can easily compare across samples <br/>
+Column 02: <b>assembly</b>:  prefix from the fasta file used as input so you can easily compare across assemblies <br/>
+Column 03: <b>quast_#contigs</b>: Number of total contigs <br/>
+Column 04: <b>quast_#contigs>10kb</b>: Number of contigs >10kb in size <br/>
+Column 05: <b>quast_assembly_N50</b>: Assembly N50 <br/>
+Column 06: <b>quast_assembly_N90</b>: Assembly N90 <br/>
+Column 07: <b>quast_largest_contig</b>: Largest contig in the assembly <br/>
+Column 08: <b>BUSCO_db</b>: The BUSCO database used to evaluate the assembly (easy to be sure of comparing BUSCO values from the same database) <br/>
+Column 09: <b>BUSCO_total</b>: Total number of BUSCOs in the database <br/>
+Column 10: <b>BUSCO_complete_single</b>: BUSCOs identified as complete and as a single copy <br/>
+Column 11: <b>BUSCO_fragmented</b>: BUSCOs identified as fragmented <br/>
+Column 12: <b>BUSCO_missing</b>: BUSCOs not identified <br/>
+Column 13: <b>merqury_completeness(%)</b>: A k-mer estimation of the amount of total genomic material assembled <br/>
+Column 14: <b>merqury_qv(phred)</b>: A k-mer estimation of the genome wide error rate <br/>
+Column 15: <b>CRAQ_average_CRE(%)</b>: An estimation of the total assembly without any small regional errors <br/>
+Column 16: <b>CRAQ_average_CSE(%)</b>: An estimation of the total assembly without any large structural errors <br/>
+Column 17: <b>telomeric_ends</b>: Number of contig ends identified with telomeric repeats <br/>
+Column 18: <b>telomeric_ends(%)</b>: Percentage of contig ends with telomeric repeats <br/>
+Column 19: <b>t2t_contigs</b>: Number of contigs with telomeric repeats at both ends <br/>
 
 
 
