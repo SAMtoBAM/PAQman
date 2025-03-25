@@ -36,16 +36,17 @@ Required inputs:
 
 Optional parameters:
 -x --platform     Long-read technology to determine mapping mapping parameters. Choose between 'ont' or 'pacbio-hifi' or 'pacbio-clr' (default: ont)
--1 --pair1        Paired end illumina reads; first pair. Used by Merqury, CRAQ and coverage analysis
--2 --pair2        Paired end illumina reads; second pair. Used by Merqury, CRAQ and coverage analysis
+-1 --pair1        Paired end illumina reads; first pair. Used by Merqury, CRAQ and coverage analysis (Recommended)
+-2 --pair2        Paired end illumina reads; second pair. Used by Merqury, CRAQ and coverage analysis (Recommended)
 -b --buscodb      Name of BUSCO database to be used (default: eukaryota)
 -w --window       Number of basepairs for window averaging for coverage (default: 30000)
 -s --slide        Number of basepairs for the window to slide for coverage (default: 10000)
 -r --repeat       Telomeric repeat pattern (default: TTAGGG)
--p --prefix       Prefix for output (default: name -a before the fasta prefix)
--o --output       Prefix for output (default: genomeeval_output)
+-p --prefix       Prefix for output (default: name of assembly file (-a) before the fasta suffix)
+-o --output       Name of output folder for all results (default: genomeeval_output)
 -t --threads      Number of threads for tools that accept this option (default: 1)
 -c --cleanup      Remove a large number of files produced by each of the tools. Choose between 'yes' or 'no' (default: 'yes')
+-h --help         Print this help message
 ```
 
 
