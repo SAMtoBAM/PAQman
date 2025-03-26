@@ -4,12 +4,10 @@
 PAQman is combines a set of tools (and a few in-house scripts) designed to comprehensively evaluate a de-novo genome assembly using a range of important metrics and without the need for a reference <br/>
 <i/>Note: PAQman has been primarily designed for long-read reference quality assemblies </i>
 
-PAQman combines 6 important metrics: <br/>
+PAQman evaluate 6 important metrics: <br/>
 Contiguity; Gene Content; Completeness; Error rate; Correctness; Coverage; Telomerality*.
 
 ***
-
-## Installation and quick start
 
 ### Conda installation
 ```
