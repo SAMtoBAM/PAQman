@@ -82,9 +82,9 @@ Telomerality is calculated using a few simple steps specific to PAQman <br/>
 3. Only keep regions where at least two consecutive repeats were found (i.e. only keep region > 2\*repeat length) <br/>
 Can find all the coordinates for telomeric regions (including interstitial) in the bed file with explanatory header: 'telomerality/telomeres.bed' <br/>
 4. Contig ends are labelled in 3 ways <br/>
-       A. 'telomeric': Coordinates for a telomeric repeat are at least within 0.75\*length from the end (e.g. a 100 bp long telomeric repeat region with within 75bp of a contig end) <br/>
-       B. 'distant': >0.75\*length bp away but within 5kb <br/>
-       C. 'absent': >5kb from the end or no repeats identified in contig <br/>
+   <b>telomeric</b>: Coordinates for a telomeric repeat are at least within 0.75\*length from the end (e.g. a 100 bp long telomeric repeat region with within 75bp of a contig end) <br/>
+   <b>distant</b>: >0.75\*length bp away but within 5kb <br/>
+   <b>absent</b>: >5kb from the end or no repeats identified in contig <br/>
 Can find these classifications (and coordinates/distance from edge etc) for each contig end in the tsv file with explanatory header: 'telomerality/telomeres.classification.tsv' <br/>
 
 
