@@ -51,7 +51,7 @@ Optional parameters:
 ## The output:
 
 ### Summary stats: 'summary_stats.tsv':
-|Column &nbsp;&nbsp;&nbsp;| Header | Description  |
+|Column &nbsp;&nbsp;&nbsp;| Header | Description |
 |------------|--------|--------------|
 | Column 01 | <b>strain</b> | prefix given to the output files so you can easily compare across samples
 | Column 02 | <b>assembly</b> | prefix from the fasta file used as input so you can easily compare across assemblies
@@ -60,7 +60,7 @@ Optional parameters:
 | Column 05 | <b>quast_assembly_N50</b> | Assembly N50
 | Column 06 | <b>quast_assembly_N90</b> | Assembly N90
 | Column 07 | <b>quast_largest_contig</b> | Largest contig in the assembly
-| Column 08 | <b>BUSCO_db</b> | The BUSCO database used to evaluate the assembly (easy to be sure of comparing BUSCO values from the same database)
+| Column 08 | <b>BUSCO_db</b> | The BUSCO database used to evaluate the assembly
 | Column 09 | <b>BUSCO_total</b> | Total number of BUSCOs in the database
 | Column 10 | <b>BUSCO_complete_single</b> | BUSCOs identified as complete and as a single copy
 | Column 11 | <b>BUSCO_fragmented</b> | BUSCOs identified as fragmented
