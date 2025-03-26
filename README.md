@@ -1,7 +1,5 @@
- ![](https://github.com/SAMtoBAM/PAQman/blob/main/paqman_logo_grey.svg)
- # Post-Assembly Quality manager (PAQman)
 
-
+ # Post-Assembly Quality manager ![](https://github.com/SAMtoBAM/PAQman/blob/main/paqman_logo_grey.svg)
 
 PAQman is combines a set of tools (and a few in-house scripts) designed to comprehensively evaluate a de-novo genome assembly using a range of important metrics and without the need for a reference <br/>
 <i/>Note: PAQman has been primarily designed for long-read reference quality assemblies </i>
