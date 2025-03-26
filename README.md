@@ -65,8 +65,8 @@ Optional parameters:
 | Column 12 | <b>BUSCO_missing</b> | BUSCOs not identified
 | Column 13 | <b>merqury_completeness(%)</b> | A k-mer estimation of compmeteness
 | Column 14 | <b>merqury_qv(phred)</b> | A k-mer estimation of the genome wide error rate
-| Column 15 | <b>CRAQ_average_CRE(%)</b> | An estimation of the total assembly without small regional errors
-| Column 16 | <b>CRAQ_average_CSE(%)</b> | An estimation of the total assembly without large structural errors
+| Column 15 | <b>CRAQ_average_CRE(%)</b> | Percentage of assembly without small regional errors
+| Column 16 | <b>CRAQ_average_CSE(%)</b> | Percentage of assembly without large structural errors
 | Column 17 | <b>telomeric_ends</b> | Number of contig ends with telomeric repeats
 | Column 18 | <b>telomeric_ends(%)</b> | Percentage of contig ends with telomeric repeats
 | Column 19 | <b>t2t_contigs</b> | Number of contigs with telomeric repeats at both ends
