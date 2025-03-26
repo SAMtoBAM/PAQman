@@ -3,11 +3,11 @@ set -euo pipefail
 
 version="v1"
 
-##genomeval environment
-#mamba create -n genomeval bioconda::busco bioconda::merqury bioconda::quast bioconda::filtlong bioconda::seqtk bioconda::craq conda-forge::r-gggenomes conda-forge::r-ggpubr conda-forge::r-ggsci conda-forge::r-svglite
+##paqman environment
+#mamba create -n paqman bioconda::busco bioconda::merqury bioconda::quast bioconda::filtlong bioconda::seqtk bioconda::craq conda-forge::r-gggenomes conda-forge::r-ggpubr conda-forge::r-ggsci conda-forge::r-svglite
 
-##to create the conda env using these tools and genomeval
-#conda env genomeval > genomeval.yml
+##to create the conda env using these tools and paqman
+#conda env paqman > paqman.yml
 
 
 ##############################################################
@@ -25,8 +25,8 @@ buscodb="eukaryota"
 window="30000"
 slide="10000"
 telomererepeat="TTAGGG"
-prefix="genomeval"
-output="genomeval_output"
+prefix="paqman"
+output="paqman_output"
 threads="1"
 help="nohelp"
 
@@ -105,8 +105,8 @@ case "$key" in
 	;;
 	-h|--help)
 	echo "
-	GenomeEval (version: ${version})
-	genomeval -g genome.fa -l long-reads.fq.gz -x ont -1 illumina.R1.fq.gz -2 illumina.R2.fq.gz -b eukaryota -w 30000 -s 10000 -r TTAGGG -p genome -o genomeval_output -c yes
+	PAQman (version: ${version})
+	paqman -g genome.fa -l long-reads.fq.gz -x ont -1 illumina.R1.fq.gz -2 illumina.R2.fq.gz -b eukaryota -w 30000 -s 10000 -r TTAGGG -p genome -o paqman_output -c yes
 	
 	Required inputs:
 	-a | --assembly     Genome assemly in fasta format (*.fa / *.fasta / *.fna) and can be gzipped (*.gz)
@@ -124,7 +124,7 @@ case "$key" in
 	-w | --window       Number of basepairs for window averaging for coverage (default: 30000)
 	-s | --slide        Number of basepairs for the window to slide for coverage (default: 10000)
 	-p | --prefix       Prefix for output (default: name of assembly file (-a) before the fasta suffix)
-	-o | --output       Name of output folder for all results (default: genomeeval_output)
+	-o | --output       Name of output folder for all results (default: paqman_output)
 	-c | --cleanup      Remove a large number of files produced by each of the tools that can take up a lot of space. Choose between 'yes' or 'no' (default: 'yes')
 	-h | --help         Print this help message
 	"
@@ -135,8 +135,8 @@ done
 
 
 
-##reset the prefix if not reassigned from 'genomeval' the to the prefix of the assembly
-[[ $prefix == "genomeval" ]] && prefix=$( echo $assembly | awk -F "/" '{print $NF}' | sed 's/\.fasta\.gz$//' | sed 's/\.fa\.gz$//' | sed 's/\.fasta$//' | sed 's/\.fa$//' )
+##reset the prefix if not reassigned from 'paqman' the to the prefix of the assembly
+[[ $prefix == "paqman" ]] && prefix=$( echo $assembly | awk -F "/" '{print $NF}' | sed 's/\.fasta\.gz$//' | sed 's/\.fa\.gz$//' | sed 's/\.fasta$//' | sed 's/\.fa$//' )
 ##set that we do have shortreads available
 [[ $pair1 != "" && $pair2 != ""  ]] && shortreads="yes"
 
@@ -156,9 +156,9 @@ echo "Using ${buscodb} database for BUSCO assessment"
 #################### BEGINNING EVALUATION ####################
 ##############################################################
 echo "########################################################"
-echo "################## GenomEval: Starting GenomEval ##################"
+echo "################## paqman: Starting paqman ##################"
 echo "########################################################"
-echo "################## GenomEval: Step 1: Organising Input"
+echo "################## paqman: Step 1: Organising Input"
 
 ## assembly evaluations
 mkdir ${output}
@@ -187,7 +187,7 @@ pair22=$( echo ${pair2} | awk -F "/" '{print $NF}' )
 
 
 ########################## QUAST ##########################
-echo "################## GenomEval: Step 2: Running Quast"
+echo "################## paqman: Step 2: Running Quast"
 quast -o ./quast ${assembly}
 ## we are just interested in the summary tsv file 'quast/report.tsv'
 
@@ -195,7 +195,7 @@ quast -o ./quast ${assembly}
 quaststat=$( cat ./quast/report.tsv | awk -F "\t" '{if(NR == 2 || NR == 5 || NR == 15 || NR == 16 || NR == 18 || NR == 19) all=all";"$2} END{print all}' | sed 's/^;//' | tr ';' '\t' | awk '{print $1"\t"$2"\t"$4"\t"$5"\t"$6"\t"$3}' )
 
 ########################## BUSCO (using the ${buscodb} dataset) ##########################
-echo "################## GenomEval: Step 3: Running BUSCO"
+echo "################## paqman: Step 3: Running BUSCO"
 busco -i ${assembly} -o ./busco  -l ${buscodb} --mode genome -c ${threads}
 if [[ $cleanup == "yes" ]]
 then
@@ -212,7 +212,7 @@ buscostat=$( cat ./busco/short_summary.specific.*.busco.txt | grep "The lineage\
 
 
 ########################## Merqury ##########################
-echo "################## GenomEval: Step 4a: Generating k-mer distribution"
+echo "################## paqman: Step 4a: Generating k-mer distribution"
 if [[ $shortreads == "yes" ]]
 then
 echo "Creating meryl k-mer database using short-reads"
@@ -226,7 +226,7 @@ echo "Creating meryl k-mer database using long-reads"
 meryl t=${threads} memory=15 k=18 count output ${prefix}.meryl ${longreads2}
 fi
 
-echo "################## GenomEval: Step 5b: Running Merqury"
+echo "################## paqman: Step 5b: Running Merqury"
 
 mkdir ./merqury
 merqury.sh ${prefix}.meryl ${assembly} ${prefix}.merqury
@@ -253,7 +253,7 @@ phredval=$( cat ./merqury/${prefix}.merqury.qv | awk '{print $4}' )
 merqurystat=$( echo "${completeness};${phredval}" | tr ';' '\t' )
 
 ########################## CRAQ ##########################
-echo "################## GenomEval: Step 5a: Downsampling for 50X long-reads for CRAQ assessment"
+echo "################## paqman: Step 5a: Downsampling for 50X long-reads for CRAQ assessment"
 ## redownsample the dataset for just 50X of the longest as to remove shorter reads from confusing CRAQ
 ## get genome size based on input genome
 genomesize=$( cat ./quast/report.tsv  | awk -F "\t" '{if(NR == 15) print $2}' )
@@ -261,7 +261,7 @@ target=$( echo $genomesize | awk '{print $1*50}' )
 ##now run filtlong with the settings
 filtlong -t ${target} --length_weight 5 ${longreads2} | gzip > longreads.filtlong50x.fq.gz
 ##run craq
-echo "################## GenomEval: Step 5b: Running CRAQ"
+echo "################## paqman: Step 5b: Running CRAQ"
 if [[ $shortreads == "yes" ]]
 then
 [[ $platform == "ont" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -ngs ${pair12},${pair22} -x map-ont --thread ${threads}
@@ -289,7 +289,7 @@ craqstat=$( cat ./craq/runAQI_out/out_final.Report | head -n3 | tail -n1 | awk -
 
 
 ########################## READ COVERAGE ##########################
-echo "################## GenomEval: Step 6a: Running whole genome read alignment"
+echo "################## paqman: Step 6a: Running whole genome read alignment"
 ## using the short-read data we can look at genome wide coverage on the assembly
 ## first index the assembly using the aligner
 mkdir ./coverage
@@ -359,13 +359,13 @@ fi
 ##set a full path for the shortread data to be read into the R script
 SRpath=$( realpath ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.coverage_normalised.tsv )
 
-echo "################## GenomEval: Step 6b: Plotting coverage"
+echo "################## paqman: Step 6b: Plotting coverage"
 ##covert paths in R script to those relevant for the coverage outputs generated here and then export the plots 
 cat coverage_plots.template_SR_and_LR.R | sed "s|PATHTOSRCOVERAGE|${SRpath}|" | sed "s|PATHTOLRCOVERAGE|${LRpath}|" | sed "s|PATHTOOUTPUT|./coverage/${prefix}|" > ./coverage/${prefix}.coverage_plots.R
 Rscript ./coverage/${assembly}.coverage_plots.R
 else 
 
-echo "################## GenomEval: Step 6b: Plotting coverage"
+echo "################## paqman: Step 6b: Plotting coverage"
 ##covert paths in R script to those relevant for the coverage outputs generated here and then export the plots 
 cat coverage_plots.template_LR.R | sed "s|PATHTOLRCOVERAGE|${LRpath}|" | sed "s|PATHTOOUTPUT|./coverage/${prefix}|" > ./coverage/${prefix}.coverage_plots.R
 Rscript ./coverage/${assembly}.coverage_plots.R
@@ -374,7 +374,7 @@ fi
 
 
 ########################## TELOMERALITY ##########################
-echo "################## GenomEval: Step 7: Running Telomere search"
+echo "################## paqman: Step 7: Running Telomere search"
 mkdir ./telomerality
 #telomererepeat="TTAGGG"
 ##can also label all regions with the canonical telomeric repeat
@@ -409,12 +409,12 @@ telomeralitystat=$(  echo "${telomericends};${t2t}" | tr ';' '\t' )
 
 ########################## SUMMARY STATS ##########################
 
-echo "################## GenomEval: Step 8: Generating summary statistics file"
+echo "################## paqman: Step 8: Generating summary statistics file"
 ### Create the header for the summary stats file
 echo "strain;assembly;quast_#contigs;quast_#contigs>10kb;quast_assembly_size;quast_assembly_N50;quast_assembly_N90;quast_largest_contig;BUSCO_db;BUSCO_total;BUSCO_complete;BUSCO_complete_single;BUSCO_fragmented;BUSCO_missing;merqury_completeness(%);merqury_qv(phred);CRAQ_average_CRE(%);CRAQ_average_CSE(%);telomeric_ends;telomeric_ends(%);t2t_contigs" | tr ';' '\t' >  ${output}/summary_stats.tsv
 ##spit out all the stats
 echo "${strain};${assembly};${quaststat};${buscostat};${merqurystat};${craqstat};${telomeralitystat}" | tr ';' '\t' >> ${output}/summary_stats.tsv
 
-echo "################## GenomEval: Summary stats can be found here ${output}/summary_stats.tsv"
-echo "################## GenomEval: All complete; thanks for using GenomEval"
+echo "################## paqman: Summary stats can be found here ${output}/summary_stats.tsv"
+echo "################## paqman: All complete; thanks for using paqman"
 
