@@ -1,7 +1,7 @@
 
  # Post-Assembly Quality manager ![](https://github.com/SAMtoBAM/PAQman/blob/main/paqman_logo_grey.svg)
 
-PAQman combines a set of excellent tools (and a few in-house scripts) for a reference-free and comprehensive evaluation of genome assemblies <br/>
+PAQman combines a set of excellent tools (and in-house scripts) for a reference-free and comprehensive evaluation of genome assemblies <br/>
 
 PAQman evaluates 6 important metrics: <br/>
 Contiguity (QUAST) <br/>
