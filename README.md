@@ -1,11 +1,18 @@
 
  # Post-Assembly Quality manager ![](https://github.com/SAMtoBAM/PAQman/blob/main/paqman_logo_grey.svg)
 
-PAQman is combines a set of tools (and a few in-house scripts) designed to comprehensively evaluate a de-novo genome assembly using a range of important metrics and without the need for a reference <br/>
-<i/>Note: PAQman has been primarily designed for long-read reference quality assemblies </i>
+PAQman combines a set of excellent tools (and a few in-house scripts) for a reference-free and comprehensive evaluation of genome assemblies <br/>
+<i/>Note: PAQman has been primarily designed for long-read reference-quality assemblies </i>
 
-PAQman evaluate 6 important metrics: <br/>
-Contiguity; Gene Content; Completeness; Error rate; Correctness; Coverage; Telomerality*.
+PAQman evaluates 6 important metrics: <br/>
+Contiguity (QUAST) <br/>
+Gene Content (BUSCO) <br/>
+Completeness (Merqury)<br/>
+Error rate (Merqury)<br/>
+Correctness (CRAQ)<br/>
+Coverage (PAQman)<br/>
+Telomerality* (PAQman) <br/>
+<i>PAQman is clearly built upon the back of the tools in brackets so please cite them</i>
 
 ***
 
