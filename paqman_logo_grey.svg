@@ -8,7 +8,7 @@
    version="1.1"
    id="svg1"
    sodipodi:docname="paqman_logo_grey.svg"
-   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -23,15 +23,17 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="2.0586053"
-     inkscape:cx="191.87748"
-     inkscape:cy="86.223426"
-     inkscape:window-width="1920"
-     inkscape:window-height="1094"
-     inkscape:window-x="-11"
-     inkscape:window-y="-11"
+     inkscape:zoom="1.4556538"
+     inkscape:cx="167.96577"
+     inkscape:cy="166.59181"
+     inkscape:window-width="1850"
+     inkscape:window-height="1016"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1" />
+     inkscape:current-layer="layer1"
+     inkscape:pageshadow="2"
+     showgrid="false" />
   <defs
      id="defs1" />
   <g
@@ -40,56 +42,72 @@
      id="layer1">
     <path
        style="fill:none;stroke:#666666;stroke-width:1.09719;stroke-dasharray:none;stroke-opacity:1"
-       d="M 47.299363,13.620973 C 29.533111,10.903328 33.470989,21.718826 5.3096614,21.620584"
-       id="path3-6"
+       d="M 50.103363,13.593247 C 32.337111,10.875602 36.274989,21.6911 8.1136536,21.592858"
+       id="path3-6-3"
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;stroke:#666666;stroke-width:1.09719;stroke-dasharray:2.19437, 1.09719;stroke-dashoffset:0;stroke-opacity:1"
-       d="m 58.161065,11.669857 c -1.52148,1.65091 -6.916909,2.414863 -10.444211,1.989757"
-       id="path3-6-5"
+       d="m 60.965065,11.642131 c -1.52148,1.65091 -6.916909,2.414863 -10.444211,1.989757"
+       id="path3-6-5-6"
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;stroke:#666666;stroke-width:1.09719;stroke-dasharray:none;stroke-opacity:1"
-       d="M 45.499315,9.6157393 C 34.762745,32.619993 20.476322,3.3625868 8.2825115,28.180061"
-       id="path4-7"
+       d="M 48.303315,9.5880133 C 37.566745,32.592264 23.280322,3.3348611 11.086504,28.152334"
+       id="path4-7-7"
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;stroke:#666666;stroke-width:1.09719;stroke-dasharray:2.19437, 1.09719;stroke-dashoffset:0;stroke-opacity:1"
-       d="M 56.384159,6.1699474 C 55.835862,5.9015334 47.976204,4.1564806 45.340509,9.8742273"
-       id="path4-7-0"
+       d="M 59.188159,6.1422211 C 58.639862,5.8738071 50.780204,4.1287551 48.144509,9.8465013"
+       id="path4-7-0-5"
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;stroke:#666666;stroke-width:1.09719;stroke-dasharray:1.09719, 1.09719;stroke-dashoffset:0;stroke-opacity:1"
-       d="M 68.28148,10.272648 C 61.493206,9.9064883 63.328427,9.2718866 57.237826,6.5683691"
-       id="path4-7-0-8"
+       d="M 71.08548,10.244922 C 64.297206,9.8787623 66.132427,9.2441616 60.041826,6.5406431"
+       id="path4-7-0-8-3"
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;stroke:#666666;stroke-width:1.09719;stroke-dasharray:1.09719, 1.09719;stroke-dashoffset:0;stroke-opacity:1"
-       d="M 69.702897,3.6012535 C 60.517351,4.6901236 60.786589,8.6428899 58.447716,11.271623"
-       id="path4-7-0-8-5"
+       d="M 72.506897,3.5735271 C 63.321351,4.6623981 63.590589,8.6151639 61.251716,11.243897"
+       id="path4-7-0-8-5-5"
        sodipodi:nodetypes="cc" />
-    <path
-       style="fill:#ffed00;fill-opacity:1;stroke:#666666;stroke-width:0.928686;stroke-dasharray:none;stroke-opacity:1"
-       id="path1"
-       sodipodi:type="arc"
-       sodipodi:cx="19.202816"
-       sodipodi:cy="20.271034"
-       sodipodi:rx="17.736675"
-       sodipodi:ry="17.736675"
-       sodipodi:start="0.20195794"
-       sodipodi:end="5.3634657"
-       sodipodi:arc-type="slice"
-       d="M 36.579006,23.828796 A 17.736675,17.736675 0 0 1 20.593034,37.953142 17.736675,17.736675 0 0 1 2.5961356,26.500626 17.736675,17.736675 0 0 1 8.6205124,6.0371135 17.736675,17.736675 0 0 1 29.952008,6.1627201 L 19.202816,20.271034 Z" />
     <text
        xml:space="preserve"
        style="font-size:15.4825px;line-height:normal;font-family:'Bookman Old Style';-inkscape-font-specification:'Bookman Old Style';text-align:center;text-decoration-color:#000000;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none"
-       x="68.620956"
-       y="32.735157"
-       id="text4"><tspan
+       x="67.191612"
+       y="31.64909"
+       id="text4-6"><tspan
          sodipodi:role="line"
-         id="tspan4"
+         id="tspan4-2"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15.4825px;font-family:Arial;-inkscape-font-specification:Arial;fill:#666666;fill-opacity:1;stroke-width:0;stroke-dasharray:none"
-         x="68.620956"
-         y="32.735157">PAQman</tspan></text>
+         x="67.191612"
+         y="31.64909">PAQman</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:3.52778px;line-height:normal;font-family:'Bookman Old Style';-inkscape-font-specification:'Bookman Old Style';text-align:center;text-decoration-color:#000000;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0;stroke-dasharray:none"
+       x="64.765289"
+       y="37.672382"
+       id="text4-6-9"><tspan
+         sodipodi:role="line"
+         id="tspan4-2-1"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;font-family:Arial;-inkscape-font-specification:Arial;fill:#666666;fill-opacity:1;stroke-width:0;stroke-dasharray:none"
+         x="64.765289"
+         y="37.672382"><tspan
+   style="font-weight:bold"
+   id="tspan60645">P</tspan>ost-<tspan
+   style="font-weight:bold"
+   id="tspan63195">A</tspan>ssembly <tspan
+   style="font-weight:bold"
+   id="tspan64817">Q</tspan>uality <tspan
+   style="font-weight:bold"
+   id="tspan65971">man</tspan>ager</tspan></text>
+    <g
+       id="g3190"
+       transform="matrix(0.191301,0,0,0.191301,-19.508192,-13.658186)">
+      <path
+         style="fill:#ffed00;fill-opacity:1;stroke:#6e6e6e;stroke-width:5.22736;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+         d="m 201.39844,86.621094 -54.73047,17.847656 -33.88672,46.53906 1.21094,57.19141 33.99609,45.11719 53.41016,19.66406 54.76953,-17.79688 33.85156,-46.58984 -82.55085,-33.53446 48.69929,-70.64132 z"
+         id="path413"
+         sodipodi:nodetypes="ccccccccccc" />
+    </g>
   </g>
 </svg>
