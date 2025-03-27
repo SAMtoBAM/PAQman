@@ -3,7 +3,7 @@
 
 PAQman combines a set of excellent tools (and in-house scripts) for a reference-free and comprehensive evaluation of genome assemblies <br/>
 
-PAQman evaluates 6 important metrics: <br/>
+PAQman evaluates 7 important metrics: <br/>
 Contiguity (QUAST) <br/>
 Gene Content (BUSCO) <br/>
 Completeness (Merqury)<br/>
