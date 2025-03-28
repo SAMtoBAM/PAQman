@@ -17,7 +17,7 @@ Telomerality* (PAQman) <br/>
 
 ### Conda installation
 ```
-conda install paqman
+conda install samtobam::paqman
 ```
 
 ### Quick run
