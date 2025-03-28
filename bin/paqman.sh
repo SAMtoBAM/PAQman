@@ -3,6 +3,16 @@ set -euo pipefail
 
 version="v1"
 
+##paqman environment
+#mamba create -n paqman bioconda::busco bioconda::merqury bioconda::quast bioconda::filtlong bioconda::seqtk bioconda::craq bioconda::seqkit conda-forge::r-gggenomes conda-forge::r-ggpubr conda-forge::r-ggsci conda-forge::r-svglite conda-forge::r-fmsb conda-forge::r-ggsci conda-forge::r-reshape2
+
+##maybe to add mummer4
+
+
+##to create the conda env using these tools and paqman
+#conda env export > paqman.yml
+
+
 LRcoverageRpath=$( which coverage_plots.template_LR.R )
 LRSRcoverageRpath=$( which coverage_plots.template_SR_and_LR.R )
 
@@ -121,7 +131,7 @@ case "$key" in
 	-w | --window       Number of basepairs for window averaging for coverage (default: 30000)
 	-s | --slide        Number of basepairs for the window to slide for coverage (default: 10000)
 	-p | --prefix       Prefix for output (default: name of assembly file (-a) before the fasta suffix)
-	-o | --output       Name of output folder for all results (default: genomeeval_output)
+	-o | --output       Name of output folder for all results (default: paqman_output)
 	-c | --cleanup      Remove a large number of files produced by each of the tools that can take up a lot of space. Choose between 'yes' or 'no' (default: 'yes')
 	-h | --help         Print this help message
 	"
