@@ -57,7 +57,7 @@ Optional parameters:
 ### Summary stats: 'summary_stats.tsv':
 |Column &nbsp;&nbsp;&nbsp;| Header | Description |
 |------------|--------|--------------|
-| Column 01 | <b>strain</b> | prefix given to the output files (-p)
+| Column 01 | <b>prefix</b> | prefix given to the output files (-p)
 | Column 02 | <b>assembly</b> | prefix from the fasta file without suffix (-g)
 | Column 03 | <b>quast_#contigs</b> | Number of total contigs
 | Column 04 | <b>quast_#contigs>10kb</b> | Number of contigs >10 kb
