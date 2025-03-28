@@ -3,11 +3,8 @@ set -euo pipefail
 
 version="v1"
 
-##paqman environment
-#mamba create -n paqman bioconda::busco bioconda::merqury bioconda::quast bioconda::filtlong bioconda::seqtk bioconda::craq conda-forge::r-gggenomes conda-forge::r-ggpubr conda-forge::r-ggsci conda-forge::r-svglite
-
-##to create the conda env using these tools and paqman
-#conda env paqman > paqman.yml
+LRcoverageRpath=$( which coverage_plots.template_LR.R )
+LRSRcoverageRpath=$( which coverage_plots.template_SR_and_LR.R )
 
 
 ##############################################################
@@ -79,7 +76,7 @@ case "$key" in
 	shift
 	;;
 	-r|--telomererepeat)
-	slide="$2"
+	telomererepeat="$2"
 	shift
 	shift
 	;;
@@ -99,7 +96,7 @@ case "$key" in
 	shift
 	;;
 	-c|--cleanup)
-	output="$2"
+	cleanup="$2"
 	shift
 	shift
 	;;
@@ -124,7 +121,7 @@ case "$key" in
 	-w | --window       Number of basepairs for window averaging for coverage (default: 30000)
 	-s | --slide        Number of basepairs for the window to slide for coverage (default: 10000)
 	-p | --prefix       Prefix for output (default: name of assembly file (-a) before the fasta suffix)
-	-o | --output       Name of output folder for all results (default: paqman_output)
+	-o | --output       Name of output folder for all results (default: genomeeval_output)
 	-c | --cleanup      Remove a large number of files produced by each of the tools that can take up a lot of space. Choose between 'yes' or 'no' (default: 'yes')
 	-h | --help         Print this help message
 	"
@@ -136,7 +133,7 @@ done
 
 
 ##reset the prefix if not reassigned from 'paqman' the to the prefix of the assembly
-[[ $prefix == "paqman" ]] && prefix=$( echo $assembly | awk -F "/" '{print $NF}' | sed 's/\.fasta\.gz$//' | sed 's/\.fa\.gz$//' | sed 's/\.fasta$//' | sed 's/\.fa$//' )
+[[ $prefix == "paqman" ]] && prefix=$( echo $assembly | awk -F "/" '{print $NF}' | sed 's/\.fasta\.gz$//' | sed 's/\.fa\.gz$//' | sed 's/\.fasta$//' | sed 's/\.fa$//' | sed 's/\.fna$//' )
 ##set that we do have shortreads available
 [[ $pair1 != "" && $pair2 != ""  ]] && shortreads="yes"
 
@@ -156,9 +153,9 @@ echo "Using ${buscodb} database for BUSCO assessment"
 #################### BEGINNING EVALUATION ####################
 ##############################################################
 echo "########################################################"
-echo "################## paqman: Starting paqman ##################"
+echo "################## PAQman: Starting PAQman ##################"
 echo "########################################################"
-echo "################## paqman: Step 1: Organising Input"
+echo "################## PAQman: Step 1: Organising Input"
 
 ## assembly evaluations
 mkdir ${output}
@@ -187,16 +184,19 @@ pair22=$( echo ${pair2} | awk -F "/" '{print $NF}' )
 
 
 ########################## QUAST ##########################
-echo "################## paqman: Step 2: Running Quast"
-quast -o ./quast ${assembly}
+echo "################## PAQman: Step 2: Running Quast"
+quast -o ./quast ${assembly} > quast.log
+##move quast log to quast output folder
+mv quast.log quast/
 ## we are just interested in the summary tsv file 'quast/report.tsv'
 
-## get the information of interest out of the summary files (number of contigs; contigs > 10kb; sum size; N50, N90; largest contig) and place in variable "quaststat"
-quaststat=$( cat ./quast/report.tsv | awk -F "\t" '{if(NR == 2 || NR == 5 || NR == 15 || NR == 16 || NR == 18 || NR == 19) all=all";"$2} END{print all}' | sed 's/^;//' | tr ';' '\t' | awk '{print $1"\t"$2"\t"$4"\t"$5"\t"$6"\t"$3}' )
 
 ########################## BUSCO (using the ${buscodb} dataset) ##########################
-echo "################## paqman: Step 3: Running BUSCO"
-busco -i ${assembly} -o ./busco  -l ${buscodb} --mode genome -c ${threads}
+echo "################## PAQman: Step 3: Running BUSCO"
+busco -i ${assembly} -o ./busco  -l ${buscodb} --mode genome -c ${threads} >  busco.log
+##move log to busco output folder
+mv busco.log busco/
+
 if [[ $cleanup == "yes" ]]
 then
 ##remove output from busco that takes a lot of space
@@ -207,26 +207,23 @@ rm -r busco_downloads
 fi
 ## we are just interested in the summary txt file 'busco/short_summary.*.txt'
 
-## get the information of interest out of the summary file (busco_db;total;complete;complete_singlecopy;fragmented;missing) and place in variable "buscostat"
-buscostat=$( cat ./busco/short_summary.specific.*.busco.txt | grep "The lineage\|Complete BUSCOs\|Complete and single\|Fragmented BUSCOs\|Missing BUSCOs\|Total BUSCO" | sed 's/# The lineage dataset is: //g' | awk '{line=line";"$1} END{print line}' | sed 's/^;//' | tr ';' '\t' | awk '{print $1"\t"$6"\t"$2"\t"$3"\t"$4"\t"$5}' )
-
 
 ########################## Merqury ##########################
-echo "################## paqman: Step 4a: Generating k-mer distribution"
+echo "################## PAQman: Step 4a: Generating k-mer distribution"
 if [[ $shortreads == "yes" ]]
 then
-echo "Creating meryl k-mer database using short-reads"
+echo "NOTE: Creating meryl k-mer database using short-reads"
 ## calculcate the kmer profile of the raw reads before assembly
 ## this profile will be compared to the resulting assembly to calculate completeness, i.e. how many of the good quality kmers are captured in the assembly
 ## here we can use JUST the illumina dataset and always compare to this dataset
 meryl t=${threads} memory=15 k=18 count output ${prefix}.meryl ${pair12} ${pair22}
 else 
-echo "Creating meryl k-mer database using long-reads"
+echo "NOTE: Creating meryl k-mer database using long-reads"
 ##same but instead using the long-read data due to an absence of short reads
-meryl t=${threads} memory=15 k=18 count output ${prefix}.meryl ${longreads2}
+meryl t=${threads} memory=15 k=18 count output ${prefix}.meryl ${longreads2} 
 fi
 
-echo "################## paqman: Step 5b: Running Merqury"
+echo "################## PAQman: Step 5b: Running Merqury"
 
 mkdir ./merqury
 merqury.sh ${prefix}.meryl ${assembly} ${prefix}.merqury
@@ -247,13 +244,10 @@ rm -r ${prefix}.mer*
 #rm -r ${prefix}.fa
 fi
 
-## get the information of interest out of the two summary files (the kmer completeness percentage and the phred value for error rate) and place in variable "merqurystat"
-completeness=$( cat ./merqury/${prefix}.merqury.completeness.stats | awk '{print $5}' )
-phredval=$( cat ./merqury/${prefix}.merqury.qv | awk '{print $4}' )
-merqurystat=$( echo "${completeness};${phredval}" | tr ';' '\t' )
+
 
 ########################## CRAQ ##########################
-echo "################## paqman: Step 5a: Downsampling for 50X long-reads for CRAQ assessment"
+echo "################## PAQman: Step 5a: Downsampling for 50X long-reads for CRAQ assessment"
 ## redownsample the dataset for just 50X of the longest as to remove shorter reads from confusing CRAQ
 ## get genome size based on input genome
 genomesize=$( cat ./quast/report.tsv  | awk -F "\t" '{if(NR == 15) print $2}' )
@@ -261,16 +255,18 @@ target=$( echo $genomesize | awk '{print $1*50}' )
 ##now run filtlong with the settings
 filtlong -t ${target} --length_weight 5 ${longreads2} | gzip > longreads.filtlong50x.fq.gz
 ##run craq
-echo "################## paqman: Step 5b: Running CRAQ"
+echo "################## PAQman: Step 5b: Running CRAQ"
 if [[ $shortreads == "yes" ]]
 then
-[[ $platform == "ont" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -ngs ${pair12},${pair22} -x map-ont --thread ${threads}
-[[ $platform == "pacbio-hifi" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -ngs ${pair12},${pair22} -x map-hifi --thread ${threads}
-[[ $platform == "pacbio-clr" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -ngs ${pair12},${pair22} -x map-pb --thread ${threads}
+[[ $platform == "ont" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -ngs ${pair12},${pair22} -x map-ont --thread ${threads} > craq.log
+[[ $platform == "pacbio-hifi" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -ngs ${pair12},${pair22} -x map-hifi --thread ${threads} > craq.log
+[[ $platform == "pacbio-clr" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -ngs ${pair12},${pair22} -x map-pb --thread ${threads} > craq.log
+mv craq.log craq/
 else
-[[ $platform == "ont" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -x map-ont --thread ${threads}
-[[ $platform == "pacbio-hifi" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -x map-hifi --thread ${threads}
-[[ $platform == "pacbio-clr" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -x map-pb --thread ${threads}
+[[ $platform == "ont" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -x map-ont --thread ${threads} > craq.log
+[[ $platform == "pacbio-hifi" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -x map-hifi --thread ${threads} > craq.log
+[[ $platform == "pacbio-clr" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -x map-pb --thread ${threads} > craq.log
+mv craq.log craq/
 fi
 ## remove large intermediate files
 if [[ $cleanup == "yes" ]]
@@ -283,13 +279,11 @@ fi
 ## from the output we are just interested in the summary file 'craq/runAQI_out/out_final.Report' for the summary stats (second line from the top is the genome wide average)
 ## for the position of structural errors, 'craq/runAQI_out/strER_out/out_final.CSE.bed'
 
-## get the information of interest out of the summary file (just the final percentages for local and structural concordance) and place in variable "craqstat"
-craqstat=$( cat ./craq/runAQI_out/out_final.Report | head -n3 | tail -n1 | awk -F "\t" '{print $6$7}' | tr '(' '\t' | tr ')' '\t' | awk '{print $2"\t"$4}' )
 
 
 
 ########################## READ COVERAGE ##########################
-echo "################## paqman: Step 6a: Running whole genome read alignment"
+echo "################## PAQman: Step 6a: Running whole genome read alignment"
 ## using the short-read data we can look at genome wide coverage on the assembly
 ## first index the assembly using the aligner
 mkdir ./coverage
@@ -359,22 +353,22 @@ fi
 ##set a full path for the shortread data to be read into the R script
 SRpath=$( realpath ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.coverage_normalised.tsv )
 
-echo "################## paqman: Step 6b: Plotting coverage"
+echo "################## PAQman: Step 6b: Plotting coverage"
 ##covert paths in R script to those relevant for the coverage outputs generated here and then export the plots 
-cat coverage_plots.template_SR_and_LR.R | sed "s|PATHTOSRCOVERAGE|${SRpath}|" | sed "s|PATHTOLRCOVERAGE|${LRpath}|" | sed "s|PATHTOOUTPUT|./coverage/${prefix}|" > ./coverage/${prefix}.coverage_plots.R
-Rscript ./coverage/${assembly}.coverage_plots.R
+cat ${LRSRcoverageRpath} | sed "s|PATHTOSRCOVERAGE|${SRpath}|" | sed "s|PATHTOLRCOVERAGE|${LRpath}|" | sed "s|PATHTOOUTPUT|./coverage/${prefix}|" > ./coverage/${prefix}.coverage_plots.R
+Rscript ./coverage/${prefix}.coverage_plots.R
 else 
 
-echo "################## paqman: Step 6b: Plotting coverage"
+echo "################## PAQman: Step 6b: Plotting coverage"
 ##covert paths in R script to those relevant for the coverage outputs generated here and then export the plots 
-cat coverage_plots.template_LR.R | sed "s|PATHTOLRCOVERAGE|${LRpath}|" | sed "s|PATHTOOUTPUT|./coverage/${prefix}|" > ./coverage/${prefix}.coverage_plots.R
-Rscript ./coverage/${assembly}.coverage_plots.R
+cat ${LRcoverageRpath} | sed "s|PATHTOLRCOVERAGE|${LRpath}|" | sed "s|PATHTOOUTPUT|./coverage/${prefix}|" > ./coverage/${prefix}.coverage_plots.R
+Rscript ./coverage/${prefix}.coverage_plots.R
 fi
 
 
 
 ########################## TELOMERALITY ##########################
-echo "################## paqman: Step 7: Running Telomere search"
+echo "################## PAQman: Step 7: Running Telomere search"
 mkdir ./telomerality
 #telomererepeat="TTAGGG"
 ##can also label all regions with the canonical telomeric repeat
@@ -401,20 +395,57 @@ cat ./telomerality/telomeres.bed | awk -v contig="$contig" '{if($1 == contig) pr
 cat ./telomerality/telomeres.bed | awk -v contig="$contig" '{if($1 == contig) print}' | tail -n1 | awk -v contig="$contig" -v size="$size" '{if($1 ==contig && (size-$3) <= 0.75*($3-$2)) {print contig"\tend\t"(size-$3)"\t"$2"-"$3"\ttelomeric"; end="noneed"} else if($1 ==contig && (size-$3) > 0.75*($3-$2) && (size-$3) < 5000) {print contig"\tend\t"(size-$3)"\t"$2"-"$3"\tdistant"; end="noneed"}} END{if(end != "noneed") print contig"\tend\tNA\tNA\tabsent"}'
 done >> ./telomerality/telomeres.classification.tsv
 
-telomericends=$( cat ./telomerality/telomeres.classification.tsv | awk '{if($5 == "telomeric") {sum=sum+1; n++} else {n++}} END{print sum"\t"(sum/n)*100}' )
-t2t=$( cat ./telomerality/telomeres.classification.tsv | cut -f1 | sort -u | while read contig; do cat ./telomerality/telomeres.classification.tsv | awk -v contig="$contig" '{if($1 == contig && $5 == "telomeric") sum=sum+1} END{if(sum==2) print}'; done | wc -l )
 
-telomeralitystat=$(  echo "${telomericends};${t2t}" | tr ';' '\t' )
 
 
 ########################## SUMMARY STATS ##########################
 
-echo "################## paqman: Step 8: Generating summary statistics file"
+echo "################## PAQman: Step 8: Generating summary statistics file"
 ### Create the header for the summary stats file
-echo "strain;assembly;quast_#contigs;quast_#contigs>10kb;quast_assembly_size;quast_assembly_N50;quast_assembly_N90;quast_largest_contig;BUSCO_db;BUSCO_total;BUSCO_complete;BUSCO_complete_single;BUSCO_fragmented;BUSCO_missing;merqury_completeness(%);merqury_qv(phred);CRAQ_average_CRE(%);CRAQ_average_CSE(%);telomeric_ends;telomeric_ends(%);t2t_contigs" | tr ';' '\t' >  ${output}/summary_stats.tsv
-##spit out all the stats
-echo "${strain};${assembly};${quaststat};${buscostat};${merqurystat};${craqstat};${telomeralitystat}" | tr ';' '\t' >> ${output}/summary_stats.tsv
+echo "prefix;assembly;quast_#contigs;quast_#contigs>10kb;quast_assembly_size;quast_assembly_N50;quast_assembly_N90;quast_largest_contig;BUSCO_db;BUSCO_total;BUSCO_complete;BUSCO_complete_single;BUSCO_fragmented;BUSCO_missing;merqury_completeness(%);merqury_qv(phred);CRAQ_average_CRE(%);CRAQ_average_CSE(%);telomeric_ends;telomeric_ends(%);t2t_contigs" | tr ';' '\t' >  summary_stats.tsv
 
-echo "################## paqman: Summary stats can be found here ${output}/summary_stats.tsv"
-echo "################## paqman: All complete; thanks for using paqman"
+
+##assign all the stats variables
+
+
+##assembly name without the suffix (can be the prefix too if not set)
+assembly2=$( echo $assembly | awk -F "/" '{print $NF}' | sed 's/\.fasta\.gz$//' | sed 's/\.fa\.gz$//' | sed 's/\.fasta$//' | sed 's/\.fa$//' | sed 's/\.fna$//' )
+
+##QUAST
+## get the information of interest out of the summary files (number of contigs; contigs > 10kb; sum size; N50, N90; largest contig) and place in variable "quaststat"
+quaststat=$( cat ./quast/report.tsv | awk -F "\t" '{if(NR == 2 || NR == 5 || NR == 15 || NR == 16 || NR == 18 || NR == 19) all=all";"$2} END{print all}' | sed 's/^;//' | tr ';' '\t' | awk '{print $1"\t"$2"\t"$4"\t"$5"\t"$6"\t"$3}' )
+
+
+## BUSCO
+## get the information of interest out of the summary file (busco_db;total;complete;complete_singlecopy;fragmented;missing) and place in variable "buscostat"
+buscostat=$( cat ./busco/short_summary.specific.*.busco.txt | grep "The lineage\|Complete BUSCOs\|Complete and single\|Fragmented BUSCOs\|Missing BUSCOs\|Total BUSCO" | sed 's/# The lineage dataset is: //g' | awk '{line=line";"$1} END{print line}' | sed 's/^;//' | tr ';' '\t' | awk '{print $1"\t"$6"\t"$2"\t"$3"\t"$4"\t"$5}' )
+
+
+## Merqury
+## get the information of interest out of the two summary files (the kmer completeness percentage and the phred value for error rate) and place in variable "merqurystat"
+completeness=$( cat ./merqury/${prefix}.merqury.completeness.stats | awk '{print $5}' )
+phredval=$( cat ./merqury/${prefix}.merqury.qv | awk '{print $4}' )
+##combine both
+merqurystat=$( echo "${completeness};${phredval}" | tr ';' '\t' )
+
+
+## CRAQ
+## get the information of interest out of the summary file (just the final percentages for local and structural concordance) and place in variable "craqstat"
+craqstat=$( cat ./craq/runAQI_out/out_final.Report | head -n3 | tail -n1 | awk -F "\t" '{print $6$7}' | tr '(' '\t' | tr ')' '\t' | awk '{print $2"\t"$4}' )
+
+
+## telomerality
+##get the number of telomere ends and as a percentage of contig ends
+telomericends=$( cat ./telomerality/telomeres.classification.tsv | awk '{if($5 == "telomeric") {sum=sum+1; n++} else {n++}} END{print sum"\t"(sum/n)*100}' )
+##get the number of contigs with telomeres at both ends
+t2t=$( cat ./telomerality/telomeres.classification.tsv | cut -f1 | sort -u | while read contig; do cat ./telomerality/telomeres.classification.tsv | awk -v contig="$contig" '{if($1 == contig && $5 == "telomeric") sum=sum+1} END{if(sum==2) print}'; done | wc -l )
+##combine the two
+telomeralitystat=$(  echo "${telomericends};${t2t}" | tr ';' '\t' )
+
+
+##spit out all the stats and save them to the summary stats file
+echo "${prefix};${assembly2};${quaststat};${buscostat};${merqurystat};${craqstat};${telomeralitystat}" | tr ';' '\t' >> summary_stats.tsv
+
+echo "################## PAQman: Summary stats can be found here ${output}/summary_stats.tsv"
+echo "################## PAQman: All complete; thanks for using PAQman"
 
