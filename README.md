@@ -104,14 +104,14 @@ Can find these classifications (and coordinates/distance from edge etc) for each
 
 ## Comparing PAQman output across multiple assemblies
 
-PAQman also has a tool (paqplot) to compare and analyse summary files from multiple assemblies <br/>
+PAQman also has a tool (paqplots) to compare and analyse summary files from multiple assemblies <br/>
 This makes it easier to benchmark tools and parameters using all the variables analysed  <br/>
 Simply provide paqplots with a combined summary file (with the same header) or a list of paths to the summary files
 
 ```
-	paqplot.sh -s summary_file.tsv -p genome -o paqman_output -c yes
+	paqplots.sh -s summary_file.tsv -p genome -o paqman_output -c yes
 	OR
-	paqplot.sh -l list_of_summary_files.txt -p genome -o paqman_output -c yes
+	paqplots.sh -l list_of_summary_files.txt -p genome -o paqman_output -c yes
 
 	
 	Required inputs:
