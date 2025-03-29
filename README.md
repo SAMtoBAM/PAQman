@@ -136,7 +136,7 @@ A radar plot (thanks ggradar!) for stats of percentages and a lollipop plot for 
 </p>
 
 Second: Another radar plot (thanks ggradar again!) containing a subset of stats and their relative values (i.e. all stats divided by the maximum value for that stat) <br/>
-In this example, all stats should be maximised except for contig count hence the PACman like shape below
+In this example, all stats should be maximised except for contig count hence the PACman like shape in blue below
 
 <p align="center" >
     <img src="https://github.com/SAMtoBAM/PAQman/blob/main/figures/example.relative_values.svg" width=50%>
