@@ -110,9 +110,9 @@ This makes it easier to benchmark tools and parameters using all the variables a
 Simply provide paqplots with a combined summary file (with the same header) or a list of paths to the summary files
 
 ```
-	paqplots.sh -s summary_file.tsv -p genome -o paqman_output -c yes
+	paqplots.sh -s summary_file.tsv -p genome -o paqman_output
 	OR
-	paqplots.sh -l list_of_summary_files.txt -p genome -o paqman_output -c yes
+	paqplots.sh -l list_of_summary_files.txt -p genome -o paqman_output
 
 	
 	Required inputs:
@@ -122,7 +122,6 @@ Simply provide paqplots with a combined summary file (with the same header) or a
 	Optional parameters:
 	-p | --prefix       Prefix for output (default: paqplot)
 	-o | --output       Name of output folder for all results (default: paqplot_output)
-	-c | --cleanup      Remove a large number of files produced by each of the tools that can take up a lot of space. Choose between 'yes' or 'no' (default: 'yes')
 	-h | --help         Print this help message
 	
 ```
