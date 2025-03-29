@@ -2,9 +2,10 @@
     <img src="https://github.com/SAMtoBAM/PAQman/blob/main/logo/paqman_logo_grey.svg" width=70%>
 </p>
 
-[![Anaconda_version](https://anaconda.org/samtobam/paqman/badges/version.svg
-)](https://anaconda.org/samtobam/paqman) [![Anaconda_downloads](https://anaconda.org/samtobam/paqman/badges/downloads.svg)](https://anaconda.org/samtobam/paqman) [![Anaconda_platforms](https://anaconda.org/samtobam/paqman/badges/platforms.svg
-)](https://anaconda.org/samtobam/paqman) [![Anaconda-Server Badge](https://anaconda.org/samtobam/paqman/badges/latest_release_date.svg)](https://anaconda.org/samtobam/paqman)
+[![Anaconda_version](https://anaconda.org/samtobam/paqman/badges/version.svg)](https://anaconda.org/samtobam/paqman)
+[![Anaconda_downloads](https://anaconda.org/samtobam/paqman/badges/downloads.svg)](https://anaconda.org/samtobam/paqman)
+[![Anaconda_platforms](https://anaconda.org/samtobam/paqman/badges/platforms.svg)](https://anaconda.org/samtobam/paqman)
+[![Anaconda-Server Badge](https://anaconda.org/samtobam/paqman/badges/latest_release_date.svg)](https://anaconda.org/samtobam/paqman)
 
 
 PAQman combines a set of excellent tools (and in-house scripts) for a reference-free and comprehensive evaluation of genome assemblies <br/>
