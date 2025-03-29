@@ -132,7 +132,7 @@ First: Figures containing all of the raw variables compared <br/>
 A radar plot (thanks ggradar!) for stats of percentages and a lollipop plot for all others (due to the wildly different scales)
 
 <p align="center" >
-    <img src="https://github.com/SAMtoBAM/PAQman/blob/main/figures/example.raw_values.svg" width=50%>
+    <img src="https://github.com/SAMtoBAM/PAQman/blob/main/figures/example.raw_values.svg" width=70%>
 </p>
 
 Second: Another radar plot (thanks ggradar again!) containing a subset of stats and their relative values (i.e. all stats divided by the maximum value for that stat) <br/>
