@@ -5,7 +5,7 @@
    viewBox="0 0 230 150"
    version="1.1"
    id="svg805"
-   sodipodi:docname="test.export.svg"
+   sodipodi:docname="example.relative_values.svg"
    inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -22,15 +22,15 @@
      inkscape:pagecheckerboard="0"
      inkscape:document-units="pt"
      showgrid="false"
-     inkscape:zoom="0.82285343"
-     inkscape:cx="40.711989"
-     inkscape:cy="365.19262"
+     inkscape:zoom="2.327381"
+     inkscape:cx="114.07673"
+     inkscape:cy="141.14578"
      inkscape:window-width="1850"
      inkscape:window-height="1016"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg805" />
+     inkscape:current-layer="surface10254" />
   <defs
      id="defs226">
     <g
@@ -633,11 +633,11 @@
      id="surface10254"
      transform="translate(-34.534105,-175.33902)">
     <rect
-       x="36.670303"
-       y="180.26988"
-       width="226.28371"
-       height="139.28558"
-       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.352248"
+       x="35.332623"
+       y="175.50575"
+       width="229.72986"
+       height="149.40839"
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.367592"
        id="rect228" />
     <path
        style="fill:none;stroke:#bdbdbd;stroke-width:0.75;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:0.75, 2.25;stroke-opacity:1"
