@@ -64,6 +64,7 @@ case "$key" in
 	-h|--help)
 	echo "
 	PAQman (version: ${version})
+ 
 	paqplot -s summary_file.tsv -p genome -o paqman_output -c yes
 	OR
 	paqplot -l list_of_summary_files.txt -p genome -o paqman_output -c yes
