@@ -70,8 +70,8 @@ case "$key" in
 
 	
 	Required inputs:
-	-s | --summary     A PAQman summary file with multiple assemblies combined and the same header
-	-l | --list		   A list of paths to multiple summary files
+	-s | --summary		A PAQman summary file with multiple assemblies combined and the same header
+	-l | --list			A list of paths to multiple summary files
 	
 	Optional parameters:
 	-p | --prefix       Prefix for output (default: paqplot)
