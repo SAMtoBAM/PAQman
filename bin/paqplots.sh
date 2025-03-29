@@ -56,18 +56,13 @@ case "$key" in
 	shift
 	shift
 	;;
-	-c|--cleanup)
-	cleanup="$2"
-	shift
-	shift
-	;;
 	-h|--help)
 	echo "
 	PAQman (version: ${version})
  
-	paqplot -s summary_file.tsv -p genome -o paqman_output -c yes
+	paqplot -s summary_file.tsv -p paqplot -o paqplot_output
 	OR
-	paqplot -l list_of_summary_files.txt -p genome -o paqman_output -c yes
+	paqplot -l list_of_summary_files.txt -p paqplot -o paqplot_output
 
 	
 	Required inputs:
@@ -77,7 +72,6 @@ case "$key" in
 	Optional parameters:
 	-p | --prefix		Prefix for output (default: paqplot)
 	-o | --output		Name of output folder for all results (default: paqplot_output)
-	-c | --cleanup		Remove a large number of files produced by each of the tools that can take up a lot of space. Choose between 'yes' or 'no' (default: 'yes')
 	-h | --help		Print this help message
 	"
 	exit
