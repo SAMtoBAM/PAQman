@@ -71,13 +71,13 @@ case "$key" in
 	
 	Required inputs:
 	-s | --summary		A PAQman summary file with multiple assemblies combined and the same header
-	-l | --list			A list of paths to multiple summary files
+	-l | --list		A list of paths to multiple summary files
 	
 	Optional parameters:
-	-p | --prefix       Prefix for output (default: paqplot)
-	-o | --output       Name of output folder for all results (default: paqplot_output)
-	-c | --cleanup      Remove a large number of files produced by each of the tools that can take up a lot of space. Choose between 'yes' or 'no' (default: 'yes')
-	-h | --help         Print this help message
+	-p | --prefix		Prefix for output (default: paqplot)
+	-o | --output		Name of output folder for all results (default: paqplot_output)
+	-c | --cleanup		Remove a large number of files produced by each of the tools that can take up a lot of space. Choose between 'yes' or 'no' (default: 'yes')
+	-h | --help		Print this help message
 	"
 	exit
 	;;
