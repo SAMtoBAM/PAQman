@@ -3,16 +3,6 @@ set -euo pipefail
 
 version="v1"
 
-##paqman environment
-#mamba create -n paqman bioconda::busco bioconda::merqury bioconda::quast bioconda::filtlong bioconda::seqtk bioconda::craq bioconda::seqkit conda-forge::r-gggenomes conda-forge::r-ggpubr conda-forge::r-ggsci conda-forge::r-svglite conda-forge::r-fmsb conda-forge::r-ggsci conda-forge::r-reshape2
-
-##maybe to add mummer4
-
-
-##to create the conda env using these tools and paqman
-#conda env export > paqman.yml
-
-
 LRcoverageRpath=$( which coverage_plots.template_LR.R )
 LRSRcoverageRpath=$( which coverage_plots.template_SR_and_LR.R )
 
@@ -251,7 +241,7 @@ rm *.bed
 rm *.wig
 rm *png
 rm -r ${prefix}.mer*
-#rm -r ${prefix}.fa
+rm -r ${assembly}.meryl
 fi
 
 
@@ -281,8 +271,8 @@ fi
 ## remove large intermediate files
 if [[ $cleanup == "yes" ]]
 then
-rm -r ./craq/*/*.depth
-rm -r ./craq/*/*.bam
+rm -r ./craq/LRout
+rm -r ./craq/SRout
 ##remove read subset used for alignment
 rm longreads.filtlong50x.fq.gz
 fi
@@ -358,6 +348,13 @@ then
 rm ./coverage/${prefix}.bwamem.sorted.bam
 ##remove the coverage files looking at everybase pair due to size
 rm ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz
+##remove index files
+rm ${assembly}.amb
+rm ${assembly}.ann
+rm ${assembly}.bwt
+rm ${assembly}.amb
+rm ${assembly}.pac
+rm ${assembly}.sa
 fi
 
 ##set a full path for the shortread data to be read into the R script
@@ -406,7 +403,12 @@ cat ./telomerality/telomeres.bed | awk -v contig="$contig" '{if($1 == contig) pr
 done >> ./telomerality/telomeres.classification.tsv
 
 
-
+########################## LAST CLEAN-UP ##########################
+## just removing some index files, links etc
+if [[ $cleanup == "yes" ]]
+then
+rm ${assembly}.fai
+fi
 
 ########################## SUMMARY STATS ##########################
 
