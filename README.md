@@ -1,5 +1,6 @@
-
- # Post-Assembly Quality manager ![](https://github.com/SAMtoBAM/PAQman/blob/main/paqman_logo_grey.svg)
+ <p align="center" >
+    <img src="https://github.com/SAMtoBAM/PAQman/blob/main/logo/paqman_logo_grey.svg" width=70%>
+</p>
 
 [![Anaconda_version](https://anaconda.org/samtobam/paqman/badges/version.svg
 )](https://anaconda.org/samtobam/paqman) [![Anaconda_downloads](https://anaconda.org/samtobam/paqman/badges/downloads.svg)](https://anaconda.org/samtobam/paqman) [![Anaconda_platforms](https://anaconda.org/samtobam/paqman/badges/platforms.svg
