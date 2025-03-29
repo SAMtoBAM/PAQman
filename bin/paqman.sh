@@ -103,6 +103,7 @@ case "$key" in
 	-h|--help)
 	echo "
 	PAQman (version: ${version})
+ 
 	paqman -g genome.fa -l long-reads.fq.gz -x ont -1 illumina.R1.fq.gz -2 illumina.R2.fq.gz -b eukaryota -w 30000 -s 10000 -r TTAGGG -p genome -o paqman_output -c yes
 	
 	Required inputs:
