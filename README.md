@@ -102,16 +102,16 @@ Can find these classifications (and coordinates/distance from edge etc) for each
 
 
 
-## Comparing summary output
+## Comparing PAQman output across multiple assemblies
 
-PAQman also has a tool to compare and analyse summary files from multiple assemblies <br/>
+PAQman also has a tool (paqplot) to compare and analyse summary files from multiple assemblies <br/>
 This makes it easier to benchmark tools and parameters using all the variables analysed  <br/>
 Simply provide paqplots with a combined summary file (with the same header) or a list of paths to the summary files
 
 ```
-	paqplot -s summary_file.tsv -p genome -o paqman_output -c yes
+	paqplot.sh -s summary_file.tsv -p genome -o paqman_output -c yes
 	OR
-	paqplot -l list_of_summary_files.txt -p genome -o paqman_output -c yes
+	paqplot.sh -l list_of_summary_files.txt -p genome -o paqman_output -c yes
 
 	
 	Required inputs:
@@ -126,4 +126,18 @@ Simply provide paqplots with a combined summary file (with the same header) or a
 	
 ```
 
+paqplot will provide two images (alongside the R scripts used to generate them) <br/>
+First: Figures containing all of the raw variables compared <br/>
+A radar plot (thanks ggradar!) for stats of percentages and a lollipop plot for all others (due to the wildly different scales)
+
+<p align="center" >
+    <img src="https://github.com/SAMtoBAM/PAQman/blob/main/figures/example.raw_values.svg" width=50%>
+</p>
+
+Second: Another radar plot (thanks ggradar again!) containing a subset of stats and their relative values (i.e. all stats divided by the maximum value for that stat) <br/>
+In this example, all stats should be maximised except for contig count hence the PACman like shape below
+
+<p align="center" >
+    <img src="https://github.com/SAMtoBAM/PAQman/blob/main/figures/example.relative_values.svg" width=50%>
+</p>
 
