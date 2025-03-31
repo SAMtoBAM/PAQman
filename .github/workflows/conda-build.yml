@@ -49,5 +49,5 @@ jobs:
         fi
     
         echo "Uploading ${PACKAGE_FILES[0]}..."
-        anaconda upload --force "${PACKAGE_FILES[0]}"
+        conda run anaconda upload --force "${PACKAGE_FILES[0]}"
 
