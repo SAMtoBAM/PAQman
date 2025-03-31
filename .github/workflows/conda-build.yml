@@ -33,8 +33,6 @@ jobs:
       # This step installs conda-build and then uses it to build your Conda package.
     
     - name: Upload starfish Package
-      env:
-          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
       run: |
         conda install -c anaconda anaconda-client
         PACKAGE_FILES=($(find /usr/share/miniconda/conda-bld/linux-64/ -name "paqman*.conda"))
@@ -49,5 +47,5 @@ jobs:
         fi
     
         echo "Uploading ${PACKAGE_FILES[0]}..."
-        conda run anaconda upload --force "${PACKAGE_FILES[0]}"
+        conda run anaconda upload -t ${{ secrets.ANACONDA_API_TOKEN }} --force "${PACKAGE_FILES[0]}"
 
