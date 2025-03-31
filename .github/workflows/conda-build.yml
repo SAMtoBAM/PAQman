@@ -35,17 +35,17 @@ jobs:
     - name: Upload starfish Package
       run: |
         conda install -c anaconda anaconda-client
-        PACKAGE_FILES=($(find /usr/share/miniconda/conda-bld/linux-64/ -name "paqman*.conda"))
+        PACKAGE_FILES=($(find /usr/share/miniconda/conda-bld/linux-64/ -name "paqman*.tar.bz2"))
         NUM_FILES=${#PACKAGE_FILES[@]}
     
         if [ "$NUM_FILES" -eq 0 ]; then
-          echo "Error: No paqman package files found."
+          echo "Error: No starfish package files found."
           exit 1
         elif [ "$NUM_FILES" -gt 1 ]; then
-          echo "Error: Multiple paqman package files found."
+          echo "Error: Multiple starfish package files found."
           exit 1
         fi
     
         echo "Uploading ${PACKAGE_FILES[0]}..."
-        conda run anaconda upload -t ${{ secrets.ANACONDA_API_TOKEN }} --force "${PACKAGE_FILES[0]}"
+        conda run anaconda -t ${{ secrets.ANACONDA_API_TOKEN }} upload --force "${PACKAGE_FILES[0]}"
 
