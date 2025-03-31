@@ -57,9 +57,9 @@ case "$key" in
 	echo "
 	PAQman (version: ${version})
  
-	paqplot -s summary_file.tsv -p paqplot -o paqplot_output
+	paqplot -s summary_file.tsv
 	OR
-	paqplot -l list_of_summary_files.txt -p paqplot -o paqplot_output
+	paqplot -l list_of_summary_files.txt
 
 	
 	Required inputs:
