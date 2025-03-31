@@ -35,7 +35,7 @@ jobs:
     - name: Upload starfish Package
       run: |
         conda install -c anaconda anaconda-client
-        PACKAGE_FILES=($(find /usr/share/miniconda/conda-bld/linux-64/ -name "paqman*.conda"))
+        PACKAGE_FILES=($(find /usr/share/miniconda/conda-bld/linux-64/ -name "paqman*.tar.bz2"))
         NUM_FILES=${#PACKAGE_FILES[@]}
     
         if [ "$NUM_FILES" -eq 0 ]; then
