@@ -1,0 +1,48 @@
+name: PAQman conda build and upload
+
+# This workflow is triggered on pushes to the repository.
+on:
+  push:
+    branches:
+      - main  # Trigger the workflow on push to the main branch
+
+jobs:
+  conda-build-and-upload:
+    # This job runs on the latest Ubuntu runner hosted by GitHub Actions
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+      # This step checks out a copy of your repository.
+
+    - name: Setup Miniconda
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        activate-environment: paqman
+        python-version: 3.8  # Specify the version of Python you need
+        auto-activate-base: true
+      # This step sets up Miniconda with a specific Python version.
+
+    - name: Conda Build
+      run: |
+        conda install conda-build conda-verify
+        conda build .
+      # This step installs conda-build and then uses it to build your Conda package.
+    
+    - name: Upload starfish Package
+      run: |
+        conda install -c anaconda anaconda-client
+        PACKAGE_FILES=($(find /usr/share/miniconda/conda-bld/linux-64/ -name "paqman*.conda"))
+        NUM_FILES=${#PACKAGE_FILES[@]}
+    
+        if [ "$NUM_FILES" -eq 0 ]; then
+          echo "Error: No paqman package files found."
+          exit 1
+        elif [ "$NUM_FILES" -gt 1 ]; then
+          echo "Error: Multiple paqman package files found."
+          exit 1
+        fi
+    
+        echo "Uploading ${PACKAGE_FILES[0]}..."
+        conda run anaconda -t ${{ secrets.ANACONDA_API_TOKEN }} upload --force "${PACKAGE_FILES[0]}"
