@@ -11,8 +11,8 @@
    sodipodi:docname="paqman_schematic.svg"
    xml:space="preserve"
    inkscape:export-filename="/home/samslaptop/Downloads/paqman_schematic.png"
-   inkscape:export-xdpi="500"
-   inkscape:export-ydpi="500"
+   inkscape:export-xdpi="1000"
+   inkscape:export-ydpi="1000"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -28,8 +28,8 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      inkscape:zoom="1.4142136"
-     inkscape:cx="274.00388"
-     inkscape:cy="193.3937"
+     inkscape:cx="250.66935"
+     inkscape:cy="214.60691"
      inkscape:window-width="1850"
      inkscape:window-height="1016"
      inkscape:window-x="0"
@@ -610,7 +610,7 @@
        y="0.91015363"
        ry="0" /><g
        id="g51930"
-       transform="matrix(1.4332761,0,0,1.4332761,-56.727693,-20.530368)"><rect
+       transform="matrix(1.4332761,0,0,1.4332761,-56.727693,-20.356979)"><rect
          style="fill:#ffffff;fill-opacity:0.998143;stroke:none;stroke-width:0.0915471;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stop-color:#000000"
          id="rect2091"
          width="17.686094"
@@ -798,8 +798,8 @@
        x="32.378616"
        y="60.412827"
        ry="0.57887936" /><path
-       style="fill:#95ccfb;fill-opacity:0;stroke:#000000;stroke-width:0.259946;stroke-dasharray:0.259946, 0.259946;stroke-dashoffset:0;stroke-opacity:1"
-       d="m 113.35511,75.105113 -39.703984,0.0019"
+       style="fill:#95ccfb;fill-opacity:0;stroke:#000000;stroke-width:0.30496;stroke-dasharray:0.30496, 0.30496;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 128.29649,74.905092 -54.645364,0.0019"
        id="path11-0-6-1-4-6-6"
        sodipodi:nodetypes="cc" /><path
        style="fill:#95ccfb;fill-opacity:0;stroke:#000000;stroke-width:0.3;stroke-dasharray:none;stroke-opacity:1;marker-start:url(#Dot-8)"
@@ -1177,7 +1177,7 @@
      y="44.34623"
      ry="0.32375982" /><path
      style="fill:#95ccfb;fill-opacity:0;stroke:#000000;stroke-width:0.3;stroke-dasharray:0.3, 0.3;stroke-dashoffset:0;stroke-opacity:1;marker-end:url(#Dot-6)"
-     d="m 126.53331,47.122872 -27.249682,0.0019"
+     d="m 126.53331,47.296261 -27.249682,0.0019"
      id="path11-0-6-1-4-6"
      sodipodi:nodetypes="cc" /><g
      id="g12"
@@ -1287,7 +1287,7 @@
      id="layer2"
      inkscape:label="Layer 2" /><g
      id="surface25269"
-     transform="matrix(0.03602705,0,0,0.03523309,114.40256,65.500518)"><rect
+     transform="matrix(0.03602705,0,0,0.03523309,130.27757,64.839059)"><rect
        x="9.6294546"
        y="102.81282"
        width="507.23297"
