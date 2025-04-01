@@ -416,7 +416,7 @@ fi
 
 echo "################## PAQman: Step 8: Generating summary statistics file"
 ### Create the header for the summary stats file
-echo "prefix;assembly;quast_#contigs;quast_#contigs>10kb;quast_assembly_size;quast_assembly_N50;quast_assembly_N90;quast_largest_contig;BUSCO_db;BUSCO_total;BUSCO_complete;BUSCO_complete_single;BUSCO_fragmented;BUSCO_missing;merqury_completeness(%);merqury_qv(phred);CRAQ_average_CRE(%);CRAQ_average_CSE(%);telomeric_ends;telomeric_ends(%);t2t_contigs" | tr ';' '\t' >  summary_stats.tsv
+echo "prefix;assembly;quast_#contigs;quast_#contigs>10kb;quast_assembly_size;quast_assembly_N50;quast_assembly_N90;quast_largest_contig;BUSCO_db;BUSCO_total;BUSCO_complete;BUSCO_complete_single;BUSCO_fragmented;BUSCO_missing;merqury_completeness(%);merqury_qv(phred);CRAQ_average_CRE(%);CRAQ_average_CSE(%);coverage_normal(%);telomeric_ends;telomeric_ends(%);t2t_contigs" | tr ';' '\t' >  summary_stats.tsv
 
 
 ##assign all the stats variables
@@ -447,6 +447,13 @@ merqurystat=$( echo "${completeness};${phredval}" | tr ';' '\t' )
 ## get the information of interest out of the summary file (just the final percentages for local and structural concordance) and place in variable "craqstat"
 craqstat=$( cat ./craq/runAQI_out/out_final.Report | head -n3 | tail -n1 | awk -F "\t" '{print $6$7}' | tr '(' '\t' | tr ')' '\t' | awk '{print $2"\t"$4}' )
 
+## Coverage
+## calculate the proportion of the windows (sits in for genome proportion) with a median coverage less than times the standard deviation away from the median
+##can just use the normalised median and therefore within 2SD from 1
+covSD=$( cat ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv | awk '{print $5}' | awk '{x+=$0;y+=$0^2}END{print sqrt(y/NR-(x/NR)^2)}' )
+covstat=$( cat ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv |awk -v covSD="$covSD" '{if($5 > (1+(2*covSD)) || $5 < (1-(2*covSD))) {deviation=deviation+1}} END{print (1-(deviation/NR))*100}' )
+
+
 
 ## telomerality
 ##get the number of telomere ends and as a percentage of contig ends
@@ -458,7 +465,7 @@ telomeralitystat=$(  echo "${telomericends};${t2t}" | tr ';' '\t' )
 
 
 ##spit out all the stats and save them to the summary stats file
-echo "${prefix};${assembly2};${quaststat};${buscostat};${merqurystat};${craqstat};${telomeralitystat}" | tr ';' '\t' >> summary_stats.tsv
+echo "${prefix};${assembly2};${quaststat};${buscostat};${merqurystat};${craqstat};${covstat};${telomeralitystat}" | tr ';' '\t' >> summary_stats.tsv
 
 echo "################## PAQman: Summary stats can be found here ${output}/summary_stats.tsv"
 echo "################## PAQman: All complete; thanks for using PAQman"
