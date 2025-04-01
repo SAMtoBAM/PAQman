@@ -80,9 +80,10 @@ Optional parameters:
 | Column 14 | <b>merqury_qv(phred)</b> | A k-mer estimation of the genome wide error rate
 | Column 15 | <b>CRAQ_average_CRE(%)</b> | Percentage of assembly without small regional errors
 | Column 16 | <b>CRAQ_average_CSE(%)</b> | Percentage of assembly without large structural errors
-| Column 17 | <b>telomeric_ends</b> | Number of contig ends with telomeric repeats
-| Column 18 | <b>telomeric_ends(%)</b> | Percentage of contig ends with telomeric repeats
-| Column 19 | <b>t2t_contigs</b> | Number of contigs with telomeric repeats at both ends
+| Column 17 | <b>coverage_normal(%)</b> | Percentage of the genome with a median coverage within two standard deviations from the genome wide median
+| Column 18 | <b>telomeric_ends</b> | Number of contig ends with telomeric repeats
+| Column 19 | <b>telomeric_ends(%)</b> | Percentage of contig ends with telomeric repeats
+| Column 20 | <b>t2t_contigs</b> | Number of contigs with telomeric repeats at both ends
 
 
 
