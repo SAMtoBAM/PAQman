@@ -17,11 +17,11 @@ From: quay.io/centos/centos:stream9
     conda config --add channels conda-forge
 
     # Install your Conda package
-    conda install samtobam::paqman || { echo "starfish package not found in egluckthaler channel"; exit 1; }
+    conda create -n paqman samtobam::paqman 
 
 %environment
     export PATH="/opt/conda/envs/paqman/bin:/opt/conda/bin:$PATH"
-    source activate starfish
+    source activate paqman
 
 %labels
    Author Samuel O'Donnell
