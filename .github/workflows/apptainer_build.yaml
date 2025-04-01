@@ -1,0 +1,30 @@
+name: PAQman apptainer build and push
+
+on:
+  push:
+    branches:
+      - main  # or any other branch you want to trigger the workflow
+
+jobs:
+  apptainer-build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+        contents: read
+        packages: write
+    container:
+        image: quay.io/singularity/singularity:v3.8.1
+        options: --privileged
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+
+    # Step to set up Apptainer and build the .sif image
+    - name: Build Apptainer Image
+      run: |
+        singularity build paqman.sif apptainer/paqman.def
+        
+    - name: Login and Deploy Container
+      run: |
+           echo ${{ secrets.GITHUB_TOKEN }} | singularity remote login -u ${{ secrets.GHCR_USERNAME }} --password-stdin oras://ghcr.io
+           singularity push paqman.sif oras://ghcr.io/${GITHUB_REPOSITORY}:${tag}
