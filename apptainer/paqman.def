@@ -1,0 +1,27 @@
+Bootstrap: docker
+From: quay.io/centos/centos:stream9
+
+%post
+    # Update and install necessary packages
+    yum -y update
+    yum -y install wget which bzip2 ca-certificates libxcrypt-compat
+
+    # Install Miniconda
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    bash Miniconda3-latest-Linux-x86_64.sh -b -p /opt/conda
+    rm Miniconda3-latest-Linux-x86_64.sh
+    export PATH="/opt/conda/bin:$PATH"
+
+    # set the conda config channels
+    conda config --add channels bioconda
+    conda config --add channels conda-forge
+
+    # Install your Conda package
+    conda install samtobam::paqman || { echo "starfish package not found in egluckthaler channel"; exit 1; }
+
+%environment
+    export PATH="/opt/conda/envs/paqman/bin:/opt/conda/bin:$PATH"
+    source activate starfish
+
+%labels
+   Author Samuel O'Donnell
