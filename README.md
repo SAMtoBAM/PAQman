@@ -2,6 +2,7 @@
     <img src="https://github.com/SAMtoBAM/PAQman/blob/main/logo/paqman_logo_grey.svg" width=70%>
 </p>
 
+[![Zenodo DOI](https://zenodo.org/badge/952795493.svg)](https://doi.org/10.5281/zenodo.15126267)
 [![Anaconda_version](https://anaconda.org/samtobam/paqman/badges/version.svg)](https://anaconda.org/samtobam/paqman)
 [![Anaconda_downloads](https://anaconda.org/samtobam/paqman/badges/downloads.svg)](https://anaconda.org/samtobam/paqman)
 [![Anaconda_platforms](https://anaconda.org/samtobam/paqman/badges/platforms.svg)](https://anaconda.org/samtobam/paqman)
