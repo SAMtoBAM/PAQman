@@ -4,7 +4,6 @@
 
 [![Zenodo DOI](https://zenodo.org/badge/952795493.svg)](https://doi.org/10.5281/zenodo.15126267)
 [![Anaconda_version](https://anaconda.org/samtobam/paqman/badges/version.svg)](https://anaconda.org/samtobam/paqman)
-[![Anaconda_downloads](https://anaconda.org/samtobam/paqman/badges/downloads.svg)](https://anaconda.org/samtobam/paqman)
 [![Anaconda_platforms](https://anaconda.org/samtobam/paqman/badges/platforms.svg)](https://anaconda.org/samtobam/paqman)
 [![Anaconda-Server Badge](https://anaconda.org/samtobam/paqman/badges/latest_release_date.svg)](https://anaconda.org/samtobam/paqman)
 
@@ -71,8 +70,8 @@ Optional parameters:
 ## The output:
 
 ### Summary stats: 'summary_stats.tsv':
-|Column &nbsp;&nbsp;&nbsp;| Header | Description |
-|------------|--------|--------------|
+|Column | Header | Description |
+|:---:|:---:|--------------|
 | Column 01 | <b>prefix</b> | prefix given to the output files (-p)
 | Column 02 | <b>assembly</b> | prefix from the fasta file without suffix (-a)
 | Column 03 | <b>quast_#contigs</b> | Number of total contigs
@@ -89,7 +88,7 @@ Optional parameters:
 | Column 14 | <b>merqury_qv(phred)</b> | A k-mer estimation of the genome wide error rate
 | Column 15 | <b>CRAQ_average_CRE(%)</b> | Percentage of assembly without small regional errors
 | Column 16 | <b>CRAQ_average_CSE(%)</b> | Percentage of assembly without large structural errors
-| Column 17 | <b>coverage_normal(%)</b> | Percentage of the genome with a median coverage within two standard deviations from the genome wide median
+| Column 17 | <b>coverage_normal(%)</b> | Percentage of the genome within 2*stdev of the genome wide median
 | Column 18 | <b>telomeric_ends</b> | Number of contig ends with telomeric repeats
 | Column 19 | <b>telomeric_ends(%)</b> | Percentage of contig ends with telomeric repeats
 | Column 20 | <b>t2t_contigs</b> | Number of contigs with telomeric repeats at both ends
