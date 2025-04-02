@@ -60,6 +60,14 @@ Optional parameters:
 
 ***
 
+## The Pipeline
+
+ <p align="center" >
+    <img src="https://github.com/SAMtoBAM/PAQman/blob/main/figures/paqman_schematic.svg" width=100%>
+</p>
+
+
+
 ## The output:
 
 ### Summary stats: 'summary_stats.tsv':
