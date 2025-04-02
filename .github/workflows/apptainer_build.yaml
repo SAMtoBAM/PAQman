@@ -30,4 +30,4 @@ jobs:
            echo "GITHUB_REPOSITORY=${GITHUB_REPOSITORY}"
            echo "tag=${tag}"
            echo ${{ secrets.APPTAINER_API_TOKEN }} | singularity remote login -u ${{ secrets.GHCR_USERNAME }} --password-stdin oras://ghcr.io
-           singularity push paqman.sif oras://ghcr.io/${GITHUB_REPOSITORY}:${tag}
+           singularity push paqman.sif oras://ghcr.io/samtobam/paqman:${tag}
