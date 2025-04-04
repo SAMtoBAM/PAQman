@@ -242,7 +242,7 @@ rm *.bed
 rm *.wig
 rm *png
 rm -r ${prefix}.mer*
-rm -r ${assembly}.meryl
+#rm -r ${assembly}.meryl
 fi
 
 
