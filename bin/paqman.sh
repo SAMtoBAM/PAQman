@@ -353,7 +353,6 @@ rm ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz
 rm ${assembly}.amb
 rm ${assembly}.ann
 rm ${assembly}.bwt
-rm ${assembly}.amb
 rm ${assembly}.pac
 rm ${assembly}.sa
 fi
