@@ -175,7 +175,7 @@ cd ${output}
 ##unzip the assembly if it was compressed otherwise just create a symobolic link
 if [[ ${assembly} =~ ".gz"$ || ${assembly} =~ ".gzip"$ ]]
 then
-zcat ${assemblypath} ${assembly2}.fa
+zcat ${assemblypath} > ${assembly2}.fa
 assembly="${assembly2}.fa"
 else
 ln -sf ${assemblypath} ./
