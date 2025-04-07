@@ -38,7 +38,7 @@ SRplot=ggplot(data=SRcoverage, aes(x=((start+end)/2), y=coverage_norm ))+
 mmhigh=(length(unique(SRcoverage$contig))/2*50)
 ##output with width of just a bit less than A4 and DPI of 320
 ggsave(filename = "PATHTOOUTPUT.SR.svg", plot = SRplot,
-       width = 200, height = mmhigh, units = "mm", dpi = "retina")
+       width = 200, height = mmhigh, units = "mm", dpi = "retina", limitsize = F)
 
 
 
@@ -65,7 +65,7 @@ LRplot=ggplot(data=LRcoverage, aes(x=((start+end)/2), y=coverage_norm ))+
 mmhigh=(length(unique(LRcoverage$contig))/2*50)
 ##output with width of just a bit less than A4 and DPI of 320
 ggsave(filename = "PATHTOOUTPUT.LR.svg", plot = LRplot,
-       width = 200, height = mmhigh, units = "mm", dpi = "retina")
+       width = 200, height = mmhigh, units = "mm", dpi = "retina", limitsize = F)
 
 
 
@@ -87,4 +87,4 @@ SRLRplot=ggplot()+
   ylab("Genome-wide median normalised coverage")
 
 ggsave(filename = "PATHTOOUTPUT.SR_and_LR.svg", plot = SRLRplot,
-       width = 200, height = mmhigh, units = "mm", dpi = "retina")
+       width = 200, height = mmhigh, units = "mm", dpi = "retina", limitsize = F)
