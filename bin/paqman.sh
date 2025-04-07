@@ -11,7 +11,7 @@ LRSRcoverageRpath=$( which coverage_plots.template_SR_and_LR.R )
 ##################### SETTING VARIABLES ######################
 ##############################################################
 
-#default values, unless denoted when running MUM&Co
+#default values, unless denoted when running PAQman
 assembly=""
 longreads=""
 platform="ont"
