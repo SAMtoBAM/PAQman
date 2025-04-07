@@ -252,7 +252,10 @@ rm *.bed
 rm *.wig
 rm *png
 rm -r ${prefix}.mer*
+if [ -f ${assembly2}.meryl ]
+then
 rm -r ${assembly2}.meryl
+fi
 fi
 
 
