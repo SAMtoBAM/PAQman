@@ -20,7 +20,7 @@ paqplotspath=$( which comparison_paqman_plots.template.R )
 ##################### SETTING VARIABLES ######################
 ##############################################################
 
-#default values, unless denoted when running MUM&Co
+#default values, unless denoted when running PAQman
 summary=""
 list=""
 
