@@ -172,6 +172,8 @@ else
 ln -sf ../${assembly} ./
 assembly=$( echo ${assembly} | awk -F "/" '{print $NF}' )
 fi
+##assembly name without the suffix (can be the prefix too if not set)
+assembly2=$( echo $assembly | awk -F "/" '{print $NF}' | sed 's/\.fasta\.gz$//' | sed 's/\.fa\.gz$//' | sed 's/\.fasta$//' | sed 's/\.fa$//' | sed 's/\.fna$//' )
 
 
 ## make symbolic links to the input files in the output folder
@@ -242,7 +244,7 @@ rm *.bed
 rm *.wig
 rm *png
 rm -r ${prefix}.mer*
-#rm -r ${assembly}.meryl
+rm -r ${assembly2}.meryl
 fi
 
 
