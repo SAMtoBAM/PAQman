@@ -469,7 +469,7 @@ covstat=$( cat ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minima
 
 ## telomerality
 ##get the number of telomere ends and as a percentage of contig ends
-telomericends=$( cat ./telomerality/telomeres.classification.tsv | awk '{if($5 == "telomeric") {sum=sum+1; n++} else {n++}} END{print sum"\t"(sum/n)*100}' )
+telomericends=$( cat ./telomerality/telomeres.classification.tsv | awk '{if($5 == "telomeric") {sum=sum+1; n++} else {n++}} END{if(sum>0) {print sum"\t"(sum/n)*100} else {print "0\t0"}}' )
 ##get the number of contigs with telomeres at both ends
 t2t=$( cat ./telomerality/telomeres.classification.tsv | cut -f1 | sort -u | while read contig; do cat ./telomerality/telomeres.classification.tsv | awk -v contig="$contig" '{if($1 == contig && $5 == "telomeric") sum=sum+1} END{if(sum==2) print}'; done | wc -l )
 ##combine the two
