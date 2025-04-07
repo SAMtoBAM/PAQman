@@ -149,13 +149,22 @@ echo "Using ${platform} parameters for long-read alignment"
 [[ $pair1 == "" || $pair2 == ""  ]] && echo "Missing short-reads as input; using only long-reads for assessment"
 echo "Using ${buscodb} database for BUSCO assessment"
 
+##assembly name without the suffix (can be the prefix too if not set)
+assembly2=$( echo $assembly | awk -F "/" '{print $NF}' | sed 's/\.fasta\.gz$//' | sed 's/\.fa\.gz$//' | sed 's/\.fasta$//' | sed 's/\.fa$//' | sed 's/\.fna$//' )
+
+##get paths for the reads and assembly
+assemblypath=$( realpath ${assembly} )
+longreadpath=$( realpath ${longreads} )
+[[ $pair1 != "" || $pair2 != ""  ]] && pair1path=$( realpath ${pair1} ) && pair2path=$( realpath ${pair2} )
+
+
 
 ##############################################################
 #################### BEGINNING EVALUATION ####################
 ##############################################################
-echo "#############################################################"
+echo "########################################################"
 echo "################## PAQman: Starting PAQman ##################"
-echo "#############################################################"
+echo "########################################################"
 echo "################## PAQman: Step 1: Organising Input"
 
 ## assembly evaluations
@@ -166,24 +175,23 @@ cd ${output}
 ##unzip the assembly if it was compressed otherwise just create a symobolic link
 if [[ ${assembly} =~ ".gz"$ || ${assembly} =~ ".gzip"$ ]]
 then
-zcat ../${assembly} ./${output}/${prefix}.fa
-assembly="${prefix}.fa"
+zcat ${assemblypath} ${assembly2}.fa
+assembly="${assembly2}.fa"
 else
-ln -sf ../${assembly} ./
+ln -sf ${assemblypath} ./
 assembly=$( echo ${assembly} | awk -F "/" '{print $NF}' )
 fi
-##assembly name without the suffix (can be the prefix too if not set)
-assembly2=$( echo $assembly | awk -F "/" '{print $NF}' | sed 's/\.fasta\.gz$//' | sed 's/\.fa\.gz$//' | sed 's/\.fasta$//' | sed 's/\.fa$//' | sed 's/\.fna$//' )
 
 
 ## make symbolic links to the input files in the output folder
-ln -sf ../${longreads} ./
-[[ $shortreads == "yes" ]] && ln -sf ../${pair1} ./
-[[ $shortreads == "yes" ]] && ln -sf ../${pair2} ./
+ln -sf ${longreadpath} ./
+[[ $shortreads == "yes" ]] && ln -sf ${pair1path} ./
+[[ $shortreads == "yes" ]] && ln -sf ${pair2path} ./
 ## create modified variable for that calls directly the local symlink
 longreads2=$( echo ${longreads} | awk -F "/" '{print $NF}' )
 pair12=$( echo ${pair1} | awk -F "/" '{print $NF}' )
 pair22=$( echo ${pair2} | awk -F "/" '{print $NF}' )
+
 
 
 ########################## QUAST ##########################
