@@ -227,17 +227,17 @@ echo "NOTE: Creating meryl k-mer database using short-reads"
 ## calculcate the kmer profile of the raw reads before assembly
 ## this profile will be compared to the resulting assembly to calculate completeness, i.e. how many of the good quality kmers are captured in the assembly
 ## here we can use JUST the illumina dataset and always compare to this dataset
-meryl t=${threads} memory=15 k=18 count output ${prefix}.meryl ${pair12} ${pair22}
+meryl t=${threads} memory=15 k=18 count output reads.meryl ${pair12} ${pair22}
 else 
 echo "NOTE: Creating meryl k-mer database using long-reads"
 ##same but instead using the long-read data due to an absence of short reads
-meryl t=${threads} memory=15 k=18 count output ${prefix}.meryl ${longreads2} 
+meryl t=${threads} memory=15 k=18 count output reads.meryl ${longreads2} 
 fi
 
 echo "################## PAQman: Step 5b: Running Merqury"
 
 mkdir ./merqury
-merqury.sh ${prefix}.meryl ${assembly} ${prefix}.merqury
+merqury.sh reads.meryl ${assembly} ${prefix}.merqury
 ## just want to keep these two output files with important stats on error rate and completeness (respectively)
 mv ${prefix}.merqury.qv ./merqury/
 mv ${prefix}.merqury.completeness.stats ./merqury/
@@ -251,7 +251,7 @@ rm *.hist.ploidy
 rm *.bed
 rm *.wig
 rm *png
-rm -r ${prefix}.mer*
+rm -r reads.mer*
 if [ -f ${assembly2}.meryl ]
 then
 rm -r ${assembly2}.meryl
