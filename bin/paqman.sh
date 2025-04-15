@@ -250,12 +250,9 @@ rm *hist
 rm *.hist.ploidy
 rm *.bed
 rm *.wig
-rm *png
-rm -r reads.mer*
-if [ -f ${assembly2}.meryl ]
-then
-rm -r ${assembly2}.meryl
-fi
+rm *.png
+rm *.qv
+rm -r *.meryl
 fi
 
 
@@ -335,6 +332,8 @@ then
 rm ./coverage/${prefix}.minimap.sorted.bam
 ##remove the coverage files looking at everybase pair due to size
 rm ./coverage/${prefix}.minimap.sorted.cov.tsv.gz
+##remove bed file generated from assembly
+rm ${assembly}.bed
 fi
 
 ## generate genome wide plots using the final file './coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.coverage_normalised.tsv'
