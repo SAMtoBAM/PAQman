@@ -22,12 +22,14 @@ requirements:
   - bioconda::seqtk=1.4
   - bioconda::craq=1.0.9
   - bioconda::seqkit=2.10.0
+  - conda-forge::r-ggplot2=3.5.1
   - conda-forge::r-gggenomes=1.0.1
   - conda-forge::r-ggpubr=0.6.0
   - conda-forge::r-ggsci=3.2.0
   - conda-forge::r-svglite=2.1.3
   - conda-forge::r-ggsci=3.2.0
   - conda-forge::r-reshape2=1.4.4
+  - conda-forge::r-devtools=2.4.5
 
 test:
   commands:
