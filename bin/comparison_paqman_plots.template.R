@@ -134,7 +134,7 @@ comparisonstemp2=as.data.frame(apply(comparisonstemp1,2,function(x){x/max(x)}, s
 comparisonsrel=cbind(label, comparisonstemp2)
 
 ##plot with ggradar
-relplot=ggradar(comparisonsrel, axis.label.size = 3, legend.text.size = 6, legend.position = "top", group.point.size = 3 , group.line.width = 1, gridline.mid.colour = "grey", grid.label.size = 5, background.circle.colour = "grey90", gridline.mid.linetype = 8 , gridline.max.linetype = 8, values.radar = c("", "0.5", ""))+scale_color_aaas()
+relplot=ggradar(comparisonsrel, axis.label.size = 3, legend.text.size = 6, legend.position = "top", group.point.size = 3 , group.line.width = 1, gridline.mid.colour = "grey", grid.label.size = 5, background.circle.colour = "grey90", gridline.mid.linetype = 8 , gridline.max.linetype = 8, values.radar = c("", "0.5", ""))+scale_color_aaas()+theme(legend.direction = "vertical")
 
 ggsave(filename = "PATHTOOUTPUT.relative_values.svg", plot = relplot,
        width = 200, height = 200, units = "mm", dpi = "retina")
