@@ -49,8 +49,11 @@ comparisons$"BUSCO_complete_single(%)"=(comparisons$BUSCO_complete_single/compar
 
 
 ##set new variable as a combination of the strain and assembly name
-comparisons$label=paste(comparisons$strain, comparisons$assembly, sep = "-")
+comparisons$label=paste(comparisons$prefix, comparisons$assembly, sep = "-")
 
+##order the label factor (alphanumerically) for each plot
+list=str_sort(comparisons$label)
+comparisons$label=factor(comparisons$label, levels=list)
 
 ##plots of raw values
 ## will generate a set of plots, one being a radar plot of percentages, the rest being the absolute values in side by side columns
@@ -87,7 +90,7 @@ names(comparisonsdot) = gsub(pattern = "CRAQ_average_", replacement = "", x = na
 comparisonsdot2=melt(comparisonsdot)
 
 ##plot 
-absplot2=ggdotchart(comparisonsdot2, x = "label", y="value", group="variable", rotate=T, color="label", facet.by="variable", scales="free_x", nrow=1, add="segment", legend = "none") + theme_pubr(x.text.angle = 45, legend = "none") + xlab("Assembly")+scale_color_aaas()+theme(axis.text.y = element_text(size=10))
+absplot2=ggdotchart(comparisonsdot2, x = "label", y="value", sorting = "none", rotate=T, color="label", facet.by="variable", scales="free_x", nrow=1, add="segment", legend = "none") + theme_pubr(x.text.angle = 45, legend = "none") + xlab("Assembly")+scale_color_aaas()+theme(axis.text.y = element_text(size=10))
 
 
 ##combine the two plots together
