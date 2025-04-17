@@ -126,15 +126,18 @@ names(comparisonstemp1) = gsub(pattern = "CRAQ_average_", replacement = "", x = 
 
 
 ##get a label to be placed in the first column (taken by ggradar as the label)
-label=as.data.frame(paste(comparisons$strain, comparisons$assembly, sep = "-"))
+label=as.data.frame(paste(comparisons$prefix, comparisons$assembly, sep = "-"))
 ##rename column name
 colnames(label)="label"
+
 
 ##calculate the relative values of all samples for each column, dividing by the max for the column
 comparisonstemp2=as.data.frame(apply(comparisonstemp1,2,function(x){x/max(x)}, simplify = F), check.names = F)
 
 ##combine the labels (in the first column) with the relative values
 comparisonsrel=cbind(label, comparisonstemp2)
+list=str_sort(comparisonsrel$label)
+comparisonsrel$label=factor(comparisonsrel$label, levels=list)
 
 ##plot with ggradar
 relplot=ggradar(comparisonsrel, axis.label.size = 3, legend.text.size = 6, legend.position = "top", group.point.size = 3 , group.line.width = 1, gridline.mid.colour = "grey", grid.label.size = 5, background.circle.colour = "grey90", gridline.mid.linetype = 8 , gridline.max.linetype = 8, values.radar = c("", "0.5", ""))+scale_color_aaas()+theme(legend.direction = "vertical")
