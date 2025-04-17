@@ -95,7 +95,7 @@ absplot3=ggarrange(absplot1, absplot2, ncol=1, heights = c(3,2))
 
 ##save the plot
 ggsave(filename = "PATHTOOUTPUT.raw_values.svg", plot = absplot3,
-       width = 500, height = 200, units = "mm", dpi = "retina")
+       width = 500, height = 250, units = "mm", dpi = "retina")
 
 
 
