@@ -42,7 +42,7 @@ Required inputs:
 -l | --longreads    Long reads used for assembly in fastq or fasta format  (*.fa / *.fasta / *.fna / *.fastq / *.fq) and can be gzipped (*.gz)
 
 Recommended inputs:
--x | --platform     Long-read technology to determine mapping mapping parameters. Choose between 'ont' or 'pacbio-hifi' or 'pacbio-clr' (default: ont)
+-x | --platform     Long-read technology to determine mapping parameters. Choose between 'ont' or 'pacbio-hifi' or 'pacbio-clr' (default: ont)
 -b | --buscodb      Name of BUSCO database to be used (default: eukaryota)
 -t | --threads      Number of threads for tools that accept this option (default: 1)
 -r | --repeat       Telomeric repeat pattern (default: TTAGGG)
