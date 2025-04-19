@@ -196,7 +196,7 @@ pair22=$( echo ${pair2} | awk -F "/" '{print $NF}' )
 
 ########################## QUAST ##########################
 echo "################## PAQman: Step 2: Running Quast"
-quast -o ./quast ${assembly} > quast.log
+quast -s -o ./quast ${assembly} > quast.log
 ##move quast log to quast output folder
 mv quast.log quast/
 ## we are just interested in the summary tsv file 'quast/report.tsv'
@@ -438,7 +438,7 @@ assembly2=$( echo $assembly | awk -F "/" '{print $NF}' | sed 's/\.fasta\.gz$//' 
 
 ##QUAST
 ## get the information of interest out of the summary files (number of contigs; contigs > 10kb; sum size; N50, N90; largest contig) and place in variable "quaststat"
-quaststat=$( cat ./quast/report.tsv | awk -F "\t" '{if(NR == 2 || NR == 5 || NR == 15 || NR == 16 || NR == 18 || NR == 19) all=all";"$2} END{print all}' | sed 's/^;//' | tr ';' '\t' | awk '{print $1"\t"$2"\t"$4"\t"$5"\t"$6"\t"$3}' )
+quaststat=$( cat ./quast/report.tsv | awk -F "\t" '{if(NR == 5 || NR == 14 || NR == 15 || NR == 16 || NR == 18 || NR == 19) all=all";"$NF} END{print all}' | sed 's/^;//' | tr ';' '\t' | awk '{print $2"\t"$1"\t"$4"\t"$5"\t"$6"\t"$3}' )
 
 
 ## BUSCO
