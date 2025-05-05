@@ -30,6 +30,7 @@ requirements:
   - conda-forge::r-ggsci=3.2.0
   - conda-forge::r-reshape2=1.4.4
   - conda-forge::r-devtools=2.4.5
+  - conda-forge::r-stringr=1.5.1
 
 test:
   commands:
