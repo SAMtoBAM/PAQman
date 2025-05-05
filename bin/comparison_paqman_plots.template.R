@@ -4,7 +4,7 @@
 ################### ################### ################### ################### 
 
 
-packages = c("ggplot2", "reshape2", "ggsci", "ggpubr", "devtools")
+packages = c("ggplot2", "reshape2", "ggsci", "ggpubr", "devtools", "stringr")
 
 ##check if a package is installed, if so load, if not install
 package.check <- lapply(
