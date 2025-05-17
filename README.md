@@ -1,5 +1,5 @@
  <p align="center" >
-    <img src="https://github.com/SAMtoBAM/PAQman/blob/main/logo/paqman_logo_grey.png" width=70%>
+    <img src="https://github.com/SAMtoBAM/PAQman/blob/main/logo/paqman_logo_grey.svg" width=70%>
 </p>
 
 [![Zenodo DOI](https://zenodo.org/badge/952795493.svg)](https://doi.org/10.5281/zenodo.15126267)
