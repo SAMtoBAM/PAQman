@@ -273,6 +273,10 @@ then
 [[ $platform == "pacbio-hifi" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -ngs ${pair12},${pair22} -x map-hifi --thread ${threads} > craq.log
 [[ $platform == "pacbio-clr" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -ngs ${pair12},${pair22} -x map-pb --thread ${threads} > craq.log
 mv craq.log craq/
+if [[ $cleanup == "yes" ]]
+then
+rm -r ./craq/SRout
+fi
 else
 [[ $platform == "ont" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -x map-ont --thread ${threads} > craq.log
 [[ $platform == "pacbio-hifi" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -x map-hifi --thread ${threads} > craq.log
@@ -283,7 +287,6 @@ fi
 if [[ $cleanup == "yes" ]]
 then
 rm -r ./craq/LRout
-rm -r ./craq/SRout
 ##remove read subset used for alignment
 rm longreads.filtlong50x.fq.gz
 fi
