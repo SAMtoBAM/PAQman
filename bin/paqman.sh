@@ -157,7 +157,14 @@ assemblypath=$( realpath ${assembly} )
 longreadpath=$( realpath ${longreads} )
 [[ $pair1 != "" || $pair2 != ""  ]] && pair1path=$( realpath ${pair1} ) && pair2path=$( realpath ${pair2} )
 
+#check if the files given actually exist
+[ ! -f "${assemblypath}" ] && echo "ERROR: Cannot find path to assembly file provided by -a; check path is correct and file exists" && exit
+[ ! -f "${longreadpath}" ] && echo "ERROR: Cannot find path to long-reads provided by -l; check path is correct and file exists" && exit
 
+if [[ $shortreads == "yes" ]]
+then
+[ ! -f "${pair1path}" ] && echo "ERROR: Cannot find path to short-reads provided by -1; check path is correct and file exists" && exit
+fi
 
 ##############################################################
 #################### BEGINNING EVALUATION ####################
