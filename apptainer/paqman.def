@@ -15,6 +15,7 @@ From: quay.io/centos/centos:stream9
     # set the conda config channels
     conda config --add channels bioconda
     conda config --add channels conda-forge
+    conda config --append channels pwwang
 
     # Install your Conda package
     conda create -n paqman samtobam::paqman 
