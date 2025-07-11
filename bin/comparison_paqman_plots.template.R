@@ -4,33 +4,38 @@
 ################### ################### ################### ################### 
 
 
-packages = c("ggplot2", "reshape2", "ggsci", "ggpubr", "devtools", "stringr")
+#packages = c("ggplot2", "reshape2", "ggsci", "ggpubr", "devtools", "stringr")
 
 ##check if a package is installed, if so load, if not install
-package.check <- lapply(
-  packages,
-  FUN = function(x) {
-    if (!require(x, character.only = TRUE)) {
-      install.packages(x, dependencies = TRUE)
-      library(x, character.only = TRUE)
-    }
-  }
-)
+#package.check <- lapply(
+#  packages,
+#  FUN = function(x) {
+#    if (!require(x, character.only = TRUE)) {
+#      install.packages(x, dependencies = TRUE)
+#      library(x, character.only = TRUE)
+#    }
+#  }
+#)
 
 
 ##again for ggradar as it need devtools
-packages2=c("ggradar")
-package.check <- lapply(
-  packages2,
-  FUN = function(x) {
-    if (!require(x, character.only = TRUE)) {
-      devtools::install_github("ricardo-bion/ggradar", dependencies = TRUE)
-      library(x, character.only = TRUE)
-    }
-  }
-)
+#packages2=c("ggradar")
+#package.check <- lapply(
+#  packages2,
+#  FUN = function(x) {
+#    if (!require(x, character.only = TRUE)) {
+#      devtools::install_github("ricardo-bion/ggradar", dependencies = TRUE)
+#      library(x, character.only = TRUE)
+#    }
+#  }
+#)
 
-
+library(ggplot2)
+library(reshape2)
+library(ggsci)
+library(ggpubr)
+library(stringr)
+library(ggradar)
 
 
 ################### ################### ################### ################### 
