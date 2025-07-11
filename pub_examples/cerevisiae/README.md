@@ -34,7 +34,7 @@ The dataset was manually determined as a recent, high coverage and reasonably lo
     ##set the SRR data to download as a variable
     SRR="SRR17374240"
     ##download the fastq file
-        fasterq-dump ${SRR}
+    fasterq-dump ${SRR}
     ##move into the project folder then compress
     mv ${SRR}.fastq ${project}/${SRR}.fq
     gzip ${SRR}.fq
