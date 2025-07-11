@@ -31,6 +31,7 @@ docker pull ghcr.io/samtobam/paqman:latest
 
 ### Conda installation
 ```
+conda config --append channels pwwang
 conda install samtobam::paqman
 ```
 
