@@ -19,11 +19,11 @@ The list of assemblies was manually determined (GCA_000146045, GCA_002057635, GC
     ##remove the zipped form
     rm ncbi_dataset.zip
     ##rename the assemblies as just the ncbi GCA assession and rename the contig headers with the genome name
-    ##and move into the project folder
+    ##and move into the project folder (and compress)
     ls ncbi_dataset/data/ | grep -v json | while read genome
     do
     genome2=$( echo $genome | sed 's/_//' | awk -F "." '{print $1}')
-    cat ncbi_dataset/data/$genome/$genome*.fna | sed "s/>/>${genome2}\_/g" > ${project}/$genome2.fa
+    cat ncbi_dataset/data/$genome/$genome*.fna | sed "s/>/>${genome2}\_/g" | gzip > ${project}/$genome2.fa.gz
     done
  
 ## 2. Download a set of raw Oxford nanopore reads
