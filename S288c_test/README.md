@@ -9,7 +9,7 @@
 
 
 ## 1. Download assemblies
-This download used the ncbi-datasets-cli datasets tool (easily installed with conda: 'conda install conda-forge::ncbi-datasets-cli') <br/>
+This download used the ncbi-datasets-cli datasets tool (easily installed with conda: `conda install conda-forge::ncbi-datasets-cli`) <br/>
 The list of assemblies was manually determined (GCA_000146045, GCA_002057635, GCA_016858165, GCA_022626425)
 
     ##download all data
@@ -27,7 +27,7 @@ The list of assemblies was manually determined (GCA_000146045, GCA_002057635, GC
     done
  
 ## 2. Download a set of raw Oxford nanopore reads
-This download uses the sra-toolkit (easily installed with conda: 'conda install bioconda::sra-tools' <br/>
+This download uses the sra-toolkit (easily installed with conda: `conda install bioconda::sra-tools`) <br/>
 The dataset was manually determined as a recent, high coverage and reasonably long dataset (SRR17374240)
 
     ##set the SRR data to download as a variable
