@@ -1,0 +1,6 @@
+
+channels:
+  - pwwang
+  - conda-forge
+  - bioconda
+  - defaults
