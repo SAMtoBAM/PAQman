@@ -18,14 +18,15 @@ The list of assemblies was manually determined (GCA_000146045, GCA_002057635, GC
     unzip ncbi_dataset.zip
     ##remove the zipped form
     rm ncbi_dataset.zip
-    ##rename the assemblies as just the ncbi GCA assession and rename the contig headers with the genome name
+    ##rename the assemblies as just the ncbi GCA assession
     ##and move into the project folder (and compress)
     ls ncbi_dataset/data/ | grep -v json | while read genome
     do
     genome2=$( echo $genome | sed 's/_//' | awk -F "." '{print $1}')
-    cat ncbi_dataset/data/$genome/$genome*.fna | sed "s/>/>${genome2}\_/g" | gzip > ${project}/$genome2.fa.gz
+    cat ncbi_dataset/data/$genome/$genome*.fna | gzip > ${project}/$genome2.fa.gz
     done
  
+
 ## 2. Download a set of raw Oxford nanopore reads
 This download uses the sra-toolkit (easily installed with conda: `conda install bioconda::sra-tools`) <br/>
 The dataset was manually determined as a recent, high coverage and reasonably long dataset (SRR17374240)
