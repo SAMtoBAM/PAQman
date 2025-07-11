@@ -413,9 +413,9 @@ seqkit locate -j ${threads} --ignore-case -p "${telomererepeat}" ${assembly} | t
 ##the classificatio for absence will be if there were no telomeres identified within 5kb of an end
 ##edge will be beginning or end
 ##closest_coords will be coordinates for the region identified
-##distance_to_edge will be the shortest ditance of the repeat to an edge
+##distance_to_edge will be the shortest distance of the repeat to an edge
 ##classified will be categorical telomeric/distant/absent
-echo "contig;edge;closest_coords;distance_to_edge;classified" | tr ';' '\t' > ./telomerality/telomeres.classification.tsv
+echo "contig;edge;distance_to_edge;closest_coords;classified" | tr ';' '\t' > ./telomerality/telomeres.classification.tsv
 
 cat ${assembly}.fai | cut -f1-2 | while read line
 do
