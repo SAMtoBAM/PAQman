@@ -59,7 +59,7 @@ The uses PAQman (see github READme for installation/usage instructions)
 The uses PAQman (see github READme for installation/usage instructions)
 
     ##create a txt file with a list of paths to the summary files
-    ls ${project}/*_paqman/summary_file.tsv > ${project}/list_of_summary_files.txt
+    ls ${project}/*_paqman/summary_stats.tsv > ${project}/list_of_summary_files.txt
     ##run paqplots for the comparisons
     time paqplots.sh -l ${project}/list_of_summary_files.txt -p ${project} -o ${project}/${project}_paqplot
   
