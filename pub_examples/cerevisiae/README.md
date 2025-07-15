@@ -7,6 +7,9 @@
     project="cerevisiae"
     mkdir ${project}
 
+    ##for 16 threads
+    threads="16"
+
 
 ## 1. Download assemblies
 This download used the ncbi-datasets-cli datasets tool (easily installed with conda: `conda install conda-forge::ncbi-datasets-cli`) <br/>
@@ -39,6 +42,10 @@ The dataset was manually determined as a recent, high coverage and reasonably lo
     mv ${SRR}.fastq ${project}/${SRR}.fq
     gzip ${SRR}.fq
 
+    ##downsample the excessive 600X coverage to 100X
+    ##use 12Mb as estimated genome size and therefore 100X this
+    filtlong -t 1200000000 --length_weight 5 ${SRR}.fq | gzip > ${SRR}.filtlong100x.fq.gz
+
 
 ## 3. Run PAQman on all assemblies
 The uses PAQman (see github READme for installation/usage instructions)
@@ -51,7 +58,7 @@ The uses PAQman (see github READme for installation/usage instructions)
     ls ${project}/*.fa.gz | while read assembly
     do
     sample=$( echo $assembly | awk -F "/" '{print $NF}' | awk -F "." '{print $1}' )
-    time paqman.sh -a ${project}/${sample}.fa.gz -l ${project}/${SRR}.fq.gz -t 16 -b ${busco} -p ${sample} -o ${project}/${sample}_paqman -r ${repeat}
+    time paqman.sh -a ${project}/${sample}.fa.gz -l ${project}/${SRR}.filtlong100x.fq.gz -t ${threads} -b ${busco} -p ${sample} -o ${project}/${sample}_paqman -r ${repeat}
     done
 
 
@@ -61,5 +68,5 @@ The uses PAQman (see github READme for installation/usage instructions)
     ##create a txt file with a list of paths to the summary files
     ls ${project}/*_paqman/summary_stats.tsv > ${project}/list_of_summary_files.txt
     ##run paqplots for the comparisons
-    time paqplots.sh -l ${project}/list_of_summary_files.txt -p ${project} -o ${project}/${project}_paqplot
+    paqplots.sh -l ${project}/list_of_summary_files.txt -p ${project} -o ${project}/${project}_paqplot
   
