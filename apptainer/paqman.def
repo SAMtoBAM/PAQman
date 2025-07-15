@@ -17,6 +17,10 @@ From: quay.io/centos/centos:stream9
     conda config --add channels conda-forge
     conda config --append channels pwwang
 
+    # Accept ToS
+    conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
+    conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
+
     # Install your Conda package
     conda create -n paqman samtobam::paqman 
 
