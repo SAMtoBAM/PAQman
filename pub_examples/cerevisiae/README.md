@@ -1,4 +1,4 @@
-# Pipeline used to test the quality of 4 assemblies of the reference strain S288c of _Saccharomyces cerevisiae_
+# Pipeline used to test the quality of 5 assemblies of the reference strain S288c of _Saccharomyces cerevisiae_
 
 
 ## 0. Setup
