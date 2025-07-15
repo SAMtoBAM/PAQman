@@ -10,7 +10,7 @@
 
 ## 1. Download assemblies
 This download used the ncbi-datasets-cli datasets tool (easily installed with conda: `conda install conda-forge::ncbi-datasets-cli`) <br/>
-The list of assemblies was manually determined (GCA_000146045, GCA_002057635, GCA_016858165, GCA_022626425, GCA_902192305) picking just S288c assemblies (ignoring BYXXXX)
+The S288c assemblies was manually picked (GCA_000146045, GCA_002057635, GCA_016858165, GCA_022626425, GCA_902192305)
 
     ##download all data
     datasets download genome accession GCA_000146045 GCA_002057635 GCA_016858165 GCA_022626425 GCA_902192305
