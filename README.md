@@ -80,26 +80,26 @@ Optional parameters:
 ### Summary stats: 'summary_stats.tsv':
 |Column | Header | Description |
 |:---:|:---:|--------------|
-| Column 01 | <b>prefix</b> | prefix given to the output files (-p)
-| Column 02 | <b>assembly</b> | prefix from the fasta file without suffix (-a)
-| Column 03 | <b>quast_#contigs</b> | Number of total contigs
-| Column 04 | <b>quast_#contigs>10kb</b> | Number of contigs >10 kb
-| Column 05 | <b>quast_assembly_N50</b> | Assembly N50
-| Column 06 | <b>quast_assembly_N90</b> | Assembly N90
-| Column 07 | <b>quast_largest_contig</b> | Largest contig in the assembly
-| Column 08 | <b>BUSCO_db</b> | The BUSCO database used to evaluate the assembly
-| Column 09 | <b>BUSCO_total</b> | Total number of BUSCOs in the database
-| Column 10 | <b>BUSCO_complete_single</b> | BUSCOs identified as complete and as a single copy
-| Column 11 | <b>BUSCO_fragmented</b> | BUSCOs identified as fragmented
-| Column 12 | <b>BUSCO_missing</b> | BUSCOs not identified
-| Column 13 | <b>merqury_completeness(%)</b> | A k-mer estimation of compmeteness
-| Column 14 | <b>merqury_qv(phred)</b> | A k-mer estimation of the genome wide error rate
-| Column 15 | <b>CRAQ_average_CRE(%)</b> | Percentage of assembly without small regional errors
-| Column 16 | <b>CRAQ_average_CSE(%)</b> | Percentage of assembly without large structural errors
-| Column 17 | <b>coverage_normal(%)</b> | Percentage of the genome within 2*stdev of the genome wide median
-| Column 18 | <b>telomeric_ends</b> | Number of contig ends with telomeric repeats
-| Column 19 | <b>telomeric_ends(%)</b> | Percentage of contig ends with telomeric repeats
-| Column 20 | <b>t2t_contigs</b> | Number of contigs with telomeric repeats at both ends
+| 01 | <b>prefix</b> | prefix given to the output files (-p)
+| 02 | <b>assembly</b> | prefix from the fasta file without suffix (-a)
+| 03 | <b>quast_#contigs</b> | Number of total contigs
+| 04 | <b>quast_#contigs>10kb</b> | Number of contigs >10 kb
+| 05 | <b>quast_assembly_N50</b> | Assembly N50
+| 06 | <b>quast_assembly_N90</b> | Assembly N90
+| 07 | <b>quast_largest_contig</b> | Largest contig in the assembly
+| 08 | <b>BUSCO_db</b> | The BUSCO database used to evaluate the assembly
+| 09 | <b>BUSCO_total</b> | Total number of BUSCOs in the database
+| 10 | <b>BUSCO_complete_single</b> | BUSCOs identified as complete and as a single copy
+| 11 | <b>BUSCO_fragmented</b> | BUSCOs identified as fragmented
+| 12 | <b>BUSCO_missing</b> | BUSCOs not identified
+| 13 | <b>merqury_completeness(%)</b> | A k-mer estimation of compmeteness
+| 14 | <b>merqury_qv(phred)</b> | A k-mer estimation of the genome wide error rate
+| 15 | <b>CRAQ_average_CRE(%)</b> | Percentage of assembly without small regional errors
+| 16 | <b>CRAQ_average_CSE(%)</b> | Percentage of assembly without large structural errors
+| 17 | <b>coverage_normal(%)</b> | Percentage of the genome within 2*stdev of the genome wide median
+| 18 | <b>telomeric_ends</b> | Number of contig ends with telomeric repeats
+| 19 | <b>telomeric_ends(%)</b> | Percentage of contig ends with telomeric repeats
+| 20 | <b>t2t_contigs</b> | Number of contigs with telomeric repeats at both ends
 
 
 
