@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-version="v1"
+version="v1.0.1"
 
 LRcoverageRpath=$( which coverage_plots.template_LR.R )
 LRSRcoverageRpath=$( which coverage_plots.template_SR_and_LR.R )
@@ -19,12 +19,13 @@ pair1=""
 pair2=""
 shortreads="no"
 buscodb="eukaryota"
+threads="1"
 window="30000"
 slide="10000"
 telomererepeat="TTAGGG"
 prefix="paqman"
 output="paqman_output"
-threads="1"
+sequences="contigs"
 help="nohelp"
 
 ## to clean up a bunch of output from the tools in order to reduce all the unnecessary output
@@ -65,6 +66,11 @@ case "$key" in
 	shift
 	shift
 	;;
+	-t|--threads)
+	threads="$2"
+	shift
+	shift
+	;;
 	-w|--window)
 	window="$2"
 	shift
@@ -80,11 +86,6 @@ case "$key" in
 	shift
 	shift
 	;;
-	-t|--threads)
-	threads="$2"
-	shift
-	shift
-	;;
 	-p|--prefix)
 	prefix="$2"
 	shift
@@ -92,6 +93,11 @@ case "$key" in
 	;;
 	-o|--output)
 	output="$2"
+	shift
+	shift
+	;;
+	-seq|--sequences)
+	sequences="$2"
 	shift
 	shift
 	;;
@@ -123,6 +129,7 @@ case "$key" in
 	-s | --slide        Number of basepairs for the window to slide for coverage (default: 10000)
 	-p | --prefix       Prefix for output (default: name of assembly file (-a) before the fasta suffix)
 	-o | --output       Name of output folder for all results (default: paqman_output)
+	-seq | --sequences	Whether or not to use scaffolds or contigs; provide 'scaffolds' to not break the assembly at N's (default: contigs)
 	-c | --cleanup      Remove a large number of files produced by each of the tools that can take up a lot of space. Choose between 'yes' or 'no' (default: 'yes')
 	-h | --help         Print this help message
 	"
@@ -166,27 +173,79 @@ then
 [ ! -f "${pair1path}" ] && echo "ERROR: Cannot find path to short-reads provided by -1; check path is correct and file exists" && exit
 fi
 
+
+##check that the options are proper
+[[ $sequences != "contigs" && $sequences != "scaffolds" ]] && echo "ERROR: --sequences option neither 'contigs' (default) or 'scaffolds'" && exit
+[[ $cleanup != "yes" && $cleanup != "no" ]] && echo "ERROR: --cleanup option neither 'yes' (default) or 'no'" && exit
+
+
 ##############################################################
 #################### BEGINNING EVALUATION ####################
 ##############################################################
-echo "########################################################"
-echo "################## PAQman: Starting PAQman ##################"
-echo "########################################################"
-echo "################## PAQman: Step 1: Organising Input"
+echo "#################################################"
+echo "################ Starting PAQman ################"
+echo "#################################################"
+echo "$(date +%H:%M) ########## Step 1: Organising Input"
 
 ## assembly evaluations
 mkdir ${output}
 cd ${output}
 
+##organise the assemblies
+##if they are compressed then create a new version uncompressed
+##if the sequences option is switched to scaffold then leave the sequences as is
+
 ## make symbolic links to the input files in the output folder
 ##unzip the assembly if it was compressed otherwise just create a symobolic link
+if [[ ${sequences} == "scaffolds" ]]
+then
+echo "NOTE: Keeping sequences as is, not breaking scaffolds"
 if [[ ${assembly} =~ ".gz"$ || ${assembly} =~ ".gzip"$ ]]
 then
-zcat ${assemblypath} > ${assembly2}.fa
+zcat ${assemblypath} | seqkit sort  > ${assembly2}.fa
 assembly="${assembly2}.fa"
 else
-ln -sf ${assemblypath} ./
+cat ${assemblypath} | seqkit sort  > ${assembly2}.fa
 assembly=$( echo ${assembly} | awk -F "/" '{print $NF}' )
+fi
+fi
+
+
+##if the default option for sequences is to use contigs 
+##if this default option is maintained then the assembly will be broken into contigs at all sets of Ns
+##save the new assembly and use this for everything
+
+if [[ ${sequences} == "contigs" ]]
+then
+echo "NOTE: Breaking any scaffolds into contigs for all evaluations"
+if [[ ${assembly} =~ ".gz"$ || ${assembly} =~ ".gzip"$ ]]
+then
+zcat ${assemblypath} | awk -F " " '{print $1}' | seqkit fx2tab | awk -F'\t' '{
+        header = $1;
+        sequence = $2;
+        split(sequence, contigs, /N+/);
+        for (i=1; i<=length(contigs); i++) {
+            if (length(contigs[i]) > 0) { # Ensure non-empty contigs
+                print ">" header "_contig" i;
+                print contigs[i];
+            }
+        }
+    }' | seqkit sort  > ${assembly2}.fa
+assembly="${assembly2}.fa"
+else
+cat ${assemblypath} | awk -F " " '{print $1}' | seqkit fx2tab | awk -F'\t' '{
+        header = $1;
+        sequence = $2;
+        split(sequence, contigs, /N+/);
+        for (i=1; i<=length(contigs); i++) {
+            if (length(contigs[i]) > 0) { # Ensure non-empty contigs
+                print ">" header "_contig" i;
+                print contigs[i];
+            }
+        }
+    }' | seqkit sort  > ${assembly2}.fa
+assembly="${assembly2}.fa"
+fi
 fi
 
 
@@ -202,15 +261,15 @@ pair22=$( echo ${pair2} | awk -F "/" '{print $NF}' )
 
 
 ########################## QUAST ##########################
-echo "################## PAQman: Step 2: Running Quast"
-quast -s -o ./quast ${assembly} > quast.log
+echo "$(date +%H:%M) ########## Step 2: Running Quast"
+quast -o ./quast ${assembly} > quast.log
 ##move quast log to quast output folder
 mv quast.log quast/
 ## we are just interested in the summary tsv file 'quast/report.tsv'
 
 
 ########################## BUSCO (using the ${buscodb} dataset) ##########################
-echo "################## PAQman: Step 3: Running BUSCO"
+echo "$(date +%H:%M) ########## Step 3: Running BUSCO"
 busco -i ${assembly} -o ./busco  -l ${buscodb} --mode genome -c ${threads} >  busco.log
 ##move log to busco output folder
 mv busco.log busco/
@@ -227,7 +286,7 @@ fi
 
 
 ########################## Merqury ##########################
-echo "################## PAQman: Step 4a: Generating k-mer distribution"
+echo "$(date +%H:%M) ########## Step 4a: Generating k-mer distribution"
 if [[ $shortreads == "yes" ]]
 then
 echo "NOTE: Creating meryl k-mer database using short-reads"
@@ -241,13 +300,14 @@ echo "NOTE: Creating meryl k-mer database using long-reads"
 meryl t=${threads} memory=15 k=18 count output reads.meryl ${longreads2} 
 fi
 
-echo "################## PAQman: Step 5b: Running Merqury"
+echo "$(date +%H:%M) ########## Step 5b: Running Merqury"
 
 mkdir ./merqury
 merqury.sh reads.meryl ${assembly} ${prefix}.merqury
 ## just want to keep these two output files with important stats on error rate and completeness (respectively)
 mv ${prefix}.merqury.qv ./merqury/
 mv ${prefix}.merqury.completeness.stats ./merqury/
+
 if [[ $cleanup == "yes" ]]
 then
 ## remove the rest of the files we don't care about to clean up the directory
@@ -265,7 +325,7 @@ fi
 
 
 ########################## CRAQ ##########################
-echo "################## PAQman: Step 5a: Downsampling for 50X long-reads for CRAQ assessment"
+echo "$(date +%H:%M) ########## Step 5a: Downsampling for 50X long-reads for CRAQ assessment"
 ## redownsample the dataset for just 50X of the longest as to remove shorter reads from confusing CRAQ
 ## get genome size based on input genome
 genomesize=$( cat ./quast/report.tsv  | awk -F "\t" '{if(NR == 15) print $2}' )
@@ -273,7 +333,7 @@ target=$( echo $genomesize | awk '{print $1*50}' )
 ##now run filtlong with the settings
 filtlong -t ${target} --length_weight 5 ${longreads2} | gzip > longreads.filtlong50x.fq.gz
 ##run craq
-echo "################## PAQman: Step 5b: Running CRAQ"
+echo "$(date +%H:%M) ########## Step 5b: Running CRAQ"
 if [[ $shortreads == "yes" ]]
 then
 [[ $platform == "ont" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -ngs ${pair12},${pair22} -x map-ont --thread ${threads} > craq.log
@@ -304,7 +364,7 @@ fi
 
 
 ########################## READ COVERAGE ##########################
-echo "################## PAQman: Step 6a: Running whole genome read alignment"
+echo "$(date +%H:%M) ########## Step 6a: Running whole genome read alignment"
 ## using the short-read data we can look at genome wide coverage on the assembly
 ## first index the assembly using the aligner
 mkdir ./coverage
@@ -333,7 +393,7 @@ bedtools genomecov -d -split -ibam ./coverage/${prefix}.minimap.sorted.bam | gzi
 medianLR=$( zcat ./coverage/${prefix}.minimap.sorted.cov.tsv.gz | awk '{if($3 != "0") print $3}' | sort -n | awk '{ a[i++]=$1} END{x=int((i+1)/2); if(x < (i+1)/2) print (a[x-1]+a[x])/2; else print a[x-1];}' )
 ##calculate the binned median coverage and normalise each bin value by the genome wide median coverage
 echo "contig;start;end;covergage_abs;coverage_norm" | tr ';' '\t' > ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv
-zcat ./coverage/${prefix}.minimap.sorted.cov.tsv.gz  | awk '{print $1"\t"$2"\t"$2"\t"$3}' |\
+zcat ./coverage/${prefix}.minimap.sorted.cov.tsv.gz  | awk '{print $1"\t"$2"\t"$2"\t"$3}' | bedtools sort |\
 bedtools map -b - -a ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed -c 4 -o median | awk -v median="$medianLR" '{print $0"\t"$4/median}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv
 
 if [[ $cleanup == "yes" ]]
@@ -362,7 +422,7 @@ bedtools genomecov -d -split -ibam ./coverage/${prefix}.bwamem.sorted.bam | gzip
 medianSR=$( zcat ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz | awk '{if($3 != "0") print $3}' | sort -n | awk '{ a[i++]=$1} END{x=int((i+1)/2); if(x < (i+1)/2) print (a[x-1]+a[x])/2; else print a[x-1];}' )
 ##calculate the binned median coverage and normalise each bin value by the genome wide median coverage
 echo "contig;start;end;covergage_abs;coverage_norm" | tr ';' '\t' > ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.coverage_normalised.tsv
-zcat ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz  | awk '{print $1"\t"$2"\t"$2"\t"$3}' |\
+zcat ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz  | awk '{print $1"\t"$2"\t"$2"\t"$3}' | bedtools sort |\
 bedtools map -b - -a ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed -c 4 -o median | awk -v median="$medianSR" '{print $0"\t"$4/median}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.coverage_normalised.tsv
 
 if [[ $cleanup == "yes" ]]
@@ -382,13 +442,13 @@ fi
 ##set a full path for the shortread data to be read into the R script
 SRpath=$( realpath ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.coverage_normalised.tsv )
 
-echo "################## PAQman: Step 6b: Plotting coverage"
+echo "$(date +%H:%M) ########## Step 6b: Plotting coverage"
 ##covert paths in R script to those relevant for the coverage outputs generated here and then export the plots 
 cat ${LRSRcoverageRpath} | sed "s|PATHTOSRCOVERAGE|${SRpath}|" | sed "s|PATHTOLRCOVERAGE|${LRpath}|" | sed "s|PATHTOOUTPUT|./coverage/${prefix}|" > ./coverage/${prefix}.coverage_plots.R
 Rscript ./coverage/${prefix}.coverage_plots.R
 else 
 
-echo "################## PAQman: Step 6b: Plotting coverage"
+echo "$(date +%H:%M) ########## Step 6b: Plotting coverage"
 ##covert paths in R script to those relevant for the coverage outputs generated here and then export the plots 
 cat ${LRcoverageRpath} | sed "s|PATHTOLRCOVERAGE|${LRpath}|" | sed "s|PATHTOOUTPUT|./coverage/${prefix}|" > ./coverage/${prefix}.coverage_plots.R
 Rscript ./coverage/${prefix}.coverage_plots.R
@@ -397,7 +457,7 @@ fi
 
 
 ########################## TELOMERALITY ##########################
-echo "################## PAQman: Step 7: Running Telomere search"
+echo "$(date +%H:%M) ########## Step 7: Running Telomere search"
 mkdir ./telomerality
 #telomererepeat="TTAGGG"
 ##can also label all regions with the canonical telomeric repeat
@@ -435,10 +495,17 @@ fi
 
 ########################## SUMMARY STATS ##########################
 
-echo "################## PAQman: Step 8: Generating summary statistics file"
+echo "$(date +%H:%M) ########## Step 8: Generating summary statistics file"
 ### Create the header for the summary stats file
-echo "prefix;assembly;quast_#contigs;quast_#contigs>10kb;quast_assembly_size;quast_assembly_N50;quast_assembly_N90;quast_largest_contig;BUSCO_db;BUSCO_total;BUSCO_complete;BUSCO_complete_single;BUSCO_fragmented;BUSCO_missing;merqury_completeness(%);merqury_qv(phred);CRAQ_average_CRE(%);CRAQ_average_CSE(%);coverage_normal(%);telomeric_ends;telomeric_ends(%);t2t_contigs" | tr ';' '\t' >  summary_stats.tsv
+if [[ ${sequences} == "scaffolds" ]]
+then
+echo "prefix;assembly;quast_#scaffolds;quast_#scaffolds>10kb;quast_assembly_size;quast_assembly_N50;quast_assembly_N90;quast_largest_contig;BUSCO_db;BUSCO_total;BUSCO_complete;BUSCO_complete_single;BUSCO_fragmented;BUSCO_missing;merqury_completeness(%);merqury_qv(phred);CRAQ_average_CRE(%);CRAQ_average_CSE(%);coverage_normal(%);telomeric_ends;telomeric_ends(%);t2t_scaffolds" | tr ';' '\t' >  summary_stats.tsv
+fi
 
+if [[ ${sequences} == "contigs" ]]
+then
+echo "prefix;assembly;quast_#contigs;quast_#contigs>10kb;quast_assembly_size;quast_assembly_N50;quast_assembly_N90;quast_largest_contig;BUSCO_db;BUSCO_total;BUSCO_complete;BUSCO_complete_single;BUSCO_fragmented;BUSCO_missing;merqury_completeness(%);merqury_qv(phred);CRAQ_average_CRE(%);CRAQ_average_CSE(%);coverage_normal(%);telomeric_ends;telomeric_ends(%);t2t_contigs" | tr ';' '\t' >  summary_stats.tsv
+fi
 
 ##assign all the stats variables
 
@@ -488,6 +555,6 @@ telomeralitystat=$(  echo "${telomericends};${t2t}" | tr ';' '\t' )
 ##spit out all the stats and save them to the summary stats file
 echo "${prefix};${assembly2};${quaststat};${buscostat};${merqurystat};${craqstat};${covstat};${telomeralitystat}" | tr ';' '\t' >> summary_stats.tsv
 
-echo "################## PAQman: Summary stats can be found here ${output}/summary_stats.tsv"
-echo "################## PAQman: All complete; thanks for using PAQman"
+echo "$(date +%H:%M) ######### Summary stats can be found here ${output}/summary_stats.tsv"
+echo "################ All complete; thanks for using PAQman"
 
