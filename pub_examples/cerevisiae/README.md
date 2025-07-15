@@ -13,7 +13,7 @@ This download used the ncbi-datasets-cli datasets tool (easily installed with co
 The list of assemblies was manually determined (GCA_000146045, GCA_002057635, GCA_016858165, GCA_022626425)
 
     ##download all data
-    datasets download genome accession GCA_000146045 GCA_002057635 GCA_016858165 GCA_022626425
+    datasets download genome accession GCA_000146045 GCA_002057635 GCA_016858165 GCA_022626425 GCA_902192305
     ##unzip the data
     unzip ncbi_dataset.zip
     ##remove the zipped form
