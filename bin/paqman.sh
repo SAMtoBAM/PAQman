@@ -499,12 +499,12 @@ echo "$(date +%H:%M) ########## Step 8: Generating summary statistics file"
 ### Create the header for the summary stats file
 if [[ ${sequences} == "scaffolds" ]]
 then
-echo "prefix;assembly;quast_#scaffolds;quast_#scaffolds>10kb;quast_assembly_size;quast_assembly_N50;quast_assembly_N90;quast_largest_contig;BUSCO_db;BUSCO_total;BUSCO_complete;BUSCO_complete_single;BUSCO_fragmented;BUSCO_missing;merqury_completeness(%);merqury_qv(phred);CRAQ_average_CRE(%);CRAQ_average_CSE(%);coverage_normal(%);telomeric_ends;telomeric_ends(%);t2t_scaffolds" | tr ';' '\t' >  summary_stats.tsv
+echo "prefix;assembly;quast_#scaffolds;quast_#scaffolds>10kb;quast_assembly_size;quast_assembly_N50;quast_assembly_N90;quast_largest_contig;BUSCO_db;BUSCO_total;BUSCO_complete;BUSCO_complete_single;BUSCO_fragmented;BUSCO_missing;merqury_completeness(%);merqury_qv(phred);CRAQ_R-AQI(%);CRAQ_S-AQI(%);coverage_normal(%);telomeric_ends;telomeric_ends(%);t2t_scaffolds" | tr ';' '\t' >  summary_stats.tsv
 fi
 
 if [[ ${sequences} == "contigs" ]]
 then
-echo "prefix;assembly;quast_#contigs;quast_#contigs>10kb;quast_assembly_size;quast_assembly_N50;quast_assembly_N90;quast_largest_contig;BUSCO_db;BUSCO_total;BUSCO_complete;BUSCO_complete_single;BUSCO_fragmented;BUSCO_missing;merqury_completeness(%);merqury_qv(phred);CRAQ_average_CRE(%);CRAQ_average_CSE(%);coverage_normal(%);telomeric_ends;telomeric_ends(%);t2t_contigs" | tr ';' '\t' >  summary_stats.tsv
+echo "prefix;assembly;quast_#contigs;quast_#contigs>10kb;quast_assembly_size;quast_assembly_N50;quast_assembly_N90;quast_largest_contig;BUSCO_db;BUSCO_total;BUSCO_complete;BUSCO_complete_single;BUSCO_fragmented;BUSCO_missing;merqury_completeness(%);merqury_qv(phred);CRAQ_R-AQI(%);CRAQ_S-AQI(%);coverage_normal(%);telomeric_ends;telomeric_ends(%);t2t_contigs" | tr ';' '\t' >  summary_stats.tsv
 fi
 
 ##assign all the stats variables
