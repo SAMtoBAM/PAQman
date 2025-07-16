@@ -75,7 +75,7 @@ comparisons$label=factor(comparisons$label, levels=list)
 ## CRAQ_S-AQI(%)
 ## coverage_normal(%)
 ## telomeric_ends
-## t2t_contigs
+## T2T_contigs
 comparisonsrad=subset(comparisons, select = c("label", "BUSCO_complete(%)", "BUSCO_complete_single(%)", "merqury_kmer_completeness(%)", "CRAQ_R-AQI(%)", "CRAQ_S-AQI(%)", "coverage_normal(%)", "telomeric_ends(%)"))
 #comparisonsrad=comparisons[ , c(25, 24, 23, 15, 17, 18, 19, 21), FALSE]
 ##tidy up the headers
@@ -89,7 +89,7 @@ names(comparisonsrad) = gsub(pattern = "\\(", replacement = " \\(", x = names(co
 absplot1=ggradar(comparisonsrad, axis.label.size = 3, legend.text.size = 6, legend.position = "left", group.point.size = 3 , group.line.width = 1, gridline.mid.colour = "grey", grid.label.size = 5, background.circle.colour = "grey90", gridline.mid.linetype = 8 , gridline.max.linetype = 8, grid.max = 100.1, grid.mid=50,  values.radar = c("", "50%", ""))+scale_color_aaas()+coord_cartesian(clip = "off")+theme(plot.margin = margin(0, 5, 0, 5, 'cm'))
 
 ##now set up for the lollipop plots
-comparisonsdot=subset(comparisons, select = c("label", "quast_#contigs", "quast_#contigs>10kb", "quast_assembly_size", "quast_assembly_N50", "quast_assembly_N90", "quast_largest_contig", "merqury_qv(phred)", "telomeric_ends", "t2t_contigs"))
+comparisonsdot=subset(comparisons, select = c("label", "quast_#contigs", "quast_#contigs>10kb", "quast_assembly_size", "quast_assembly_N50", "quast_assembly_N90", "quast_largest_contig", "merqury_qv(phred)", "telomeric_ends", "T2T_contigs"))
 #comparisonsdot=comparisons[ , c(25, 3, 4, 5, 6, 7, 8, 16, 20, 22), FALSE]
 ##remove some of the naming conventions as the labels are too big with them
 names(comparisonsdot) = gsub(pattern = "merqury_", replacement = "", x = names(comparisonsdot))
@@ -128,8 +128,8 @@ ggsave(filename = "PATHTOOUTPUT.raw_values.svg", plot = absplot3,
 ## CRAQ_S-AQI(%)
 ## coverage_normal(%)
 ## telomeric_ends
-## t2t_contigs
-comparisonstemp1=subset(comparisons, select = c("quast_assembly_size", "quast_assembly_N50", "quast_#contigs", "merqury_qv(phred)", "merqury_kmer_completeness(%)", "CRAQ_R-AQI(%)", "CRAQ_S-AQI(%)", "coverage_normal(%)", "telomeric_ends", "t2t_contigs", "BUSCO_complete(%)", "BUSCO_complete_single(%)"))
+## T2T_contigs
+comparisonstemp1=subset(comparisons, select = c("quast_assembly_size", "quast_assembly_N50", "quast_#contigs", "merqury_qv(phred)", "merqury_kmer_completeness(%)", "CRAQ_R-AQI(%)", "CRAQ_S-AQI(%)", "coverage_normal(%)", "telomeric_ends", "T2T_contigs", "BUSCO_complete(%)", "BUSCO_complete_single(%)"))
 #comparisonstemp1=comparisons[ , c(5, 6, 3, 15, 16, 17, 18, 19, 20, 22, 23, 24), FALSE]
 ##remove some of the naming conventions as the labels are too big with them
 names(comparisonstemp1) = gsub(pattern = "merqury_", replacement = "", x = names(comparisonstemp1))
