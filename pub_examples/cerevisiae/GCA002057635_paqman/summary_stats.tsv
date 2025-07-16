@@ -1,0 +1,2 @@
+prefix	assembly	quast_#contigs	quast_#contigs>10kb	quast_assembly_size	quast_assembly_N50	quast_assembly_N90	quast_largest_contig	BUSCO_db	BUSCO_total	BUSCO_complete	BUSCO_complete_single	BUSCO_fragmented	BUSCO_missing	merqury_completeness(%)	merqury_qv(phred)	CRAQ_average_CRE(%)	CRAQ_average_CSE(%)	coverage_normal(%)	telomeric_ends	telomeric_ends(%)	t2t_contigs
+GCA002057635	GCA002057635	18	18	12225585	813597	440036	1566853	saccharomycetaceae_odb12	3282	3278	3277	0	4	96.9514	54.792	85.2134262522508	100	99.5142	28	75.6757	12

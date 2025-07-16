@@ -1,0 +1,62 @@
+/home/saodonnell/miniconda3/envs/paqman/bin/quast -o ./quast GCA002057635.fa
+
+Version: 5.3.0
+
+System information:
+  OS: Linux-5.14.0-511.el9.x86_64-x86_64-with-glibc2.34 (linux_64)
+  Python version: 3.12.11
+  CPUs number: 128
+
+Started: 2025-07-15 18:44:39
+
+Logging to /mnt/cephfs/scratch/saodonnell/projects/genomeval/paqman_test_data/cerevisiae/GCA002057635_paqman.8t/quast/quast.log
+NOTICE: Maximum number of threads is set to 32 (use --threads option to set it manually)
+
+CWD: /mnt/cephfs/scratch/saodonnell/projects/genomeval/paqman_test_data/cerevisiae/GCA002057635_paqman.8t
+Main parameters: 
+  MODE: default, threads: 32, min contig length: 500, min alignment length: 65, min alignment IDY: 95.0, \
+  ambiguity: one, min local misassembly length: 200, min extensive misassembly length: 1000
+
+Contigs:
+  Pre-processing...
+  GCA002057635.fa ==> GCA002057635
+
+2025-07-15 18:44:40
+Running Basic statistics processor...
+  Contig files: 
+    GCA002057635
+  Calculating N50 and L50...
+    GCA002057635, N50 = 813597, L50 = 6, auN = 865387.0, Total length = 12225585, GC % = 38.15, # N's per 100 kbp =  0.00
+  Drawing Nx plot...
+    saved to /mnt/cephfs/scratch/saodonnell/projects/genomeval/paqman_test_data/cerevisiae/GCA002057635_paqman.8t/quast/basic_stats/Nx_plot.pdf
+  Drawing cumulative plot...
+    saved to /mnt/cephfs/scratch/saodonnell/projects/genomeval/paqman_test_data/cerevisiae/GCA002057635_paqman.8t/quast/basic_stats/cumulative_plot.pdf
+  Drawing GC content plot...
+    saved to /mnt/cephfs/scratch/saodonnell/projects/genomeval/paqman_test_data/cerevisiae/GCA002057635_paqman.8t/quast/basic_stats/GC_content_plot.pdf
+  Drawing GCA002057635 GC content plot...
+    saved to /mnt/cephfs/scratch/saodonnell/projects/genomeval/paqman_test_data/cerevisiae/GCA002057635_paqman.8t/quast/basic_stats/GCA002057635_GC_content_plot.pdf
+Done.
+
+NOTICE: Genes are not predicted by default. Use --gene-finding or --glimmer option to enable it.
+
+2025-07-15 18:44:41
+Creating large visual summaries...
+This may take a while: press Ctrl-C to skip this step..
+  1 of 2: Creating PDF with all tables and plots...
+  2 of 2: Creating Icarus viewers...
+Done
+
+2025-07-15 18:44:41
+RESULTS:
+  Text versions of total report are saved to /mnt/cephfs/scratch/saodonnell/projects/genomeval/paqman_test_data/cerevisiae/GCA002057635_paqman.8t/quast/report.txt, report.tsv, and report.tex
+  Text versions of transposed total report are saved to /mnt/cephfs/scratch/saodonnell/projects/genomeval/paqman_test_data/cerevisiae/GCA002057635_paqman.8t/quast/transposed_report.txt, transposed_report.tsv, and transposed_report.tex
+  HTML version (interactive tables and plots) is saved to /mnt/cephfs/scratch/saodonnell/projects/genomeval/paqman_test_data/cerevisiae/GCA002057635_paqman.8t/quast/report.html
+  PDF version (tables and plots) is saved to /mnt/cephfs/scratch/saodonnell/projects/genomeval/paqman_test_data/cerevisiae/GCA002057635_paqman.8t/quast/report.pdf
+  Icarus (contig browser) is saved to /mnt/cephfs/scratch/saodonnell/projects/genomeval/paqman_test_data/cerevisiae/GCA002057635_paqman.8t/quast/icarus.html
+  Log is saved to /mnt/cephfs/scratch/saodonnell/projects/genomeval/paqman_test_data/cerevisiae/GCA002057635_paqman.8t/quast/quast.log
+
+Finished: 2025-07-15 18:44:41
+Elapsed time: 0:00:01.991871
+NOTICEs: 2; WARNINGs: 0; non-fatal ERRORs: 0
+
+Thank you for using QUAST!
