@@ -26,7 +26,6 @@ Telomerality* (PAQman (with use of [seqtk](https://github.com/lh3/seqtk) + [bedt
 ### Apptainer usage
 ```
 docker pull ghcr.io/samtobam/paqman:latest
-
 ```
 
 ### Conda installation
@@ -146,8 +145,7 @@ Required inputs:
 Optional parameters:
 -p | --prefix       Prefix for output (default: paqplot)
 -o | --output       Name of output folder for all results (default: paqplot_output)
--h | --help         Print this help message
-	
+-h | --help         Print this help message	
 ```
 
 paqplot will provide two images (alongside the R scripts used to generate them) <br/>
