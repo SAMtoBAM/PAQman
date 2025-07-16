@@ -71,17 +71,17 @@ comparisons$label=factor(comparisons$label, levels=list)
 ## BUSCO_complete
 ## merqury_completeness(%)
 ## merqury_qv(phred)
-## CRAQ_average_CRE(%)
-## CRAQ_average_CSE(%)
+## CRAQ_R-AQI(%)
+## CRAQ_S-AQI(%)
 ## coverage_normal(%)
 ## telomeric_ends
 ## t2t_contigs
-comparisonsrad=subset(comparisons, select = c("label", "BUSCO_complete(%)", "BUSCO_complete_single(%)", "merqury_completeness(%)", "CRAQ_average_CRE(%)", "CRAQ_average_CSE(%)", "coverage_normal(%)", "telomeric_ends(%)"))
+comparisonsrad=subset(comparisons, select = c("label", "BUSCO_complete(%)", "BUSCO_complete_single(%)", "merqury_completeness(%)", "CRAQ_R-AQI(%)", "CRAQ_S-AQI(%)", "coverage_normal(%)", "telomeric_ends(%)"))
 #comparisonsrad=comparisons[ , c(25, 24, 23, 15, 17, 18, 19, 21), FALSE]
 ##tidy up the headers
 names(comparisonsrad) = gsub(pattern = "merqury_", replacement = "", x = names(comparisonsrad))
 names(comparisonsrad) = gsub(pattern = "quast_", replacement = "", x = names(comparisonsrad))
-names(comparisonsrad) = gsub(pattern = "CRAQ_average_", replacement = "", x = names(comparisonsrad))
+names(comparisonsrad) = gsub(pattern = "CRAQ_", replacement = "", x = names(comparisonsrad))
 
 absplot1=ggradar(comparisonsrad, axis.label.size = 3, legend.text.size = 6, legend.position = "left", group.point.size = 3 , group.line.width = 1, gridline.mid.colour = "grey", grid.label.size = 5, background.circle.colour = "grey90", gridline.mid.linetype = 8 , gridline.max.linetype = 8, grid.max = 100.1, grid.mid=50,  values.radar = c("", "50%", ""))+scale_color_aaas()+coord_cartesian(clip = "off")+theme(plot.margin = margin(0, 5, 0, 5, 'cm'))
 
@@ -119,17 +119,17 @@ ggsave(filename = "PATHTOOUTPUT.raw_values.svg", plot = absplot3,
 ## BUSCO_complete_single(%)
 ## merqury_completeness(%)
 ## merqury_qv(phred)
-## CRAQ_average_CRE(%)
-## CRAQ_average_CSE(%)
+## CRAQ_R-AQI(%)
+## CRAQ_S-AQI(%)
 ## coverage_normal(%)
 ## telomeric_ends
 ## t2t_contigs
-comparisonstemp1=subset(comparisons, select = c("quast_assembly_size", "quast_assembly_N50", "quast_#contigs", "merqury_qv(phred)", "merqury_completeness(%)", "CRAQ_average_CRE(%)", "CRAQ_average_CSE(%)", "coverage_normal(%)", "telomeric_ends", "t2t_contigs", "BUSCO_complete(%)", "BUSCO_complete_single(%)"))
+comparisonstemp1=subset(comparisons, select = c("quast_assembly_size", "quast_assembly_N50", "quast_#contigs", "merqury_qv(phred)", "merqury_completeness(%)", "CRAQ_R-AQI(%)", "CRAQ_S-AQI(%)", "coverage_normal(%)", "telomeric_ends", "t2t_contigs", "BUSCO_complete(%)", "BUSCO_complete_single(%)"))
 #comparisonstemp1=comparisons[ , c(5, 6, 3, 15, 16, 17, 18, 19, 20, 22, 23, 24), FALSE]
 ##remove some of the naming conventions as the labels are too big with them
 names(comparisonstemp1) = gsub(pattern = "merqury_", replacement = "", x = names(comparisonstemp1))
 names(comparisonstemp1) = gsub(pattern = "quast_", replacement = "", x = names(comparisonstemp1))
-names(comparisonstemp1) = gsub(pattern = "CRAQ_average_", replacement = "", x = names(comparisonstemp1))
+names(comparisonstemp1) = gsub(pattern = "CRAQ_", replacement = "", x = names(comparisonstemp1))
 
 
 ##get a label to be placed in the first column (taken by ggradar as the label)
