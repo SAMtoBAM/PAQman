@@ -11,14 +11,14 @@
 
 PAQman combines a set of excellent tools (and PAQman scripts) for a reference-free and comprehensive evaluation of genome assemblies <br/>
 
-PAQman evaluates 7 important metrics: <br/>
-Contiguity (QUAST) <br/>
-Gene Content (BUSCO) <br/>
-Completeness (Merqury)<br/>
-Error rate (Merqury)<br/>
-Correctness (CRAQ)<br/>
-Coverage (PAQman)<br/>
-Telomerality* (PAQman) <br/>
+PAQman evaluates 7 important features: <br/>
+Contiguity ([QUAST](http://dx.doi.org/10.1093/nar/gkad406)) <br/>
+Gene Content ([BUSCO](https://doi.org/10.1093/nar/gkae987)) <br/>
+Completeness ([Merqury](https://doi.org/10.1186/s13059-020-02134-9))<br/>
+Error rate ([Merqury](https://doi.org/10.1186/s13059-020-02134-9))<br/>
+Correctness ([CRAQ](https://doi.org/10.1038/s41467-023-42336-w))<br/>
+Coverage (PAQman (with use of [bwa](https://doi.org/10.48550/arXiv.1303.3997)/[minimap2](https://doi.org/10.1093/bioinformatics/bty191) + [samtools](https://doi.org/10.1093/bioinformatics/btp352) + [bedtools](https://doi.org/10.1093/bioinformatics/btq033)))<br/>
+Telomerality* (PAQman (with use of [seqtk](https://github.com/lh3/seqtk) + [bedtools](https://doi.org/10.1093/bioinformatics/btq033))) <br/>
 <i>PAQman is clearly built upon the back of the tools in brackets so please cite them</i>
 
 ***
@@ -42,14 +42,14 @@ paqman.sh -a path/to/assembly.fa -l path/to/long-reads.fq.gz
 
 
 ```
-paqman.sh -a path/to/assembly.fa -l path/to/long-reads.fq.gz -x ont -1 illumina.R1.fq.gz -2 illumina.R2.fq.gz -b eukaryota -w 30000 -s 10000 -r TTAGGG -p genome -o paqman_output -c yes
+paqman.sh -g assembly.fa -l long-reads.fq.gz -x ont -1 illumina.R1.fq.gz -2 illumina.R2.fq.gz -b eukaryota -w 30000 -s 10000 -r TTAGGG -p assembly -o paqman_output -c yes
 
 Required inputs:
 -a | --assembly     Genome assemly in fasta format (*.fa / *.fasta / *.fna) and can be gzipped (*.gz)
 -l | --longreads    Long reads used for assembly in fastq or fasta format  (*.fa / *.fasta / *.fna / *.fastq / *.fq) and can be gzipped (*.gz)
 
 Recommended inputs:
--x | --platform     Long-read technology to determine mapping parameters. Choose between 'ont' or 'pacbio-hifi' or 'pacbio-clr' (default: ont)
+-x | --platform     Long-read technology to determine mapping mapping parameters. Choose between 'ont' or 'pacbio-hifi' or 'pacbio-clr' (default: ont)
 -b | --buscodb      Name of BUSCO database to be used (default: eukaryota)
 -t | --threads      Number of threads for tools that accept this option (default: 1)
 -r | --repeat       Telomeric repeat pattern (default: TTAGGG)
@@ -61,6 +61,7 @@ Optional parameters:
 -s | --slide        Number of basepairs for the window to slide for coverage (default: 10000)
 -p | --prefix       Prefix for output (default: name of assembly file (-a) before the fasta suffix)
 -o | --output       Name of output folder for all results (default: paqman_output)
+-seq | --sequences	Whether or not to use scaffolds or contigs; provide 'scaffolds' to not break the assembly at N's (default: contigs)
 -c | --cleanup      Remove a large number of files produced by each of the tools that can take up a lot of space. Choose between 'yes' or 'no' (default: 'yes')
 -h | --help         Print this help message
 ```
@@ -75,7 +76,10 @@ Optional parameters:
 
 
 
-## The output:
+## The summary output metrics:
+Although PAQman looks at 7 features, within these features are many important metrics for complete assembly evaluation <br/>
+PAQman extracts some of the most informative/important and places them into a summary file <br/>
+All metrics are detailed below
 
 ### Summary stats: 'summary_stats.tsv':
 |Column | Header | Description |
@@ -84,22 +88,24 @@ Optional parameters:
 | 02 | <b>assembly</b> | prefix from the fasta file without suffix (-a)
 | 03 | <b>quast_#contigs</b> | Number of total contigs
 | 04 | <b>quast_#contigs>10kb</b> | Number of contigs >10 kb
-| 05 | <b>quast_assembly_N50</b> | Assembly N50
-| 06 | <b>quast_assembly_N90</b> | Assembly N90
-| 07 | <b>quast_largest_contig</b> | Largest contig in the assembly
-| 08 | <b>BUSCO_db</b> | The BUSCO database used to evaluate the assembly
-| 09 | <b>BUSCO_total</b> | Total number of BUSCOs in the database
-| 10 | <b>BUSCO_complete_single</b> | BUSCOs identified as complete and as a single copy
-| 11 | <b>BUSCO_fragmented</b> | BUSCOs identified as fragmented
-| 12 | <b>BUSCO_missing</b> | BUSCOs not identified
-| 13 | <b>merqury_completeness(%)</b> | A k-mer estimation of compmeteness
-| 14 | <b>merqury_qv(phred)</b> | A k-mer estimation of the genome wide error rate
-| 15 | <b>CRAQ_average_CRE(%)</b> | Percentage of assembly without small regional errors
-| 16 | <b>CRAQ_average_CSE(%)</b> | Percentage of assembly without large structural errors
-| 17 | <b>coverage_normal(%)</b> | Percentage of the genome within 2*stdev of the genome wide median
-| 18 | <b>telomeric_ends</b> | Number of contig ends with telomeric repeats
-| 19 | <b>telomeric_ends(%)</b> | Percentage of contig ends with telomeric repeats
-| 20 | <b>t2t_contigs</b> | Number of contigs with telomeric repeats at both ends
+| 05 | <b>quast_assembly_size</b> | Total number of basepairs in assembly
+| 06 | <b>quast_assembly_N50</b> | Assembly N50
+| 07 | <b>quast_assembly_N90</b> | Assembly N90
+| 08 | <b>quast_largest_contig</b> | Largest contig in the assembly
+| 09 | <b>BUSCO_db</b> | The BUSCO database used to evaluate the assembly
+| 10 | <b>BUSCO_total</b> | Total number of BUSCOs in the database
+| 11 | <b>BUSCO_complete</b> | BUSCOs identified as complete
+| 12 | <b>BUSCO_complete_single</b> | BUSCOs identified as complete and as a single copy
+| 13 | <b>BUSCO_fragmented</b> | BUSCOs identified as fragmented
+| 14 | <b>BUSCO_missing</b> | BUSCOs not identified
+| 15 | <b>merqury_kmer_completeness(%)</b> | A k-mer estimation of completeness
+| 16 | <b>merqury_qv(phred)</b> | A k-mer estimation of the genome wide error rate
+| 17 | <b>CRAQ_R-AQI(%)</b> | Quality measure from 0-100 based on small regional errors
+| 18 | <b>CRAQ_S-AQI(%)</b> | Quality measure from 0-100 based on large structural errors
+| 19 | <b>coverage_normal(%)</b> | Percentage of the genome within 2*stdev of the genome wide median
+| 20 | <b>telomeric_ends</b> | Number of contig ends with telomeric repeats
+| 21 | <b>telomeric_ends(%)</b> | Percentage of contig ends with telomeric repeats
+| 22 | <b>t2t_contigs</b> | Number of contigs with telomeric repeats at both ends
 
 
 
@@ -158,4 +164,13 @@ In this example, all stats should be maximised except for contig count hence the
 <p align="center" >
     <img src="https://github.com/SAMtoBAM/PAQman/blob/main/figures/example.relative_values.svg" width=50%>
 </p>
+
+
+
+
+
+
+
+
+
 
