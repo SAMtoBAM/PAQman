@@ -105,7 +105,7 @@ names(comparisonsrad) = gsub(pattern = "\\(", replacement = " \\(", x = names(co
 comparisonsdot2=melt(comparisonsdot)
 
 ##plot 
-absplot2=ggdotchart(comparisonsdot2, x = "label", y="value", sorting = "none", rotate=T, color="label", facet.by="variable", scales="free_x", nrow=1, add="segment", legend = "none") + theme_pubr(x.text.angle = 45, legend = "none") + xlab("Assembly")+scale_color_aaas()+theme(axis.text.y = element_text(size=10))
+absplot2=ggdotchart(comparisonsdot2, x = "label", y="value", sorting = "none", rotate=T, color="label", facet.by="variable", scales="free_x", nrow=1, add="segment", legend = "none") + theme_pubr(x.text.angle = 45, legend = "none") + xlab("Assembly")+scale_color_aaas()+theme(axis.text.y = element_text(size=10), axis.title.y = element_blank(), axis.title.x = element_blank())
 
 
 ##combine the two plots together
