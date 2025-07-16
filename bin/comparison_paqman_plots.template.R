@@ -98,8 +98,8 @@ comparisonsdot=subset(comparisons, select = c("label", "quast_#contigs", "quast_
 ##remove some of the naming conventions as the labels are too big with them
 names(comparisonsdot) = gsub(pattern = "merqury_", replacement = "", x = names(comparisonsdot))
 names(comparisonsdot) = gsub(pattern = "quast_", replacement = "", x = names(comparisonsdot))
-names(comparisonsrad) = gsub(pattern = "_", replacement = " ", x = names(comparisonsdot))
-names(comparisonsrad) = gsub(pattern = "\\(", replacement = " \\(", x = names(comparisonsdot))
+names(comparisonsdot) = gsub(pattern = "_", replacement = " ", x = names(comparisonsdot))
+names(comparisonsdot) = gsub(pattern = "\\(", replacement = " \\(", x = names(comparisonsdot))
 
 ##melt the dataframe
 comparisonsdot2=melt(comparisonsdot)
@@ -139,8 +139,8 @@ comparisonstemp1=subset(comparisons, select = c("quast_assembly_size", "quast_as
 names(comparisonstemp1) = gsub(pattern = "merqury_", replacement = "", x = names(comparisonstemp1))
 names(comparisonstemp1) = gsub(pattern = "quast_", replacement = "", x = names(comparisonstemp1))
 names(comparisonstemp1) = gsub(pattern = "CRAQ_", replacement = "", x = names(comparisonstemp1))
-names(comparisonsrad) = gsub(pattern = "_", replacement = " ", x = names(comparisonstemp1))
-names(comparisonsrad) = gsub(pattern = "\\(", replacement = " \\(", x = names(comparisonstemp1))
+names(comparisonstemp1) = gsub(pattern = "_", replacement = " ", x = names(comparisonstemp1))
+names(comparisonstemp1) = gsub(pattern = "\\(", replacement = " \\(", x = names(comparisonstemp1))
 
 
 
