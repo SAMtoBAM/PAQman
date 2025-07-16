@@ -53,8 +53,12 @@ comparisons$"BUSCO_complete(%)"=(comparisons$BUSCO_complete/comparisons$BUSCO_to
 comparisons$"BUSCO_complete_single(%)"=(comparisons$BUSCO_complete_single/comparisons$BUSCO_total)*100
 
 
-##set new variable as a combination of the strain and assembly name
-comparisons$label=paste(comparisons$prefix, comparisons$assembly, sep = "-")
+##set new variable as a combination of the strain and assembly name (but only if prefix and assembly are different)
+comparisons$label <- ifelse(
+  comparisons$prefix == comparisons$assembly,
+  comparisons$prefix,
+  paste(comparisons$prefix, comparisons$assembly, sep = "-")
+)
 
 ##order the label factor (alphanumerically) for each plot
 list=str_sort(comparisons$label)
@@ -141,7 +145,13 @@ names(comparisonsrad) = gsub(pattern = "\\(", replacement = " \\(", x = names(co
 
 
 ##get a label to be placed in the first column (taken by ggradar as the label)
-label=as.data.frame(paste(comparisons$prefix, comparisons$assembly, sep = "-"))
+label = as.data.frame(
+  ifelse(
+    comparisons$prefix == comparisons$assembly,
+    comparisons$prefix,
+    paste(comparisons$prefix, comparisons$assembly, sep = "-")
+  )
+)
 ##rename column name
 colnames(label)="label"
 
