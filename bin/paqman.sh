@@ -392,7 +392,7 @@ bedtools genomecov -d -split -ibam ./coverage/${prefix}.minimap.sorted.bam | gzi
 ## calculate the median across the whole genome using the exact basepair
 medianLR=$( zcat ./coverage/${prefix}.minimap.sorted.cov.tsv.gz | awk '{if($3 != "0") print $3}' | sort -n | awk '{ a[i++]=$1} END{x=int((i+1)/2); if(x < (i+1)/2) print (a[x-1]+a[x])/2; else print a[x-1];}' )
 ##calculate the binned median coverage and normalise each bin value by the genome wide median coverage
-echo "contig;start;end;covergage_abs;coverage_norm" | tr ';' '\t' > ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv
+echo "contig;start;end;coverage_abs;coverage_norm" | tr ';' '\t' > ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv
 zcat ./coverage/${prefix}.minimap.sorted.cov.tsv.gz  | awk '{print $1"\t"$2"\t"$2"\t"$3}' | bedtools sort |\
 bedtools map -b - -a ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed -c 4 -o median | awk -v median="$medianLR" '{print $0"\t"$4/median}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv
 
@@ -421,7 +421,7 @@ bedtools genomecov -d -split -ibam ./coverage/${prefix}.bwamem.sorted.bam | gzip
 ## calculate the median across the whole genome using the exact basepair
 medianSR=$( zcat ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz | awk '{if($3 != "0") print $3}' | sort -n | awk '{ a[i++]=$1} END{x=int((i+1)/2); if(x < (i+1)/2) print (a[x-1]+a[x])/2; else print a[x-1];}' )
 ##calculate the binned median coverage and normalise each bin value by the genome wide median coverage
-echo "contig;start;end;covergage_abs;coverage_norm" | tr ';' '\t' > ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.coverage_normalised.tsv
+echo "contig;start;end;coverage_abs;coverage_norm" | tr ';' '\t' > ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.coverage_normalised.tsv
 zcat ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz  | awk '{print $1"\t"$2"\t"$2"\t"$3}' | bedtools sort |\
 bedtools map -b - -a ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed -c 4 -o median | awk -v median="$medianSR" '{print $0"\t"$4/median}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.coverage_normalised.tsv
 
@@ -540,6 +540,9 @@ craqstat=$( cat ./craq/runAQI_out/out_final.Report | head -n3 | tail -n1 | awk -
 ##can just use the normalised median and therefore within 2SD from 1
 covSD=$( cat ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv | awk '{print $5}' | awk '{x+=$0;y+=$0^2}END{print sqrt(y/NR-(x/NR)^2)}' )
 covstat=$( cat ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv |awk -v covSD="$covSD" '{if($5 > (1+(2*covSD)) || $5 < (1-(2*covSD))) {deviation=deviation+1}} END{print (1-(deviation/NR))*100}' )
+##spit out a file with all the regions considered outside the given 2SD range
+echo "contig;start;end;coverage_abs;coverage_norm" | tr ';' '\t' > ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.outside_2SD.tsv
+cat ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv |awk -v covSD="$covSD" '{if($5 >= (1+(2*covSD)) || $5 <= (1-(2*covSD))) {print}}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.outside_2SD.tsv
 
 
 
