@@ -1,19 +1,21 @@
-# Pipeline used to test the quality of 5 assemblies of the reference strain S288c of _Saccharomyces cerevisiae_
+# Pipeline used to test the assembly quality of 5 long-read assemblies of the reference strain S288c of _Saccharomyces cerevisiae_ using PAQman
 
 
 ## 0. Setup
 
     ##set a project name variable and create a directory for all the raw and analysed results
     project="cerevisiae"
+    ##create project directory for all data
     mkdir ${project}
 
-    ##for 16 threads
+    ##set variable for 16 threads
     threads="16"
 
 
 ## 1. Download assemblies
 This download used the ncbi-datasets-cli datasets tool (easily installed with conda: `conda install conda-forge::ncbi-datasets-cli`) <br/>
-The S288c assemblies was manually picked (GCA_000146045, GCA_002057635, GCA_016858165, GCA_022626425, GCA_902192305)
+The S288c assemblies were manually picked (GCA_000146045, GCA_002057635, GCA_016858165, GCA_022626425, GCA_902192305) <br/>
+These 5 assemblies were all assembled with long read technology
 
     ##download all data
     datasets download genome accession GCA_000146045 GCA_002057635 GCA_016858165 GCA_022626425 GCA_902192305
@@ -32,7 +34,8 @@ The S288c assemblies was manually picked (GCA_000146045, GCA_002057635, GCA_0168
 
 ## 2. Download a set of raw Oxford nanopore reads
 This download uses the sra-toolkit (easily installed with conda: `conda install bioconda::sra-tools`) <br/>
-The dataset was manually determined as a recent, high coverage and reasonably long dataset (SRR17374240)
+The dataset was manually determined, selecting a recent, high coverage and reasonably long read dataset (SRR17374240) <br/>
+_Note: This read dataset was used to assemble GCA_022626425; which is used in this evaluation_
 
     ##set the SRR data to download as a variable
     SRR="SRR17374240"
@@ -42,9 +45,12 @@ The dataset was manually determined as a recent, high coverage and reasonably lo
     mv ${SRR}.fastq ${project}/${SRR}.fq
     gzip ${SRR}.fq
 
-    ##downsample the excessive 600X coverage to 100X
+    ##downsample the excessive ~800X coverage to 100X
     ##use 12Mb as estimated genome size and therefore 100X this
-    filtlong -t 1200000000 --length_weight 5 ${SRR}.fq | gzip > ${SRR}.filtlong100x.fq.gz
+    filtlong -t 1200000000 --length_weight 5 ${SRR}.fq.gz | gzip > ${SRR}.filtlong100x.fq.gz
+
+    ##remove the full set of reads just taking up space
+    rm ${SRR}.fq.gz
 
 
 ## 3. Run PAQman on all assemblies
