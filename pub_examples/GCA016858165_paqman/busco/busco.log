@@ -1,0 +1,53 @@
+2025-07-15 18:55:08 INFO:	***** Start a BUSCO v6.0.0 analysis, current time: 07/15/2025 18:55:08 *****
+2025-07-15 18:55:08 INFO:	Configuring BUSCO with local environment
+2025-07-15 18:55:08 INFO:	Running genome mode
+2025-07-15 18:55:08 INFO:	Downloading information on latest versions of BUSCO data...
+2025-07-15 18:55:11 INFO:	Input file is /mnt/cephfs/scratch/saodonnell/projects/genomeval/paqman_test_data/cerevisiae/GCA016858165_paqman.8t/GCA016858165.fa
+2025-07-15 18:55:11 INFO:	Downloading file 'https://busco-data.ezlab.org/v5/data/lineages/saccharomycetaceae_odb12.2025-07-01.tar.gz'
+2025-07-15 18:55:31 INFO:	Decompressing file '/mnt/cephfs/scratch/saodonnell/projects/genomeval/paqman_test_data/cerevisiae/GCA016858165_paqman.8t/busco_downloads/lineages/saccharomycetaceae_odb12.tar.gz'
+2025-07-15 18:55:39 INFO:	Running BUSCO using lineage dataset saccharomycetaceae_odb12 (eukaryota, 2025-07-01)
+2025-07-15 18:55:39 INFO:	Running 1 job(s) on bbtools, starting at 07/15/2025 18:55:39
+2025-07-15 18:55:40 INFO:	[bbtools]	1 of 1 task(s) completed
+2025-07-15 18:55:40 INFO:	Running 1 job(s) on miniprot_index, starting at 07/15/2025 18:55:40
+2025-07-15 18:55:41 INFO:	[miniprot_index]	1 of 1 task(s) completed
+2025-07-15 18:55:42 INFO:	Running 1 job(s) on miniprot_align, starting at 07/15/2025 18:55:42
+2025-07-15 18:57:00 INFO:	[miniprot_align]	1 of 1 task(s) completed
+2025-07-15 18:57:03 INFO:	***** Run HMMER on gene sequences *****
+2025-07-15 18:57:06 INFO:	Running 3282 job(s) on hmmsearch, starting at 07/15/2025 18:57:06
+2025-07-15 18:57:13 INFO:	[hmmsearch]	329 of 3282 task(s) completed
+2025-07-15 18:57:18 INFO:	[hmmsearch]	985 of 3282 task(s) completed
+2025-07-15 18:57:23 INFO:	[hmmsearch]	1641 of 3282 task(s) completed
+2025-07-15 18:57:23 INFO:	[hmmsearch]	1641 of 3282 task(s) completed
+2025-07-15 18:57:23 INFO:	[hmmsearch]	1641 of 3282 task(s) completed
+2025-07-15 18:57:23 INFO:	[hmmsearch]	1641 of 3282 task(s) completed
+2025-07-15 18:57:25 INFO:	[hmmsearch]	1970 of 3282 task(s) completed
+2025-07-15 18:57:28 INFO:	[hmmsearch]	2298 of 3282 task(s) completed
+2025-07-15 18:57:31 INFO:	[hmmsearch]	2626 of 3282 task(s) completed
+2025-07-15 18:57:34 INFO:	[hmmsearch]	2954 of 3282 task(s) completed
+2025-07-15 18:57:38 INFO:	[hmmsearch]	3282 of 3282 task(s) completed
+2025-07-15 18:57:40 INFO:	11 candidate overlapping regions found
+2025-07-15 18:57:40 INFO:	3487 exons in total
+2025-07-15 18:57:40 WARNING:	46 of 3276 Complete matches (1.4%) contain internal stop codons in Miniprot gene predictions
+2025-07-15 18:57:41 INFO:	
+
+    -------------------------------------------------------------------------------------------
+    |Results from dataset saccharomycetaceae_odb12                                             |
+    -------------------------------------------------------------------------------------------
+    |C:99.8%[S:99.1%,D:0.7%],F:0.0%,M:0.2%,n:3282,E:1.4%                                       |
+    |3276    Complete BUSCOs (C)    (of which 46 contain internal stop codons)                 |
+    |3252    Complete and single-copy BUSCOs (S)                                               |
+    |24    Complete and duplicated BUSCOs (D)                                                  |
+    |0    Fragmented BUSCOs (F)                                                                |
+    |6    Missing BUSCOs (M)                                                                   |
+    |3282    Total BUSCO groups searched                                                       |
+    -------------------------------------------------------------------------------------------
+2025-07-15 18:57:41 INFO:	BUSCO analysis done with WARNING(s). Total running time: 151 seconds
+
+***** Summary of warnings: *****
+2025-07-15 18:57:40 WARNING:busco.busco_tools.hmmer	46 of 3276 Complete matches (1.4%) contain internal stop codons in Miniprot gene predictions
+
+2025-07-15 18:57:41 INFO:	Results written in ./busco
+2025-07-15 18:57:41 INFO:	For assistance with interpreting the results, please consult the userguide: https://busco.ezlab.org/busco_userguide.html
+
+2025-07-15 18:57:41 INFO:	Visit this page https://gitlab.com/ezlab/busco#how-to-cite-busco to see how to cite BUSCO
+2025-07-15 18:57:41 INFO:	Thank you for using BUSCO! Anonymous usage data is gathered to improve the tool. You may opt out with --opt-out-run-stats.
