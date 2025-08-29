@@ -74,7 +74,6 @@ Optional parameters:
 </p>
 
 
-
 ## The summary output metrics:
 Although PAQman looks at 7 features, within these features are many important metrics for complete assembly evaluation <br/>
 PAQman extracts some of the most informative/important and places them into a summary file <br/>
@@ -107,6 +106,10 @@ All metrics are detailed below
 | 22 | <b>t2t_contigs</b> | Number of contigs with telomeric repeats at both ends
 
 
+## *BUSCO dataset
+To find the best appropriate BUSCO dataset for your assembly you can refer to [here](https://busco.ezlab.org/busco_userguide.html#obtain-busco) <br/>
+Or run `busco --list-datasets` 
+
 
 ## *Telomerality:
 <i>*I am using the term to describe stats about how many of the assembled contig have reached telomere sequences giving confidence of structural completeness at contig ends in repeat regions </i><br/>
@@ -123,8 +126,6 @@ Can find all the coordinates for telomeric regions (including interstitial) in t
 Can find these classifications (and coordinates/distance from edge etc) for each contig end in the tsv file with explanatory header: 'telomerality/telomeres.classification.tsv' <br/>
 
 Note: For the option -r (--repeat); although some repeats are not exact this can still work as the detection scheme allows for inexact repeats. For example 'GGTGTG' works very well for <i>S. cerevisiae</i>, which usually is represented as T(G)*1-3.
-
-
 
 
 ## Comparing PAQman output across multiple assemblies
