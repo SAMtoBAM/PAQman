@@ -135,6 +135,11 @@ case "$key" in
 	"
 	exit
 	;;
+	*)  # catch invalid args
+    echo "ERROR: Unknown option: '$1'"
+    echo "Run 'paqman.sh -h' to see valid options"
+    exit 1
+    ;;
 	esac
 done
 
