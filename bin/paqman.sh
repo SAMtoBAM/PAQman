@@ -110,7 +110,7 @@ case "$key" in
 	echo "
 	PAQman (version: ${version})
  
-	paqman.sh -g assembly.fa -l long-reads.fq.gz -x ont -1 illumina.R1.fq.gz -2 illumina.R2.fq.gz -b eukaryota -w 30000 -s 10000 -r TTAGGG -p assembly -o paqman_output -c yes
+	paqman.sh -a assembly.fa -l long-reads.fq.gz
 	
 	Required inputs:
 	-a | --assembly     Genome assemly in fasta format (*.fa / *.fasta / *.fna) and can be gzipped (*.gz)
@@ -121,16 +121,16 @@ case "$key" in
 	-b | --buscodb      Name of BUSCO database to be used (default: eukaryota)
 	-t | --threads      Number of threads for tools that accept this option (default: 1)
 	-r | --repeat       Telomeric repeat pattern (default: TTAGGG)
+ 	-1 | --pair1        Paired end illumina reads in fastq format; first pair. Used by Merqury, CRAQ and coverage analysis (Recommended). Can be gzipped (*.gz)
+	-2 | --pair2        Paired end illumina reads in fastq format; second pair. Used by Merqury, CRAQ and coverage analysis (Recommended). Can be gzipped (*.gz)
 	
 	Optional parameters:
-	-1 | --pair1        Paired end illumina reads in fastq format; first pair. Used by Merqury, CRAQ and coverage analysis (Recommended). Can be gzipped (*.gz)
-	-2 | --pair2        Paired end illumina reads in fastq format; second pair. Used by Merqury, CRAQ and coverage analysis (Recommended). Can be gzipped (*.gz)
 	-w | --window       Number of basepairs for window averaging for coverage (default: 30000)
 	-s | --slide        Number of basepairs for the window to slide for coverage (default: 10000)
 	-p | --prefix       Prefix for output (default: name of assembly file (-a) before the fasta suffix)
 	-o | --output       Name of output folder for all results (default: paqman_output)
 	-seq | --sequences	Whether or not to use scaffolds or contigs; provide 'scaffolds' to not break the assembly at N's (default: contigs)
-	-c | --cleanup      Remove a large number of files produced by each of the tools that can take up a lot of space. Choose between 'yes' or 'no' (default: 'yes')
+	-c | --cleanup      Remove a large number of files produced by each of the tools that can take up a lot of space. Choose between 'yes' or 'no' (default: yes)
 	-h | --help         Print this help message
 	"
 	exit
@@ -171,6 +171,7 @@ longreadpath=$( realpath ${longreads} )
 if [[ $shortreads == "yes" ]]
 then
 [ ! -f "${pair1path}" ] && echo "ERROR: Cannot find path to short-reads provided by -1; check path is correct and file exists" && exit
+[ ! -f "${pair2path}" ] && echo "ERROR: Cannot find path to short-reads provided by -2; check path is correct and file exists" && exit
 fi
 
 
