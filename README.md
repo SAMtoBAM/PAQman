@@ -52,10 +52,10 @@ Recommended inputs:
 -b | --buscodb      Name of BUSCO database to be used (default: eukaryota)
 -t | --threads      Number of threads for tools that accept this option (default: 1)
 -r | --repeat       Telomeric repeat pattern (default: TTAGGG)
-
-Optional parameters:
 -1 | --pair1        Paired end illumina reads in fastq format; first pair. Used by Merqury, CRAQ and coverage analysis (Recommended). Can be gzipped (*.gz)
 -2 | --pair2        Paired end illumina reads in fastq format; second pair. Used by Merqury, CRAQ and coverage analysis (Recommended). Can be gzipped (*.gz)
+
+Optional parameters:
 -w | --window       Number of basepairs for window averaging for coverage (default: 30000)
 -s | --slide        Number of basepairs for the window to slide for coverage (default: 10000)
 -p | --prefix       Prefix for output (default: name of assembly file (-a) before the fasta suffix)
