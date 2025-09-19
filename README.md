@@ -9,7 +9,7 @@
 [![Anaconda-Server Badge](https://anaconda.org/samtobam/paqman/badges/latest_release_date.svg)](https://anaconda.org/samtobam/paqman)
 
 
-PAQman combines a set of excellent tools (and PAQman scripts) for a reference-free and comprehensive evaluation of genome assemblies <br/>
+PAQman combines a set of excellent tools (and PAQman scripts) for a reference-free and comprehensive evaluation of genome assemblies. [O'Donnell et al., 2025. _biorxiv_](https://doi.org/10.1101/2025.09.11.675652) <br/>
 
 PAQman evaluates 7 important features: <br/>
 Contiguity ([QUAST](http://dx.doi.org/10.1093/nar/gkad406)) <br/>
