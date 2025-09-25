@@ -185,6 +185,7 @@ fi
 [[ $platform != "ont" && $platform != "pacbio-hifi" && $platform != "pacbio-clr" ]] && echo "ERROR: --platform option needs to be 'ont' (default) or 'pacbio-hifi' or 'pacbio-clr'" && exit
 [[ $cleanup != "yes" && $cleanup != "no" ]] && echo "ERROR: --cleanup option neither 'yes' (default) or 'no'" && exit
 
+[ -d "${output}" ] && echo "ERROR: output folder already exists" && exit
 
 ##############################################################
 #################### BEGINNING EVALUATION ####################
@@ -213,7 +214,7 @@ zcat ${assemblypath} | seqkit sort  > ${assembly2}.fa
 assembly="${assembly2}.fa"
 else
 cat ${assemblypath} | seqkit sort  > ${assembly2}.fa
-assembly=$( echo ${assembly} | awk -F "/" '{print $NF}' )
+assembly="${assembly2}.fa"
 fi
 fi
 
