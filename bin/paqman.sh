@@ -317,18 +317,21 @@ merqury.sh reads.meryl ${assembly} ${prefix}.merqury
 ## just want to keep these two output files with important stats on error rate and completeness (respectively)
 mv ${prefix}.merqury.qv ./merqury/
 mv ${prefix}.merqury.completeness.stats ./merqury/
+if [ -f "${prefix}.merqury.spectra-asm.fl.png" ] ; then mv ${prefix}.merqury.*.png ./merqury/ ; fi
+if [ -f "${prefix}.merqury.${prefix}.spectra-cn.fl.png" ] ; then mv ${prefix}.merqury.${prefix}.*.png ./merqury/ ; fi
+mv logs merqury/ 
+if [ -f "${prefix}.merqury.spectra-asm.hist" ] ; then mv ${prefix}.merqury.*.hist ./merqury/ ; fi
+if [ -f "${prefix}.merqury.${prefix}.qv" ] ; then mv ${prefix}.merqury.${prefix}.qv ./merqury/ ; fi
+
 
 if [[ $cleanup == "yes" ]]
 then
 ## remove the rest of the files we don't care about to clean up the directory
-rm -r logs
-rm *.filt
-rm *hist
-rm *.hist.ploidy
-rm *.bed
-rm *.wig
-rm *.png
-rm *.qv
+if [ -f "reads.filt" ] ; then rm reads.filt ; fi
+if [ -f "reads.hist" ] ; then rm reads.hist ; fi
+if [ -f "reads.hist.ploidy" ] ; then rm reads.hist.ploidy ; fi
+if [ -f "${prefix}_only.bed" ] ; then rm ${prefix}_only.bed ; fi
+if [ -f "${prefix}_only.wig" ] ; then rm ${prefix}_only.wig ; fi
 rm -r *.meryl
 fi
 
