@@ -428,7 +428,7 @@ if [[ $shortreads == "yes" ]]
 then
 ## align the short reads (filtering for only primary alignments -F 0x100 : removes secondary)
 #bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ 4 -o ./coverage/${prefix}.bwamem.sorted.bam -
-bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools view -b -F 0x100 | samtools sort -@ 4 -o ./coverage/${prefix}.bwamem.sorted.bam
+bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools view -b -F 0x100 - | samtools sort -@ 4 -o ./coverage/${prefix}.bwamem.sorted.bam
 
 ## get the coverage
 bedtools genomecov -d -split -ibam ./coverage/${prefix}.bwamem.sorted.bam | gzip > ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz
