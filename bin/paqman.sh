@@ -406,7 +406,10 @@ bedtools genomecov -d -split -ibam ./coverage/${prefix}.minimap.sorted.bam | gzi
 medianLR=$( zcat ./coverage/${prefix}.minimap.sorted.cov.tsv.gz | awk '{if($3 != "0") print $3}' | sort -n | awk '{ a[i++]=$1} END{x=int((i+1)/2); if(x < (i+1)/2) print (a[x-1]+a[x])/2; else print a[x-1];}' )
 ##calculate the binned median coverage and normalise each bin value by the genome wide median coverage
 echo "contig;start;end;coverage_abs;coverage_norm" | tr ';' '\t' > ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv
-zcat ./coverage/${prefix}.minimap.sorted.cov.tsv.gz  | awk '{print $1"\t"$2"\t"$2"\t"$3}' | bedtools sort |\
+#zcat ./coverage/${prefix}.minimap.sorted.cov.tsv.gz  | awk '{print $1"\t"$2"\t"$2"\t"$3}' | bedtools sort |\
+#bedtools map -b - -a ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed -c 4 -o median | awk -v median="$medianLR" '{print $0"\t"$4/median}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv
+##removed bedtools sort step (stopped working and output would be blank)
+zcat ./coverage/${prefix}.minimap.sorted.cov.tsv.gz  | awk '{print $1"\t"$2"\t"$2"\t"$3}' |\
 bedtools map -b - -a ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed -c 4 -o median | awk -v median="$medianLR" '{print $0"\t"$4/median}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv
 
 if [[ $cleanup == "yes" ]]
@@ -435,8 +438,12 @@ bedtools genomecov -d -split -ibam ./coverage/${prefix}.bwamem.sorted.bam | gzip
 medianSR=$( zcat ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz | awk '{if($3 != "0") print $3}' | sort -n | awk '{ a[i++]=$1} END{x=int((i+1)/2); if(x < (i+1)/2) print (a[x-1]+a[x])/2; else print a[x-1];}' )
 ##calculate the binned median coverage and normalise each bin value by the genome wide median coverage
 echo "contig;start;end;coverage_abs;coverage_norm" | tr ';' '\t' > ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.coverage_normalised.tsv
-zcat ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz  | awk '{print $1"\t"$2"\t"$2"\t"$3}' | bedtools sort |\
+#zcat ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz  | awk '{print $1"\t"$2"\t"$2"\t"$3}' | bedtools sort |\
+#bedtools map -b - -a ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed -c 4 -o median | awk -v median="$medianSR" '{print $0"\t"$4/median}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.coverage_normalised.tsv
+##removed bedtools sort step (stopped working and output would be blank)
+zcat ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz  | awk '{print $1"\t"$2"\t"$2"\t"$3}' |\
 bedtools map -b - -a ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed -c 4 -o median | awk -v median="$medianSR" '{print $0"\t"$4/median}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.coverage_normalised.tsv
+
 
 if [[ $cleanup == "yes" ]]
 then
