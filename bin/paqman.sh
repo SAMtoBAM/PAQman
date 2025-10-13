@@ -288,7 +288,7 @@ then
 rm -r ./busco/run_${buscodb}*/*_output
 rm -r ./busco/run_${buscodb}*/busco_sequences
 rm -r ./busco/logs
-[ ! -f "./busco/tmp" ] && rm -r ./busco/tmp
+[ -d "./busco/tmp" ] && rm -r ./busco/tmp
 ##remove the downloaded busco database
 rm -r busco_downloads
 fi
