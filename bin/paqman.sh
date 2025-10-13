@@ -26,6 +26,7 @@ telomererepeat="TTAGGG"
 prefix="paqman"
 output="paqman_output"
 sequences="contigs"
+LRmeryldb=""
 help="nohelp"
 
 ## to clean up a bunch of output from the tools in order to reduce all the unnecessary output
@@ -100,6 +101,11 @@ case "$key" in
 	sequences="$2"
 	shift
 	shift
+	;;	
+	-LRmdb|--LRmeryldb)
+	LRmeryldb="$2"
+	shift
+	shift
 	;;
 	-c|--cleanup)
 	cleanup="$2"
@@ -130,6 +136,7 @@ case "$key" in
 	-p | --prefix       Prefix for output (default: name of assembly file (-a) before the fasta suffix)
 	-o | --output       Name of output folder for all results (default: paqman_output)
 	-seq | --sequences	Whether or not to use scaffolds or contigs; provide 'scaffolds' to not break the assembly at N's (default: contigs)
+	-LRmdb | --LRmeryldb	A precomputed meryl database for your long-read dataset. Will generate the meryl db if not provided
 	-c | --cleanup      Remove a large number of files produced by each of the tools that can take up a lot of space. Choose between 'yes' or 'no' (default: yes)
 	-h | --help         Print this help message
 	"
@@ -177,6 +184,14 @@ if [[ $shortreads == "yes" ]]
 then
 [ ! -f "${pair1path}" ] && echo "ERROR: Cannot find path to short-reads provided by -1; check path is correct and file exists" && exit
 [ ! -f "${pair2path}" ] && echo "ERROR: Cannot find path to short-reads provided by -2; check path is correct and file exists" && exit
+fi
+
+##check if meryl database for the long-reads was provided and if so generate a absolute path to be providede to Merqury
+##exit if cannot find provided file
+if [[ $LRmeryldb != "" ]]
+then
+LRmeryldbpath=$( realpath ${LRmeryldb} )
+[ ! -f "${LRmeryldbpath}" ] && echo "ERROR: Cannot find path to meryl database provided by --LRmeryldb; check path is correct and file exists" && exit
 fi
 
 
@@ -288,7 +303,7 @@ then
 rm -r ./busco/run_${buscodb}*/*_output
 rm -r ./busco/run_${buscodb}*/busco_sequences
 rm -r ./busco/logs
-[ ! -f "./busco/tmp" ] && rm -r ./busco/tmp
+[ -e "./busco/tmp" ] && rm -r ./busco/tmp
 ##remove the downloaded busco database
 rm -r busco_downloads
 fi
@@ -305,15 +320,27 @@ echo "NOTE: Creating meryl k-mer database using short-reads"
 ## here we can use JUST the illumina dataset and always compare to this dataset
 meryl t=${threads} memory=15 k=18 count output reads.meryl ${pair12} ${pair22}
 else 
+
+if [[ $LRmeryldb != "" ]]
+then
+echo "NOTE: Using precomputed meryl k-mer database for long-reads" 
+else
 echo "NOTE: Creating meryl k-mer database using long-reads"
 ##same but instead using the long-read data due to an absence of short reads
 meryl t=${threads} memory=15 k=18 count output reads.meryl ${longreads2} 
 fi
 
+fi
+
 echo "$(date +%H:%M) ########## Step 5b: Running Merqury"
 
 mkdir ./merqury
+if [[ $LRmeryldb != "" ]]
+then
+merqury.sh ${LRmeryldbpath} ${assembly} ${prefix}.merqury
+else
 merqury.sh reads.meryl ${assembly} ${prefix}.merqury
+fi
 ## just want to keep these two output files with important stats on error rate and completeness (respectively)
 mv ${prefix}.merqury.qv ./merqury/
 mv ${prefix}.merqury.completeness.stats ./merqury/
@@ -428,7 +455,7 @@ if [[ $shortreads == "yes" ]]
 then
 ## align the short reads (filtering for only primary alignments -F 0x100 : removes secondary)
 #bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ 4 -o ./coverage/${prefix}.bwamem.sorted.bam -
-bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools view -b -F 0x100 - | samtools sort -@ 4 -o ./coverage/${prefix}.bwamem.sorted.bam
+bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ 4 -o ./coverage/${prefix}.bwamem.sorted.bam
 
 ## get the coverage
 bedtools genomecov -d -split -ibam ./coverage/${prefix}.bwamem.sorted.bam | gzip > ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz
