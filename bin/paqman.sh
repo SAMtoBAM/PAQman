@@ -191,7 +191,7 @@ fi
 if [[ $LRmeryldb != "" ]]
 then
 LRmeryldbpath=$( realpath ${LRmeryldb} )
-[ ! -f "${LRmeryldbpath}" ] && echo "ERROR: Cannot find path to meryl database provided by --LRmeryldb; check path is correct and file exists" && exit
+[ ! -d "${LRmeryldbpath}" ] && echo "ERROR: Cannot find path to meryl database provided by --LRmeryldb; check path is correct and file exists" && exit
 fi
 
 
