@@ -26,7 +26,7 @@ telomererepeat="TTAGGG"
 prefix="paqman"
 output="paqman_output"
 sequences="contigs"
-LRmeryldb=""
+meryldb=""
 help="nohelp"
 
 ## to clean up a bunch of output from the tools in order to reduce all the unnecessary output
@@ -102,8 +102,8 @@ case "$key" in
 	shift
 	shift
 	;;	
-	-LRmdb|--LRmeryldb)
-	LRmeryldb="$2"
+	-mdb|--meryldb)
+	meryldb="$2"
 	shift
 	shift
 	;;
@@ -136,7 +136,7 @@ case "$key" in
 	-p | --prefix       Prefix for output (default: name of assembly file (-a) before the fasta suffix)
 	-o | --output       Name of output folder for all results (default: paqman_output)
 	-seq | --sequences	Whether or not to use scaffolds or contigs; provide 'scaffolds' to not break the assembly at N's (default: contigs)
-	-LRmdb | --LRmeryldb	A precomputed meryl database for your long-read dataset. Will generate the meryl db if not provided
+	-mdb | --meryldb	A precomputed meryl database for your dataset. Generated automatically if not provided.
 	-c | --cleanup      Remove a large number of files produced by each of the tools that can take up a lot of space. Choose between 'yes' or 'no' (default: yes)
 	-h | --help         Print this help message
 	"
@@ -188,10 +188,10 @@ fi
 
 ##check if meryl database for the long-reads was provided and if so generate a absolute path to be providede to Merqury
 ##exit if cannot find provided file
-if [[ $LRmeryldb != "" ]]
+if [[ $meryldb != "" ]]
 then
-LRmeryldbpath=$( realpath ${LRmeryldb} )
-[ ! -d "${LRmeryldbpath}" ] && echo "ERROR: Cannot find path to meryl database provided by --LRmeryldb; check path is correct and file exists" && exit
+meryldbpath=$( realpath ${meryldb} )
+[ ! -d "${meryldbpath}" ] && echo "ERROR: Cannot find path to meryl database provided by --meryldb; check path is correct and file exists" && exit
 fi
 
 
@@ -312,6 +312,10 @@ fi
 
 ########################## Merqury ##########################
 echo "$(date +%H:%M) ########## Step 4a: Generating k-mer distribution"
+if [[ $meryldb != "" ]]
+then
+echo "NOTE: Using precomputed meryl k-mer database" 
+else
 if [[ $shortreads == "yes" ]]
 then
 echo "NOTE: Creating meryl k-mer database using short-reads"
@@ -319,12 +323,9 @@ echo "NOTE: Creating meryl k-mer database using short-reads"
 ## this profile will be compared to the resulting assembly to calculate completeness, i.e. how many of the good quality kmers are captured in the assembly
 ## here we can use JUST the illumina dataset and always compare to this dataset
 meryl t=${threads} memory=15 k=18 count output reads.meryl ${pair12} ${pair22}
+
 else 
 
-if [[ $LRmeryldb != "" ]]
-then
-echo "NOTE: Using precomputed meryl k-mer database for long-reads" 
-else
 echo "NOTE: Creating meryl k-mer database using long-reads"
 ##same but instead using the long-read data due to an absence of short reads
 meryl t=${threads} memory=15 k=18 count output reads.meryl ${longreads2} 
@@ -335,9 +336,9 @@ fi
 echo "$(date +%H:%M) ########## Step 5b: Running Merqury"
 
 mkdir ./merqury
-if [[ $LRmeryldb != "" ]]
+if [[ $meryldb != "" ]]
 then
-merqury.sh ${LRmeryldbpath} ${assembly} ${prefix}.merqury
+merqury.sh ${meryldbpath} ${assembly} ${prefix}.merqury
 else
 merqury.sh reads.meryl ${assembly} ${prefix}.merqury
 fi
