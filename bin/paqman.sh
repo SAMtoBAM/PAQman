@@ -26,6 +26,7 @@ telomererepeat="TTAGGG"
 prefix="paqman"
 output="paqman_output"
 sequences="contigs"
+meryldb=""
 help="nohelp"
 
 ## to clean up a bunch of output from the tools in order to reduce all the unnecessary output
@@ -100,6 +101,11 @@ case "$key" in
 	sequences="$2"
 	shift
 	shift
+	;;	
+	-mdb|--meryldb)
+	meryldb="$2"
+	shift
+	shift
 	;;
 	-c|--cleanup)
 	cleanup="$2"
@@ -130,6 +136,7 @@ case "$key" in
 	-p | --prefix       Prefix for output (default: name of assembly file (-a) before the fasta suffix)
 	-o | --output       Name of output folder for all results (default: paqman_output)
 	-seq | --sequences	Whether or not to use scaffolds or contigs; provide 'scaffolds' to not break the assembly at N's (default: contigs)
+	-mdb | --meryldb	A precomputed meryl database for your dataset. Generated automatically if not provided.
 	-c | --cleanup      Remove a large number of files produced by each of the tools that can take up a lot of space. Choose between 'yes' or 'no' (default: yes)
 	-h | --help         Print this help message
 	"
@@ -177,6 +184,14 @@ if [[ $shortreads == "yes" ]]
 then
 [ ! -f "${pair1path}" ] && echo "ERROR: Cannot find path to short-reads provided by -1; check path is correct and file exists" && exit
 [ ! -f "${pair2path}" ] && echo "ERROR: Cannot find path to short-reads provided by -2; check path is correct and file exists" && exit
+fi
+
+##check if meryl database for the long-reads was provided and if so generate a absolute path to be providede to Merqury
+##exit if cannot find provided file
+if [[ $meryldb != "" ]]
+then
+meryldbpath=$( realpath ${meryldb} )
+[ ! -d "${meryldbpath}" ] && echo "ERROR: Cannot find path to meryl database provided by --meryldb; check path is correct and file exists" && exit
 fi
 
 
@@ -288,7 +303,7 @@ then
 rm -r ./busco/run_${buscodb}*/*_output
 rm -r ./busco/run_${buscodb}*/busco_sequences
 rm -r ./busco/logs
-[ -d "./busco/tmp" ] && rm -r ./busco/tmp
+[ -e "./busco/tmp" ] && rm -r ./busco/tmp
 ##remove the downloaded busco database
 rm -r busco_downloads
 fi
@@ -297,6 +312,10 @@ fi
 
 ########################## Merqury ##########################
 echo "$(date +%H:%M) ########## Step 4a: Generating k-mer distribution"
+if [[ $meryldb != "" ]]
+then
+echo "NOTE: Using precomputed meryl k-mer database" 
+else
 if [[ $shortreads == "yes" ]]
 then
 echo "NOTE: Creating meryl k-mer database using short-reads"
@@ -304,16 +323,25 @@ echo "NOTE: Creating meryl k-mer database using short-reads"
 ## this profile will be compared to the resulting assembly to calculate completeness, i.e. how many of the good quality kmers are captured in the assembly
 ## here we can use JUST the illumina dataset and always compare to this dataset
 meryl t=${threads} memory=15 k=18 count output reads.meryl ${pair12} ${pair22}
+
 else 
+
 echo "NOTE: Creating meryl k-mer database using long-reads"
 ##same but instead using the long-read data due to an absence of short reads
 meryl t=${threads} memory=15 k=18 count output reads.meryl ${longreads2} 
 fi
 
+fi
+
 echo "$(date +%H:%M) ########## Step 5b: Running Merqury"
 
 mkdir ./merqury
+if [[ $meryldb != "" ]]
+then
+merqury.sh ${meryldbpath} ${assembly} ${prefix}.merqury
+else
 merqury.sh reads.meryl ${assembly} ${prefix}.merqury
+fi
 ## just want to keep these two output files with important stats on error rate and completeness (respectively)
 mv ${prefix}.merqury.qv ./merqury/
 mv ${prefix}.merqury.completeness.stats ./merqury/
@@ -395,9 +423,9 @@ bedtools makewindows -w ${window} -s ${slide} -g ${assembly}.bed > ./coverage/${
 ## get the coverage file (slightly modify by giving a range for the single basepair coverage value) then use bedtools map to overlap with the reference derived window file to create median-averaged bins
 
 ###RUNNING THE LONG-READ ALIGNMENT
-[[ $platform == "ont" ]] && minimap2 -ax map-ont -t ${threads} ${assembly} ${longreads2} | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
-[[ $platform == "pacbio-hifi" ]] && minimap2 -ax map-hifi -t ${threads} ${assembly} ${longreads2} | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
-[[ $platform == "pacbio-clr" ]] && minimap2 -ax map-pb -t ${threads} ${assembly} ${longreads2} | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
+[[ $platform == "ont" ]] && minimap2 --secondary=no -ax map-ont -t ${threads} ${assembly} ${longreads2} | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
+[[ $platform == "pacbio-hifi" ]] && minimap2 --secondary=no -ax map-hifi -t ${threads} ${assembly} ${longreads2} | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
+[[ $platform == "pacbio-clr" ]] && minimap2 --secondary=no -ax map-pb -t ${threads} ${assembly} ${longreads2} | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
 
 ## get the coverage
 bedtools genomecov -d -split -ibam ./coverage/${prefix}.minimap.sorted.bam | gzip > ./coverage/${prefix}.minimap.sorted.cov.tsv.gz
@@ -429,8 +457,10 @@ LRpath=$( realpath ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.mi
 ##only run this if short reads are provided
 if [[ $shortreads == "yes" ]]
 then
-## align the short reads
-bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ 4 -o ./coverage/${prefix}.bwamem.sorted.bam -
+## align the short reads (filtering for only primary alignments -F 0x100 : removes secondary)
+#bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ 4 -o ./coverage/${prefix}.bwamem.sorted.bam -
+bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ 4 -o ./coverage/${prefix}.bwamem.sorted.bam
+
 ## get the coverage
 bedtools genomecov -d -split -ibam ./coverage/${prefix}.bwamem.sorted.bam | gzip > ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz
 
