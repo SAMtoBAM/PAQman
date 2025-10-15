@@ -581,6 +581,7 @@ completeness=$( cat ./merqury/${prefix}.merqury.completeness.stats | awk '{print
 phredval=$( cat ./merqury/${prefix}.merqury.qv | awk '{print $4}' )
 if [[ $phredval == "+inf" ]]
 then
+echo "WARNING: Merqury detected no errors; QV will be estimated using the rule of three"
 phredval=$( echo "scale=5; 10 * (l($genomesize)/l(10) - l(3)/l(10))" | bc -l )
 fi
 ##combine both
