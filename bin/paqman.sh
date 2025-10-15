@@ -576,7 +576,13 @@ buscostat=$( cat ./busco/short_summary.specific.*.busco.txt | grep "The lineage\
 ## Merqury
 ## get the information of interest out of the two summary files (the kmer completeness percentage and the phred value for error rate) and place in variable "merqurystat"
 completeness=$( cat ./merqury/${prefix}.merqury.completeness.stats | awk '{print $5}' )
+##get the phredval value however if the value is '+inf' which essentially dictates no errors were found we can therefore estimate the error probability using rule by three
+##this will consider the probability of finding no errors compared to the genome size
 phredval=$( cat ./merqury/${prefix}.merqury.qv | awk '{print $4}' )
+if [[ $phredval == "+inf" ]]
+then
+phredval=$( echo "scale=5; 10 * (l($genomesize)/l(10) - l(3)/l(10))" | bc -l )
+fi
 ##combine both
 merqurystat=$( echo "${completeness};${phredval}" | tr ';' '\t' )
 
