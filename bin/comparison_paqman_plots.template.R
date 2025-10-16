@@ -157,7 +157,16 @@ colnames(label)="label"
 
 
 ##calculate the relative values of all samples for each column, dividing by the max for the column
-comparisonstemp2=as.data.frame(apply(comparisonstemp1,2,function(x){x/max(x)}, simplify = F), check.names = F)
+comparisonstemp2=as.data.frame(
+  apply(comparisonstemp1, 2, function(x) {
+    if(all(x == 0)) {
+      return(x)  # or return(rep(0, length(x))) to be explicit
+    } else {
+      return(x / max(x))
+    }
+  }, simplify = FALSE),
+  check.names = FALSE
+)
 
 ##combine the labels (in the first column) with the relative values
 comparisonsrel=cbind(label, comparisonstemp2)
