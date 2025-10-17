@@ -112,6 +112,26 @@ fi
 
 cd ${output}
 
+##check if the combination of sample names and assembly names (if they are not just the same thing) creates unique names per sample
+##first get an indicator if all the sample and assembly names are the same (0=same, 1=notsame)
+allsame=$( tail -n+2 ${summarypath} | awk -F'\t' '$1!=$2 {exit 1}' ; echo $? )
+##if the sample and assembly names are the same check just for uniqueness using this
+if [[ "$allsame" -eq 0 ]]
+then
+dups=$( awk -F'\t' '{print $1}' "${summarypath}" | sort | uniq -d )
+if [[ -n "$dups" ]]
+then
+echo "ERROR: Duplicate sample identifiers found: ${dups}"
+echo "ERROR: Please use unique sample or assembly names (first two columns in summary files) to allow comparisons" && exit
+fi
+else
+##if the sample and assembly names are NOT the same check just for uniqueness using a combination split by '-'
+dups=$( awk -F'\t' '{print $1"-"$2}' "${summarypath}" | sort | uniq -d )
+if [[ -n "$dups" ]]; then
+echo "ERROR: Duplicate combined (sample-assembly) identifiers found: ${dups}" 
+echo "ERROR: Please use unique sample or assembly names (first two columns in summary files) to allow comparisons" && exit
+fi
+fi
 
 
 echo "################## PAQman: Step 1b: Plotting comparisons"
