@@ -325,7 +325,7 @@ rm -r ./busco/run_${buscodb}*/busco_sequences
 rm -r ./busco/logs
 [ -e "./busco/tmp" ] && rm -r ./busco/tmp
 ##remove the downloaded busco database
-rm -r busco_downloads
+[ -e "./busco_downloads" ] &&  rm -r busco_downloads
 fi
 ## we are just interested in the summary txt file 'busco/short_summary.*.txt'
 
