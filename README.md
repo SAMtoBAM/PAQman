@@ -43,27 +43,28 @@ paqman.sh -a path/to/assembly.fa -l path/to/long-reads.fq.gz
 ```
 paqman.sh -g assembly.fa -l long-reads.fq.gz -x ont -1 illumina.R1.fq.gz -2 illumina.R2.fq.gz -b eukaryota -w 30000 -s 10000 -r TTAGGG -p assembly -o paqman_output -c yes
 
-Required inputs:
--a | --assembly     Genome assemly in fasta format (*.fa / *.fasta / *.fna) and can be gzipped (*.gz)
--l | --longreads    Long reads used for assembly in fastq or fasta format  (*.fa / *.fasta / *.fna / *.fastq / *.fq) and can be gzipped (*.gz)
+	Required inputs:
+	-a | --assembly     Genome assemly in fasta format (*.fa / *.fasta / *.fna) and can be gzipped (*.gz)
+	-l | --longreads    Long reads used for assembly in fastq or fasta format  (*.fa / *.fasta / *.fna / *.fastq / *.fq) and can be gzipped (*.gz)
 
-Recommended inputs:
--x | --platform     Long-read technology to determine mapping mapping parameters. Choose between 'ont' or 'pacbio-hifi' or 'pacbio-clr' (default: ont)
--b | --buscodb      Name of BUSCO database to be used (default: eukaryota)
--t | --threads      Number of threads for tools that accept this option (default: 1)
--r | --repeat       Telomeric repeat pattern (default: TTAGGG)
--1 | --pair1        Paired end illumina reads in fastq format; first pair. Used by Merqury, CRAQ and coverage analysis (Recommended). Can be gzipped (*.gz)
--2 | --pair2        Paired end illumina reads in fastq format; second pair. Used by Merqury, CRAQ and coverage analysis (Recommended). Can be gzipped (*.gz)
-
-Optional parameters:
--w | --window       Number of basepairs for window averaging for coverage (default: 30000)
--s | --slide        Number of basepairs for the window to slide for coverage (default: 10000)
--p | --prefix       Prefix for output (default: name of assembly file (-a) before the fasta suffix)
--o | --output       Name of output folder for all results (default: paqman_output)
--seq | --sequences	Whether or not to use scaffolds or contigs; provide 'scaffolds' to not break the assembly at N's (default: contigs)
--mdb | --meryldb	A precomputed meryl database for your dataset. Generated automatically if not provided.
--c | --cleanup      Remove a large number of files produced by each of the tools that can take up a lot of space. Choose between 'yes' or 'no' (default: 'yes')
--h | --help         Print this help message
+	Recommended inputs:
+	-x | --platform     Long-read technology to determine mapping mapping parameters. Choose between 'ont' or 'pacbio-hifi' or 'pacbio-clr' (default: ont)
+	-b | --buscodb      Name of BUSCO database to be used (default: eukaryota)
+	-t | --threads      Number of threads for tools that accept this option (default: 1)
+	-r | --repeat       Telomeric repeat pattern (default: TTAGGG)
+ 	-1 | --pair1        Paired end illumina reads in fastq format; first pair. Used by Merqury, CRAQ and coverage analysis (Recommended). Can be gzipped (*.gz)
+	-2 | --pair2        Paired end illumina reads in fastq format; second pair. Used by Merqury, CRAQ and coverage analysis (Recommended). Can be gzipped (*.gz)
+	
+	Optional parameters:
+	-w | --window       Number of basepairs for window averaging for coverage (default: 30000)
+	-s | --slide        Number of basepairs for the window to slide for coverage (default: 10000)
+	-p | --prefix       Prefix for output (default: name of assembly file (-a) before the fasta suffix)
+	-o | --output       Name of output folder for all results (default: paqman_output)
+	-seq | --sequences	Whether or not to use scaffolds or contigs; provide 'scaffolds' to not break the assembly at N's (default: contigs)
+	-mdb | --meryldb	A precomputed meryl database for your dataset. Generated automatically if not provided.
+	-lbdb | --localbuscodb	A predownloaded busco database for your dataset. Downloaded automatically if not provided.
+	-c | --cleanup      Remove a large number of files produced by each of the tools that can take up a lot of space. Choose between 'yes' or 'no' (default: yes)
+	-h | --help         Print this help message
 ```
 
 ***
@@ -109,7 +110,18 @@ All metrics are detailed below
 
 ## *BUSCO dataset
 To find the best appropriate BUSCO dataset for your assembly you can refer to [here](https://busco.ezlab.org/busco_userguide.html#obtain-busco) <br/>
-Or run `busco --list-datasets` 
+Or run `busco --list-datasets` <br/>
+PAQman will automatically download (then delete) the BUSCO database provided by '--buscodb'; however this can therefore add time to each subsequent run <br/>
+Therefore if you intend to run PAQman on many assemblies with the same BUSCO database we recommend you download the database once and provide the folder to PAQman using (--localbuscodb) <br/>
+To download a local database you must first identify the lineage/dataset you want then navigate to this [website](https://busco-data.ezlab.org/v5/data/lineages/) and find the latest version <br/>
+Either just click the link and download it directly you right click the link and 'copy link' then use wget on the link path:
+
+	##here is an example with the latest eukaryota dataset (you can swap out the file name 'eukaryota_odb12.2025-07-01.tar.gz' with any file from the webpage e.g. 'hexapoda_odb12.2025-07-01.tar.gz')
+	##download a local version to your current location
+	wget https://busco-data.ezlab.org/v5/data/lineages/eukaryota_odb12.2025-07-01.tar.gz
+	##unzip the tar.gz folder
+	tar -xzf eukaryota_odb12.2025-07-01.tar.gz
+	##you should be now left with a folder called 'eukaryota_odb12' which will be used by BUSCO to determine the name of the database during the run.
 
 
 ## *Telomerality:

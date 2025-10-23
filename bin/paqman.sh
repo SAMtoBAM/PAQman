@@ -27,6 +27,7 @@ prefix="paqman"
 output="paqman_output"
 sequences="contigs"
 meryldb=""
+localbuscodb=""
 help="nohelp"
 
 ## to clean up a bunch of output from the tools in order to reduce all the unnecessary output
@@ -106,6 +107,11 @@ case "$key" in
 	meryldb="$2"
 	shift
 	shift
+	;;	
+	-lbdb|--localbuscodb)
+	localbuscodb="$2"
+	shift
+	shift
 	;;
 	-c|--cleanup)
 	cleanup="$2"
@@ -137,6 +143,7 @@ case "$key" in
 	-o | --output       Name of output folder for all results (default: paqman_output)
 	-seq | --sequences	Whether or not to use scaffolds or contigs; provide 'scaffolds' to not break the assembly at N's (default: contigs)
 	-mdb | --meryldb	A precomputed meryl database for your dataset. Generated automatically if not provided.
+	-lbdb | --localbuscodb	A predownloaded busco database for your dataset. Downloaded automatically if not provided.
 	-c | --cleanup      Remove a large number of files produced by each of the tools that can take up a lot of space. Choose between 'yes' or 'no' (default: yes)
 	-h | --help         Print this help message
 	"
@@ -192,6 +199,14 @@ if [[ $meryldb != "" ]]
 then
 meryldbpath=$( realpath ${meryldb} )
 [ ! -d "${meryldbpath}" ] && echo "ERROR: Cannot find path to meryl database provided by --meryldb; check path is correct and file exists" && exit
+fi
+
+if [[ $localbuscodb != "" ]]
+then
+localbuscodbpath=$( realpath ${localbuscodb} )
+[ ! -d "${localbuscodbpath}" ] && echo "ERROR: Cannot find path to busco database provided by --localbuscodb; check path is correct and file exists" && exit
+##set name of database to folder name (as done by BUSCO and therefore named within the busco output)
+buscodb=$( echo $localbuscodb | awk -F "/" '{print $NF}' )
 fi
 
 
@@ -293,7 +308,13 @@ mv quast.log quast/
 
 ########################## BUSCO (using the ${buscodb} dataset) ##########################
 echo "$(date +%H:%M) ########## Step 3: Running BUSCO"
-busco -i ${assembly} -o ./busco  -l ${buscodb} --mode genome -c ${threads} >  busco.log
+
+if [[ $localbuscodb != "" ]]
+then
+busco -i ${assembly} -o ./busco --offline  -l ${localbuscodbpath} --mode genome -c ${threads} > busco.log
+else
+busco -i ${assembly} -o ./busco  -l ${buscodb} --mode genome -c ${threads} > busco.log
+fi
 ##move log to busco output folder
 mv busco.log busco/
 
@@ -305,7 +326,7 @@ rm -r ./busco/run_${buscodb}*/busco_sequences
 rm -r ./busco/logs
 [ -e "./busco/tmp" ] && rm -r ./busco/tmp
 ##remove the downloaded busco database
-rm -r busco_downloads
+[ -e "./busco_downloads" ] &&  rm -r busco_downloads
 fi
 ## we are just interested in the summary txt file 'busco/short_summary.*.txt'
 
