@@ -27,6 +27,7 @@ prefix="paqman"
 output="paqman_output"
 sequences="contigs"
 meryldb=""
+localbuscodb=""
 help="nohelp"
 
 ## to clean up a bunch of output from the tools in order to reduce all the unnecessary output
