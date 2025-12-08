@@ -8,6 +8,7 @@
 [![Anaconda_downloads](https://anaconda.org/samtobam/paqman/badges/downloads.svg)](https://anaconda.org/samtobam/paqman)
 [![Anaconda-Server Badge](https://anaconda.org/samtobam/paqman/badges/latest_release_date.svg)](https://anaconda.org/samtobam/paqman)
 
+***
 
 PAQman combines a set of excellent tools (and PAQman scripts) for a reference-free and comprehensive evaluation of genome assemblies. [O'Donnell et al., 2025. _biorxiv_](https://doi.org/10.1101/2025.09.11.675652) <br/>
 
@@ -19,22 +20,25 @@ Error rate ([Merqury](https://doi.org/10.1186/s13059-020-02134-9))<br/>
 Correctness ([CRAQ](https://doi.org/10.1038/s41467-023-42336-w))<br/>
 Coverage (PAQman (with use of [bwa](https://doi.org/10.48550/arXiv.1303.3997)/[minimap2](https://doi.org/10.1093/bioinformatics/bty191) + [samtools](https://doi.org/10.1093/bioinformatics/btp352) + [bedtools](https://doi.org/10.1093/bioinformatics/btq033)))<br/>
 Telomerality* (PAQman (with use of [seqtk](https://github.com/lh3/seqtk) + [bedtools](https://doi.org/10.1093/bioinformatics/btq033))) <br/>
-<i>PAQman is clearly built upon the back of the tools in brackets so please cite them</i>
+<i>PAQman is clearly built upon the back of the tools in brackets so please cite them; see section 'Citation example' below</i>
 
 ***
 
 ### Apptainer usage
+
 ```
 docker pull ghcr.io/samtobam/paqman:latest
 ```
 
 ### Conda installation
+
 ```
 conda config --append channels pwwang
 conda install samtobam::paqman
 ```
 
 ### Quick run
+
 ```
 paqman.sh -a path/to/assembly.fa -l path/to/long-reads.fq.gz
 ```
@@ -75,13 +79,16 @@ paqman.sh -g assembly.fa -l long-reads.fq.gz -x ont -1 illumina.R1.fq.gz -2 illu
     <img src="https://github.com/SAMtoBAM/PAQman/blob/main/figures/paqman_schematic.svg" width=100%>
 </p>
 
+***
 
 ## The summary output metrics:
+
 Although PAQman looks at 7 features, within these features are many important metrics for complete assembly evaluation <br/>
 PAQman extracts some of the most informative/important and places them into a summary file <br/>
 All metrics are detailed below
 
 ### Summary stats: 'summary_stats.tsv':
+
 |Column | Header | Description |
 |:---:|:---:|--------------|
 | 01 | <b>prefix</b> | prefix given to the output files (-p)
@@ -107,8 +114,10 @@ All metrics are detailed below
 | 21 | <b>telomeric_ends(%)</b> | Percentage of contig ends with telomeric repeats
 | 22 | <b>t2t_contigs</b> | Number of contigs with telomeric repeats at both ends
 
+***
 
 ## *BUSCO dataset
+
 To find the best appropriate BUSCO dataset for your assembly you can refer to [here](https://busco.ezlab.org/busco_userguide.html#obtain-busco) <br/>
 Or run `busco --list-datasets` <br/>
 PAQman will automatically download (then delete) the BUSCO database provided by '--buscodb'; however this can therefore add time to each subsequent run <br/>
@@ -123,8 +132,10 @@ Either just click the link and download it directly you right click the link and
 	tar -xzf eukaryota_odb12.2025-07-01.tar.gz
 	##you should be now left with a folder called 'eukaryota_odb12' which will be used by BUSCO to determine the name of the database during the run.
 
+***
 
 ## *Telomerality:
+
 <i>*I am using the term to describe stats about how many of the assembled contig have reached telomere sequences giving confidence of structural completeness at contig ends in repeat regions </i><br/>
 Telomerality is calculated using a few simple steps specific to PAQman <br/>
 
@@ -140,6 +151,7 @@ Can find these classifications (and coordinates/distance from edge etc) for each
 
 Note: For the option -r (--repeat); although some repeats are not exact this can still work as the detection scheme allows for inexact repeats. For example 'GGTGTG' works very well for <i>S. cerevisiae</i>, which usually is represented as T(G)*1-3.
 
+***
 
 ## Comparing PAQman output across multiple assemblies
 
@@ -177,7 +189,11 @@ In this example, all stats should be maximised except for contig count hence the
     <img src="https://github.com/SAMtoBAM/PAQman/blob/main/figures/example.relative_values.svg" width=50%>
 </p>
 
+***
 
+## Citation example:
+
+“We used PAQman v1.1.0 (O’Donnell et al. 2025) in conjunction with Quast (Mikheenko et al. 2023), BUSCO (Tegenfeldt et al. 2025), Meryl (Miller et al. 2008), Mercury (Rhie et al. 2020), Filtlong (https://github.com/rrwick/Filtlong/), CRAQ (Li et al. 2023), BWA (Li 2013), minimap2 (Li 2018), samtools (Danecek et al. 2021), bedtools (Quinlan and Hall 2010), seqkit (Shen et al. 2016) and ggplot2 (Wickham 2016) to assess and visualize assembly quality.”
 
 
 
