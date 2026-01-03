@@ -17,6 +17,10 @@ This download used the ncbi-datasets-cli datasets tool (easily installed with co
 The S288c assemblies were manually picked (GCA_000146045, GCA_002057635, GCA_016858165, GCA_022626425, GCA_902192305) <br/>
 These 5 assemblies were all assembled with long read technology
 
+    ##create conda environment for the prefetch/download and compression
+    #conda create -n ncbi_datasets htslib conda-forge::ncbi-datasets-cli seqkit
+    conda activate ncbi_datasets
+    
     ##download all data
     datasets download genome accession GCA_000146045 GCA_002057635 GCA_016858165 GCA_022626425 GCA_902192305
     ##unzip the data
@@ -52,10 +56,16 @@ _Note: This read dataset was used to assemble GCA_022626425; which is used in th
     ##remove the full set of reads just taking up space
     rm ${SRR}.fq.gz
 
+    ##deactivate environment used to get the assemblies and reads
+    conda deactivate
+
 
 ## 3. Run PAQman on all assemblies
 The uses PAQman (see github READme for installation/usage instructions)
 
+    #conda create -n paqman samtobam::paqman
+    conda activate paqman
+        
     ##PAQman options specific for cerevisiae include the busco database ('-b saccharomycetaceae') and the telomeric repeat (-r GGTGTG)
     busco="saccharomycetaceae"
     repeat="GGTGTG"
