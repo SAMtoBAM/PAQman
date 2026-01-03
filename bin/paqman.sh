@@ -392,24 +392,25 @@ echo "$(date +%H:%M) ########## Step 5a: Downsampling for 50X long-reads for CRA
 ## get genome size based on input genome
 genomesize=$( cat ./quast/report.tsv  | awk -F "\t" '{if(NR == 15) print $2}' )
 target=$( echo $genomesize | awk '{print $1*50}' )
-##now run filtlong with the settings
-filtlong -t ${target} --length_weight 5 ${longreads2} | gzip > longreads.filtlong50x.fq.gz
+##now run rasusa with the settings
+#filtlong -t ${target} --length_weight 5 ${longreads2} | gzip > longreads.filtlong50x.fq.gz
+rasusa reads -b ${target} ${longreads2} | gzip > longreads.rasusa50x.fq.gz
 ##run craq
 echo "$(date +%H:%M) ########## Step 5b: Running CRAQ"
 if [[ $shortreads == "yes" ]]
 then
-[[ $platform == "ont" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -ngs ${pair12},${pair22} -x map-ont --thread ${threads} > craq.log
-[[ $platform == "pacbio-hifi" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -ngs ${pair12},${pair22} -x map-hifi --thread ${threads} > craq.log
-[[ $platform == "pacbio-clr" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -ngs ${pair12},${pair22} -x map-pb --thread ${threads} > craq.log
+[[ $platform == "ont" ]] && craq -D ./craq -g ${assembly} -sms longreads.rasusa50x.fq.gz -ngs ${pair12},${pair22} -x map-ont --thread ${threads} > craq.log
+[[ $platform == "pacbio-hifi" ]] && craq -D ./craq -g ${assembly} -sms longreads.rasusa50x.fq.gz -ngs ${pair12},${pair22} -x map-hifi --thread ${threads} > craq.log
+[[ $platform == "pacbio-clr" ]] && craq -D ./craq -g ${assembly} -sms longreads.rasusa50x.fq.gz -ngs ${pair12},${pair22} -x map-pb --thread ${threads} > craq.log
 mv craq.log craq/
 if [[ $cleanup == "yes" ]]
 then
 rm -r ./craq/SRout
 fi
 else
-[[ $platform == "ont" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -x map-ont --thread ${threads} > craq.log
-[[ $platform == "pacbio-hifi" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -x map-hifi --thread ${threads} > craq.log
-[[ $platform == "pacbio-clr" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -x map-pb --thread ${threads} > craq.log
+[[ $platform == "ont" ]] && craq -D ./craq -g ${assembly} -sms longreads.rasusa50x.fq.gz -x map-ont --thread ${threads} > craq.log
+[[ $platform == "pacbio-hifi" ]] && craq -D ./craq -g ${assembly} -sms longreads.rasusa50x.fq.gz -x map-hifi --thread ${threads} > craq.log
+[[ $platform == "pacbio-clr" ]] && craq -D ./craq -g ${assembly} -sms longreads.rasusa50x.fq.gz -x map-pb --thread ${threads} > craq.log
 mv craq.log craq/
 fi
 ## remove large intermediate files
@@ -417,7 +418,7 @@ if [[ $cleanup == "yes" ]]
 then
 rm -r ./craq/LRout
 ##remove read subset used for alignment
-rm longreads.filtlong50x.fq.gz
+rm longreads.rasusa50x.fq.gz
 fi
 ## from the output we are just interested in the summary file 'craq/runAQI_out/out_final.Report' for the summary stats (second line from the top is the genome wide average)
 ## for the position of structural errors, 'craq/runAQI_out/strER_out/out_final.CSE.bed'
