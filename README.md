@@ -66,7 +66,7 @@ paqman.sh -g assembly.fa -l long-reads.fq.gz -x ont -1 illumina.R1.fq.gz -2 illu
 	-o | --output       Name of output folder for all results (default: paqman_output)
 	-seq | --sequences	Whether or not to use scaffolds or contigs; provide 'scaffolds' to not break the assembly at N's (default: contigs)
 	-mdb | --meryldb	A precomputed meryl database for your dataset. Generated automatically if not provided.
-	-lbdb | --localbuscodb	A predownloaded busco database for your dataset. Downloaded automatically if not provided.
+	-lbdb | --localbuscodb	A predownloaded or locally generated busco database for your dataset. Downloaded automatically if not provided.
 	-c | --cleanup      Remove a large number of files produced by each of the tools that can take up a lot of space. Choose between 'yes' or 'no' (default: yes)
 	-h | --help         Print this help message
 ```
