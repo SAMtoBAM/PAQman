@@ -39,7 +39,7 @@ These assemblies contain all semi-contiguous releases of Nipponbare assemblies; 
     rm README.md
     rm md5sum.txt
 
-## 2. Download a set of raw Oxford nanopore reads
+## 2. Download a set of reads
 Downloaded both the PacBio HiFi and ONT reads from the T2T assembly project
 
     mkdir reads
