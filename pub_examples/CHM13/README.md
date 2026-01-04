@@ -17,7 +17,7 @@ Going to use a total of 6 assemblies for CHM13; 4 from the T2T-CHM13 project and
 The two additional NCBI assemblies are to show a much less contiguous assembly quality relative to the latest possibilities
 
     ##create conda environment for the download of assemblies, and both prefetch/download and compression of reads
-    #conda create -n ncbi_datasets htslib conda-forge::ncbi-datasets-cli seqkit bioconda::sra-tools
+    #conda create -n ncbi_datasets htslib conda-forge::ncbi-datasets-cli seqkit bioconda::sra-tools bioconda::longreadsum
     conda activate ncbi_datasets
     
     mkdir assemblies
