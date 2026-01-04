@@ -125,9 +125,15 @@ The dataset was manually determined from the detailed website _https://github.co
     longreadsum fq -t ${threads} -i reads/ont/rel8.25X_subset.ont.fq.gz -o ont/rel8.25X_subset.stats
 
     ##longreadsum output
-    #
+    #total number of reads	1919028
+    #total number of bases	75000010141
+    #longest read length	6042457
+    #N50 read length	58054
+    #mean read length	39082.29
+    #median read length	25440
+    #GC%	41.79
 
-    ##so we have the expected ~XXX coverage and ana average XXkb read length
+    ##so we have the expected ~24X coverage and ana average 39kb read length
     
     ##get out of environment for getting the assemblies and reads
     conda deactivate
