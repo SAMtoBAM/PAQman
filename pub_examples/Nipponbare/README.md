@@ -54,8 +54,8 @@ Downloaded both the PacBio HiFi and ONT reads from the T2T assembly project
     rm -r SRR25241090
     
     ##compress all output together
-    cat SRR25241090.fastq | bgzip --threads ${threads} > reads/pacbio/SRR25241090.pacbio.fq.gz
-    rm SRR25241090.fastq
+    mv SRR25241090.fastq reads/pacbio/SRR25241090.pacbio.fq
+    bgzip --threads ${threads} reads/pacbio/SRR25241090.pacbio.fq
 
     ##get stats on the dataset quickly
     longreadsum fq -t ${threads} -i reads/pacbio/SRR25241090.pacbio.fq.gz -o reads/pacbio/SRR25241090.stats
@@ -75,8 +75,8 @@ Downloaded both the PacBio HiFi and ONT reads from the T2T assembly project
     rm -r SRR25241091
     
     ##compress all output together
-    cat SRR25241091.fastq | bgzip --threads ${threads} > reads/ont/SRR25241091.ont.fq.gz
-    rm SRR25241091.fastq
+    mv SRR25241091.fastq reads/ont/SRR25241091.ont.fq
+    bgzip --threads ${threads} reads/ont/SRR25241091.ont.fq
 
     ##get stats on the dataset quickly
     longreadsum fq -t ${threads} -i reads/ont/SRR25241091.ont.fq.gz -o reads/ont/SRR25241091.stats
