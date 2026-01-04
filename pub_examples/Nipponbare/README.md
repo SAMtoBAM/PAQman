@@ -1,1 +1,91 @@
-DDDD
+# Pipeline used to test the quality of different assembly versions of the Nipponbare rice cultivar
+
+Primarily using data from the T2T-Nipponbare project https://doi.org/10.1016/j.molp.2023.08.003
+
+
+## 0. Setup
+
+    ##set a project name variable and create a directory for all the raw and analysed results
+    project="Nipponbare"
+    mkdir ${project}
+    cd ${project}
+
+    threads="16"
+
+## 1. Download assemblies
+Going to use a total of 5 assemblies for Nipponbare; 1 from the T2T project and the rest from earlier versions from NCBI including the default reference <br/>
+
+    ##create conda environment for the download of assemblies, and both prefetch/download and compression of reads
+    #conda create -n ncbi_datasets htslib conda-forge::ncbi-datasets-cli seqkit
+    conda activate ncbi_datasets
+    
+    mkdir assemblies
+
+### 1.A Nipponbare assemblies
+
+These assemblies contain all semi-contiguous releases of Nipponbare assemblies; including the canonical ref (GCA_001433935.1) and the gold standard T2T (GCA_034140825.1 ) <br/>
+    
+    ##download all from NCBI
+    datasets download genome accession --assembly-source GenBank GCA_003865235.1 GCA_051403585.1 GCA_000005425.2 GCA_001433935.1 GCA_034140825.1
+    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+## 2. Download a set of raw Oxford nanopore reads
+Downloaded both the PacBio HiFi and ONT reads from the T2T assembly project
+
+    mkdir reads
+
+### 2.A PacBio HiFi reads
+    
+    ##pacbio download (using prefetch due to size and number of files)
+    mkdir reads/pacbio
+    
+    prefetch SRR25241090
+    fasterq-dump -e ${threads} SRR25241090/SRR25241090.sra
+    rm -r SRR25241090
+    
+    ##compress all output together
+    cat SRR25241090.fastq | bgzip --threads ${threads} > reads/pacbio/SRR25241090.pacbio.fq.gz
+    rm SRR25241090.fastq
+
+### 2.B ONT reads
+
+    ##pacbio download (using prefetch due to size and number of files)
+    mkdir reads/ont
+    
+    prefetch SRR25241091
+    fasterq-dump -e ${threads} SRR25241091/SRR25241091.sra
+    rm -r SRR25241091
+    
+    ##compress all output together
+    cat SRR25241091.fastq | bgzip --threads ${threads} > reads/ont/SRR25241091.ont.fq.gz
+    rm SRR25241091.fastq
+
+    ##get out of environment for getting the raw reads
+    conda deactivate
+    
+
+## 3. Run PAQman on all assemblies
+The uses PAQman (see github READme for installation/usage instructions)
+
+    #conda create -n paqman samtobam::paqman
+    conda activate paqman
+    
+    ##PAQman options specific for humans is only the busco database ('-b tetrapoda') (didn't use a more specific dataset as the number of busco genes grows substatially)
+    busco="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    ##telomeric repeat is the default for humans
+    ##loop through each assembly and run PAQman
+    ls assemblies/*.fa.gz | while read assembly
+    do
+    sample=$( echo $assembly | awk -F "/" '{print $NF}' | awk -F "." '{print $1}' )
+    time paqman.sh -a ${assembly} -l reads/pacbio/SRR25241090.pacbio.fq.gz -t ${threads} -b ${busco} -p ${sample} -o ${project}/${sample}_paqman
+    done
+
+
+## 4. Run PAQplots on the four resulting summary stats files
+The uses PAQman (see github READme for installation/usage instructions)
+
+    ##create a txt file with a list of paths to the summary files
+    ls *_paqman/summary_stats.tsv > list_of_summary_files.txt
+    ##run paqplots for the comparisons
+    time paqplots.sh -l list_of_summary_files.txt -p ${project} -o ${project}_paqplot
+  
