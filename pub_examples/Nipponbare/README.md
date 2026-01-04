@@ -61,9 +61,15 @@ Downloaded both the PacBio HiFi and ONT reads from the T2T assembly project
     longreadsum fq -t ${threads} -i reads/pacbio/SRR25241090.pacbio.fq.gz -o reads/pacbio/SRR25241090.stats
 
     ##longreadsum output
-    #
+    #total number of reads	1785885
+    #total number of bases	32966159623
+    #longest read length	57186
+    #N50 read length	19159
+    #mean read length	18459.29
+    #median read length	17489
+    #GC%	43.50
 
-    ##so we have the expected ~XXX coverage and XXkb read length    
+    ##so we have ~85X coverage and 18kb read length    
 
 ### 2.B ONT reads
 
@@ -84,7 +90,7 @@ Downloaded both the PacBio HiFi and ONT reads from the T2T assembly project
     ##longreadsum output
     #
 
-    ##so we have the expected ~XXX coverage and XXkb read length  
+    ##so we have ~XXX coverage and XXkb read length  
     
     ##get out of environment for getting the raw reads
     conda deactivate
