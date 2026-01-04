@@ -4,7 +4,7 @@
 ## 0. Setup
 
     ##set a project name variable and create a directory for all the raw and analysed results
-    project="cerevisiae"
+    project="S288c"
     ##create project directory for all data
     mkdir ${project}
 
