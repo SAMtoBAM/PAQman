@@ -18,7 +18,7 @@ The S288c assemblies were manually picked (GCA_000146045, GCA_002057635, GCA_016
 These 5 assemblies were all assembled with long read technology
 
     ##create conda environment for the prefetch/download and compression
-    #conda create -n ncbi_datasets htslib conda-forge::ncbi-datasets-cli seqkit
+    #conda create -n ncbi_datasets htslib conda-forge::ncbi-datasets-cli seqkit bioconda::sra-tools
     conda activate ncbi_datasets
     
     ##download all data
