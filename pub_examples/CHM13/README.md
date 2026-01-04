@@ -59,7 +59,7 @@ These assembly GCA_002884485.1 was assembled much earlier than the T2T assemblie
     rm md5sum.txt
 
 
-## 2. Download a set of raw Oxford nanopore reads
+## 2. Download a set of reads
 This download uses `wget` <br/>
 The dataset was manually determined from the detailed website _https://github.com/marbl/CHM13/blob/master/Sequencing_data.md_ 
 
