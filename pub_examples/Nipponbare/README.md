@@ -71,21 +71,21 @@ Downloaded both the PacBio HiFi and ONT reads from the T2T assembly project
 
     ##so we have ~85X coverage and 18kb read length    
 
-### 2.B ONT reads
+### 2.B ONT reads (NOT USED)
 
     ##pacbio download (using prefetch due to size and number of files)
-    mkdir reads/ont
+    #mkdir reads/ont
     
-    prefetch --max-size 100G SRR25241091
-    fasterq-dump -e ${threads} SRR25241091/SRR25241091.sra
-    rm -r SRR25241091
+    #prefetch --max-size 100G SRR25241091
+    #fasterq-dump -e ${threads} SRR25241091/SRR25241091.sra
+    #rm -r SRR25241091
     
     ##compress all output together
-    mv SRR25241091.fastq reads/ont/SRR25241091.ont.fq
-    bgzip --threads ${threads} reads/ont/SRR25241091.ont.fq
+    #mv SRR25241091.fastq reads/ont/SRR25241091.ont.fq
+    #bgzip --threads ${threads} reads/ont/SRR25241091.ont.fq
 
     ##get stats on the dataset quickly
-    longreadsum fq -t ${threads} -i reads/ont/SRR25241091.ont.fq.gz -o reads/ont/SRR25241091.stats
+    #longreadsum fq -t ${threads} -i reads/ont/SRR25241091.ont.fq.gz -o reads/ont/SRR25241091.stats
 
     ##longreadsum output
     #
