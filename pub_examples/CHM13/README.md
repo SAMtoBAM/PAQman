@@ -58,12 +58,12 @@ The dataset was manually determined from the detailed website _https://github.co
     
     ##pacbio download (using prefetch due to size and number of files)
     ##only able to get the ~25X coverage of 10kb HiFi reads on NCBI (the 20kb are not available for an unknown reason; only the raw subreads from the github)
-    ##split into 4 different submissions
+    ##split into 4 different SRA submissions within https://www.ncbi.nlm.nih.gov/sra/SRX5633451/
     mkdir reads/pacbio
 
     ##prefetch the SRA data etc
     prefetch SRR9087597
-    ##download the reads
+    ##download the reads sequentially in order to help remove the temporary prefetch files after each download
     fasterq-dump -e ${threads} SRR9087597/SRR9087597.sra
     ##remove the prefetch data
     rm -r SRR9087597
@@ -84,7 +84,6 @@ The dataset was manually determined from the detailed website _https://github.co
     cat *.fastq | bgzip --threads ${threads} > reads/pacbio/SRR9087XXX.pacbio.fq.gz
     ##remove uncompressed
     rm *.fastq
-
 
 ### 2.B ONT reads
 
