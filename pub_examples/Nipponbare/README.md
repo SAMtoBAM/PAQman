@@ -70,7 +70,7 @@ Downloaded both the PacBio HiFi and ONT reads from the T2T assembly project
     ##pacbio download (using prefetch due to size and number of files)
     mkdir reads/ont
     
-    prefetch SRR25241091
+    prefetch --max-size 100G SRR25241091
     fasterq-dump -e ${threads} SRR25241091/SRR25241091.sra
     rm -r SRR25241091
     
