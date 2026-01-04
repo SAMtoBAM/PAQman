@@ -85,16 +85,40 @@ The dataset was manually determined from the detailed website _https://github.co
     ##remove uncompressed
     rm *.fastq
 
+    ##get stats on the dataset quickly
+    longreadsum fq -t 16 -i reads/pacbio/SRR9087XXX.pacbio.fq.gz -o ont/stats
+
+    ##longreadsum output
+    #total number of reads	6899727
+    #total number of bases	75627496237
+    #longest read length	21034
+    #N50 read length	10859
+    #mean read length	10960.94
+    #median read length	10729
+    #GC%	41.02
+
+    ##so we have the expected ~24X coverage and 10kb read length
+    
+
 ### 2.B ONT reads
 
     ##ONT fastq reads
     mkdir reads/ont
     
     ##using the latest (and easily available) set of basecalled reads, therefore the highest quality; here the 'rel8'
-    ##however we don't need all 100X+; therefore we will unzip as we download, and select only reads >5kb in length and only until we reach ~50X
-    wget -qO- https://s3-us-west-2.amazonaws.com/human-pangenomics/T2T/CHM13/nanopore/rel8-guppy-5.0.7/reads.fastq.gz | gunzip -c | seqkit seq -m 5000 | seqkit head -l 150000000000 | bgzip --threads ${threads} > reads/ont/rel8.50X_subset.ont.fq.gz
+    ##however we don't need all 100X+; therefore we will unzip as we download, and select only reads >7.5kb in length and only until we reach ~25X which is about the same as the pacbio data
+    wget -qO- https://s3-us-west-2.amazonaws.com/human-pangenomics/T2T/CHM13/nanopore/rel8-guppy-5.0.7/reads.fastq.gz | gunzip -c | seqkit seq -m 7500 | seqkit head -l 75000000000 | bgzip --threads ${threads} > reads/ont/rel8.25X_subset.ont.fq.gz
 
-    ##get out of environment for getting the raw reads
+
+        ##get stats on the dataset quickly
+    longreadsum fq -t 16 -i reads/ont/rel8.25X_subset.ont.fq.gz -o ont/stats
+
+    ##longreadsum output
+    #
+
+    ##so we have the expected ~XXX coverage and ana average XXkb read length
+    
+    ##get out of environment for getting the assemblies and reads
     conda deactivate
     
 
