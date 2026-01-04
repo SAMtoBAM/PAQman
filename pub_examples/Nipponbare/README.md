@@ -16,7 +16,7 @@ Primarily using data from the T2T-Nipponbare project https://doi.org/10.1016/j.m
 Going to use a total of 5 assemblies for Nipponbare; 1 from the T2T project and the rest from earlier versions from NCBI including the default reference <br/>
 
     ##create conda environment for the download of assemblies, and both prefetch/download and compression of reads
-    #conda create -n ncbi_datasets htslib conda-forge::ncbi-datasets-cli seqkit
+    #conda create -n ncbi_datasets htslib conda-forge::ncbi-datasets-cli seqkit bioconda::sra-tools
     conda activate ncbi_datasets
     
     mkdir assemblies
