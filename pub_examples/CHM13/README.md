@@ -42,11 +42,22 @@ These assemblies contain all publically released T2T versions including the most
     
 
 ### 2.B Other publically available CHM13 assemblies using long-reads
-These two assemblies GCA_002884485.1 and GCA_000983455.2 were assembled much earlier than the T2T assemblies
+These assembly GCA_002884485.1 was assembled much earlier than the T2T assemblies
 
     ##download two other earlier reference quality, long-read assemblies for CHM13
-    datasets download genome accession --assembly-source GenBank GCA_002884485.1 GCA_000983455.2
-    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    datasets download genome accession --assembly-source GenBank GCA_002884485.1
+    unzip ncbi_dataset.zip
+    rm ncbi_dataset.zip
+    ls ncbi_dataset/data/ | grep -v json | while read genome
+    do
+    genome2=$( echo $genome | sed 's/_//g' | awk -F "." '{print $1}'  )
+    cat ncbi_dataset/data/$genome/$genome*.fna | bgzip > assemblies/${genome2}.fa
+    done
+    mv ncbi_dataset/data/*jso* ./
+    rm -r ncbi_dataset
+    rm README.md
+    rm md5sum.txt
+
 
 ## 2. Download a set of raw Oxford nanopore reads
 This download uses `wget` <br/>
