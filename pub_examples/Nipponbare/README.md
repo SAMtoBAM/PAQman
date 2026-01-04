@@ -32,7 +32,7 @@ These assemblies contain all semi-contiguous releases of Nipponbare assemblies; 
     ls ncbi_dataset/data/ | grep -v json | while read genome
     do
     genome2=$( echo $genome | sed 's/_//g' | awk -F "." '{print $1}'  )
-    cat ncbi_dataset/data/$genome/$genome*.fna | bgzip > assemblies/${genome2}.fa
+    cat ncbi_dataset/data/$genome/$genome*.fna | bgzip --threads ${threads} > assemblies/${genome2}.fa
     done
     mv ncbi_dataset/data/*jso* ./
     rm -r ncbi_dataset
