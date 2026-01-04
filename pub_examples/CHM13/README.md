@@ -97,7 +97,7 @@ The dataset was manually determined from the detailed website _https://github.co
     rm *.fastq
 
     ##get stats on the dataset quickly
-    longreadsum fq -t 16 -i reads/pacbio/SRR9087XXX.pacbio.fq.gz -o ont/stats
+    longreadsum fq -t 16 -i reads/pacbio/SRR9087XXX.pacbio.fq.gz -o pacbio/SRR9087XXX.stats
 
     ##longreadsum output
     #total number of reads	6899727
@@ -122,7 +122,7 @@ The dataset was manually determined from the detailed website _https://github.co
 
 
         ##get stats on the dataset quickly
-    longreadsum fq -t 16 -i reads/ont/rel8.25X_subset.ont.fq.gz -o ont/stats
+    longreadsum fq -t 16 -i reads/ont/rel8.25X_subset.ont.fq.gz -o ont/rel8.25X_subset.stats
 
     ##longreadsum output
     #
