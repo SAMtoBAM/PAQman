@@ -417,8 +417,8 @@ fi
 if [[ $cleanup == "yes" ]]
 then
 rm -r ./craq/LRout
-##remove read subset used for alignment
-rm longreads.rasusa.fq.gz
+##remove read subset used for alignments
+#rm longreads.rasusa.fq.gz
 fi
 ## from the output we are just interested in the summary file 'craq/runAQI_out/out_final.Report' for the summary stats (second line from the top is the genome wide average)
 ## for the position of structural errors, 'craq/runAQI_out/strER_out/out_final.CSE.bed'
@@ -445,9 +445,9 @@ bedtools makewindows -w ${window} -s ${slide} -g ${assembly}.bed > ./coverage/${
 ## get the coverage file (slightly modify by giving a range for the single basepair coverage value) then use bedtools map to overlap with the reference derived window file to create median-averaged bins
 
 ###RUNNING THE LONG-READ ALIGNMENT
-[[ $platform == "ont" ]] && minimap2 --secondary=no -ax map-ont -t ${threads} ${assembly} ${longreads2} | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
-[[ $platform == "pacbio-hifi" ]] && minimap2 --secondary=no -ax map-hifi -t ${threads} ${assembly} ${longreads2} | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
-[[ $platform == "pacbio-clr" ]] && minimap2 --secondary=no -ax map-pb -t ${threads} ${assembly} ${longreads2} | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
+[[ $platform == "ont" ]] && minimap2 --secondary=no -ax map-ont -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
+[[ $platform == "pacbio-hifi" ]] && minimap2 --secondary=no -ax map-hifi -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
+[[ $platform == "pacbio-clr" ]] && minimap2 --secondary=no -ax map-pb -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
 
 ## get the coverage
 bedtools genomecov -d -split -ibam ./coverage/${prefix}.minimap.sorted.bam | gzip > ./coverage/${prefix}.minimap.sorted.cov.tsv.gz
@@ -509,6 +509,8 @@ rm ${assembly}.ann
 rm ${assembly}.bwt
 rm ${assembly}.pac
 rm ${assembly}.sa
+##remove read subset used for alignment
+rm longreads.rasusa.fq.gz
 fi
 
 ##set a full path for the shortread data to be read into the R script
