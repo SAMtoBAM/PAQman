@@ -20,6 +20,9 @@ These 5 assemblies were all assembled with long read technology
     ##create conda environment for the prefetch/download and compression
     #conda create -n ncbi_datasets htslib conda-forge::ncbi-datasets-cli seqkit bioconda::sra-tools
     conda activate ncbi_datasets
+
+
+    mkdir assemblies/
     
     ##download all data
     datasets download genome accession GCA_000146045 GCA_002057635 GCA_016858165 GCA_022626425 GCA_902192305
@@ -32,7 +35,7 @@ These 5 assemblies were all assembled with long read technology
     ls ncbi_dataset/data/ | grep -v json | while read genome
     do
     genome2=$( echo $genome | sed 's/_//' | awk -F "." '{print $1}')
-    cat ncbi_dataset/data/$genome/$genome*.fna | gzip > ${project}/$genome2.fa.gz
+    cat ncbi_dataset/data/$genome/$genome*.fna | gzip > ${project}/assemblies/$genome2.fa.gz
     done
  
 
@@ -41,6 +44,8 @@ This download uses the sra-toolkit (easily installed with conda: `conda install 
 The dataset was manually determined, selecting a recent, high coverage and reasonably long read dataset (SRR17374240) <br/>
 _Note: This read dataset was used to assemble GCA_022626425; which is used in this evaluation_
 
+    mkdir reads
+    
     ##set the SRR data to download as a variable
     SRR="SRR17374240"
     ##download the fastq file
@@ -51,7 +56,7 @@ _Note: This read dataset was used to assemble GCA_022626425; which is used in th
 
     ##downsample the excessive ~800X coverage to 100X
     ##use 12Mb as estimated genome size and therefore 100X this
-    filtlong -t 1200000000 --length_weight 5 ${SRR}.fq.gz | gzip > ${SRR}.filtlong100x.fq.gz
+    filtlong -t 1200000000 --length_weight 5 ${SRR}.fq.gz | gzip > reads/${SRR}.filtlong100x.fq.gz
 
     ##remove the full set of reads just taking up space
     rm ${SRR}.fq.gz
@@ -74,7 +79,7 @@ The uses PAQman (see github READme for installation/usage instructions)
     ls ${project}/*.fa.gz | while read assembly
     do
     sample=$( echo $assembly | awk -F "/" '{print $NF}' | awk -F "." '{print $1}' )
-    time paqman.sh -a ${project}/${sample}.fa.gz -l ${project}/${SRR}.filtlong100x.fq.gz -t ${threads} -b ${busco} -p ${sample} -o ${project}/${sample}_paqman -r ${repeat}
+    time paqman.sh -a ${project}/assemblies/${sample}.fa.gz -l ${project}/reads/${SRR}.filtlong100x.fq.gz -t ${threads} -b ${busco} -p ${sample} -o ${project}/${sample}_paqman -r ${repeat}
     done
 
 
