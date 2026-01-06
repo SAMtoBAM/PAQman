@@ -27,7 +27,10 @@ prefix="paqman"
 output="paqman_output"
 sequences="contigs"
 meryldb=""
+merylmem="10"
+merylkmer="21"
 localbuscodb=""
+resume="no"
 help="nohelp"
 
 ## to clean up a bunch of output from the tools in order to reduce all the unnecessary output
@@ -107,10 +110,24 @@ case "$key" in
 	meryldb="$2"
 	shift
 	shift
-	;;	
+	;;
+	-mm|--merylmem)
+	merylmem="$2"
+	shift
+	shift
+	;;
+	-mk|--merylkmer)
+	merylkmer="$2"
+	shift
+	shift
+	;;
 	-lbdb|--localbuscodb)
 	localbuscodb="$2"
 	shift
+	shift
+	;;
+	--resume)
+    resume="yes"
 	shift
 	;;
 	-c|--cleanup)
@@ -143,7 +160,10 @@ case "$key" in
 	-o | --output       Name of output folder for all results (default: paqman_output)
 	-seq | --sequences	Whether or not to use scaffolds or contigs; provide 'scaffolds' to not break the assembly at N's (default: contigs)
 	-mdb | --meryldb	A precomputed meryl database for your dataset. Generated automatically if not provided.
+	-mm | --merylmem	The soft RAM limit in GB used whilst building the Meryl database (default: 10)
+	-mk | --merylkmer	The k-mer size used to build the Meryl database (default: 21)
 	-lbdb | --localbuscodb	A predownloaded busco database for your dataset. Downloaded automatically if not provided.
+	--resume			Resume a incomplete run of PAQman. Incomplete steps will be rerun from scratch.
 	-c | --cleanup      Remove a large number of files produced by each of the tools that can take up a lot of space. Choose between 'yes' or 'no' (default: yes)
 	-h | --help         Print this help message
 	"
@@ -215,7 +235,14 @@ fi
 [[ $platform != "ont" && $platform != "pacbio-hifi" && $platform != "pacbio-clr" ]] && echo "ERROR: --platform option needs to be 'ont' (default) or 'pacbio-hifi' or 'pacbio-clr'" && exit
 [[ $cleanup != "yes" && $cleanup != "no" ]] && echo "ERROR: --cleanup option neither 'yes' (default) or 'no'" && exit
 
-[ -d "${output}" ] && echo "ERROR: output folder already exists" && exit
+[[ -d "${output}" && $resume == "no" ]] && echo "ERROR: output folder already exists (use --resume to restart run from last step)" && exit
+[[ ! -d "$output" && "$resume" == "yes" ]] && echo "ERROR: --resume was set but output folder doesn't exist" && exit
+
+## the window size for median-average binning (in bp)
+window2=$( echo $window | awk '{print $0/1000}' )
+## distance for the window to move before recalculating the window (in bp)
+slide2=$( echo $slide | awk '{print $0/1000}' )
+
 
 ##############################################################
 #################### BEGINNING EVALUATION ####################
@@ -223,10 +250,15 @@ fi
 echo "#################################################"
 echo "################ Starting PAQman ################"
 echo "#################################################"
+
+########################## SET UP ##########################
+##check if step is to be run based on stream variable
+##begin step 1
 echo "$(date +%H:%M) ########## Step 1: Organising Input"
 
 ## assembly evaluations
-mkdir ${output}
+
+[[ ${resume} == "no"  ]] && mkdir ${output}
 cd ${output}
 
 ##organise the assemblies
@@ -286,6 +318,8 @@ assembly="${assembly2}.fa"
 fi
 fi
 
+##index the assembly for a couple downstream steps
+samtools faidx ${assembly}
 
 ## make symbolic links to the input files in the output folder
 ln -sf ${longreadpath} ./
@@ -297,16 +331,62 @@ pair12=$( echo ${pair1} | awk -F "/" '{print $NF}' )
 pair22=$( echo ${pair2} | awk -F "/" '{print $NF}' )
 
 
+########################## RESUME CHECK ##########################
+stream="step1,step2,step3,step4,step5,step6,step7"
+
+##check if resume parameter has been set then find those steps that were not completed (based on the file complete.tmp in the respective folder)
+if [[ ${resume} == "yes"  ]]
+then
+stream="step1"  # always start with step1
+
+##define the steps in order
+folders=(quast busco merqury craq coverage telomerality)
+
+##define the corresponding step numbers
+stepnums=(2 3 4 5 6 7)
+
+##Loop over folders
+for i in "${!folders[@]}"
+do
+folder="${folders[$i]}"
+step="step${stepnums[$i]}"
+
+##Check if folder exists and complete.tmp is missing
+if [[ ! -f "${folder}/complete.tmp" ]]; then
+##Append to stream variable
+stream="${stream},${step}"
+fi
+done
+
+stream2=$( echo $stream | sed 's/step1/Step1:Set-up; /g' | sed 's/,step2/Step2:Quast; /g' | sed 's/,step3/Step3:BUSCO; /g' | sed 's/,step4/Step4:Merqury; /g' | sed 's/,step5/Step5:CRAQ; /g' | sed 's/,step6/Step6:Coverage; /g' | sed 's/,step7/Step7:Telomerality/g' )
+
+echo "Resuming steps: $stream2"
+fi
+
 
 ########################## QUAST ##########################
+##check if step is to be run based on stream variable
+if [[ ",$stream," == *",step2,"* ]]; then
+[ -e "./quast" ] && rm -r ./quast
+
+##begin step 2
 echo "$(date +%H:%M) ########## Step 2: Running Quast"
+
 quast -o ./quast ${assembly} > quast.log
 ##move quast log to quast output folder
 mv quast.log quast/
 ## we are just interested in the summary tsv file 'quast/report.tsv'
 
+touch ./quast/complete.tmp
+##close stream variable if check
+fi
 
 ########################## BUSCO (using the ${buscodb} dataset) ##########################
+##check if step is to be run based on stream variable
+if [[ ",$stream," == *",step3,"* ]]; then
+[ -e "./busco" ] && rm -r ./busco
+
+##begin step 3
 echo "$(date +%H:%M) ########## Step 3: Running BUSCO"
 
 if [[ $localbuscodb != "" ]]
@@ -331,8 +411,19 @@ fi
 ## we are just interested in the summary txt file 'busco/short_summary.*.txt'
 
 
+touch ./busco/complete.tmp
+##close stream variable if check
+fi
+
 ########################## Merqury ##########################
+##check if step is to be run based on stream variable
+if [[ ",$stream," == *",step4,"* ]]; then
+[ -e "./merqury" ] && rm -r ./merqury
+
+##begin step 4
 echo "$(date +%H:%M) ########## Step 4a: Generating k-mer distribution"
+
+
 if [[ $meryldb != "" ]]
 then
 echo "NOTE: Using precomputed meryl k-mer database" 
@@ -343,18 +434,18 @@ echo "NOTE: Creating meryl k-mer database using short-reads"
 ## calculcate the kmer profile of the raw reads before assembly
 ## this profile will be compared to the resulting assembly to calculate completeness, i.e. how many of the good quality kmers are captured in the assembly
 ## here we can use JUST the illumina dataset and always compare to this dataset
-meryl t=${threads} memory=15 k=18 count output reads.meryl ${pair12} ${pair22}
+meryl t=${threads} memory=${merylmem} k=${merylkmer} count output reads.meryl ${pair12} ${pair22}
 
 else 
 
 echo "NOTE: Creating meryl k-mer database using long-reads"
 ##same but instead using the long-read data due to an absence of short reads
-meryl t=${threads} memory=15 k=18 count output reads.meryl ${longreads2} 
+meryl t=${threads} memory=${merylmem} k=${merylkmer} count output reads.meryl ${longreads2} 
 fi
 
 fi
 
-echo "$(date +%H:%M) ########## Step 5b: Running Merqury"
+echo "$(date +%H:%M) ########## Step 4b: Running Merqury"
 
 mkdir ./merqury
 if [[ $meryldb != "" ]]
@@ -385,71 +476,93 @@ rm -r *.meryl
 fi
 
 
+touch ./merqury/complete.tmp
+##close stream variable if check
+fi
 
 ########################## CRAQ ##########################
+##check if step is to be run based on stream variable
+if [[ ",$stream," == *",step5,"* ]]; then
+[ -e "./craq" ] && rm -r ./craq
+
+##begin step 5
 echo "$(date +%H:%M) ########## Step 5a: Downsampling for 50X long-reads for CRAQ assessment"
+
 ## redownsample the dataset for just 50X of the longest as to remove shorter reads from confusing CRAQ
 ## get genome size based on input genome
 genomesize=$( cat ./quast/report.tsv  | awk -F "\t" '{if(NR == 15) print $2}' )
 target=$( echo $genomesize | awk '{print $1*50}' )
-##now run filtlong with the settings
-filtlong -t ${target} --length_weight 5 ${longreads2} | gzip > longreads.filtlong50x.fq.gz
+##now run rasusa with the settings
+#filtlong -t ${target} --length_weight 5 ${longreads2} | gzip > longreads.filtlong50X.fq.gz
+rasusa reads -b ${target} ${longreads2} | gzip > longreads.rasusa.fq.gz
 ##run craq
 echo "$(date +%H:%M) ########## Step 5b: Running CRAQ"
 if [[ $shortreads == "yes" ]]
 then
-[[ $platform == "ont" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -ngs ${pair12},${pair22} -x map-ont --thread ${threads} > craq.log
-[[ $platform == "pacbio-hifi" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -ngs ${pair12},${pair22} -x map-hifi --thread ${threads} > craq.log
-[[ $platform == "pacbio-clr" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -ngs ${pair12},${pair22} -x map-pb --thread ${threads} > craq.log
+[[ $platform == "ont" ]] && craq -D ./craq -g ${assembly} -sms longreads.rasusa.fq.gz -ngs ${pair12},${pair22} -x map-ont --thread ${threads} > craq.log
+[[ $platform == "pacbio-hifi" ]] && craq -D ./craq -g ${assembly} -sms longreads.rasusa.fq.gz -ngs ${pair12},${pair22} -x map-hifi --thread ${threads} > craq.log
+[[ $platform == "pacbio-clr" ]] && craq -D ./craq -g ${assembly} -sms longreads.rasusa.fq.gz -ngs ${pair12},${pair22} -x map-pb --thread ${threads} > craq.log
 mv craq.log craq/
 if [[ $cleanup == "yes" ]]
 then
 rm -r ./craq/SRout
 fi
 else
-[[ $platform == "ont" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -x map-ont --thread ${threads} > craq.log
-[[ $platform == "pacbio-hifi" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -x map-hifi --thread ${threads} > craq.log
-[[ $platform == "pacbio-clr" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -x map-pb --thread ${threads} > craq.log
+[[ $platform == "ont" ]] && craq -D ./craq -g ${assembly} -sms longreads.rasusa.fq.gz -x map-ont --thread ${threads} > craq.log
+[[ $platform == "pacbio-hifi" ]] && craq -D ./craq -g ${assembly} -sms longreads.rasusa.fq.gz -x map-hifi --thread ${threads} > craq.log
+[[ $platform == "pacbio-clr" ]] && craq -D ./craq -g ${assembly} -sms longreads.rasusa.fq.gz -x map-pb --thread ${threads} > craq.log
 mv craq.log craq/
 fi
 ## remove large intermediate files
 if [[ $cleanup == "yes" ]]
 then
 rm -r ./craq/LRout
-##remove read subset used for alignment
-rm longreads.filtlong50x.fq.gz
+##remove read subset used for alignments
+#rm longreads.rasusa.fq.gz
 fi
 ## from the output we are just interested in the summary file 'craq/runAQI_out/out_final.Report' for the summary stats (second line from the top is the genome wide average)
 ## for the position of structural errors, 'craq/runAQI_out/strER_out/out_final.CSE.bed'
 
-
-
+touch ./craq/complete.tmp
+##close stream variable if check
+fi
 
 ########################## READ COVERAGE ##########################
+##check if step is to be run based on stream variable
+if [[ ",$stream," == *",step6,"* ]]; then
+[ -e "./coverage" ] && rm -r ./coverage
+
+##begin step 6
 echo "$(date +%H:%M) ########## Step 6a: Running whole genome read alignment"
+
 ## using the short-read data we can look at genome wide coverage on the assembly
 ## first index the assembly using the aligner
 mkdir ./coverage
 bwa index ${assembly}
 
-## the window size for median-average binning (in bp)
-window2=$( echo $window | awk '{print $0/1000}' )
-## distance for the window to move before recalculating the window (in bp)
-slide2=$( echo $slide | awk '{print $0/1000}' )
+
 ## create a bed file use for binning
-samtools faidx ${assembly}
 cat ${assembly}.fai | cut -f1-2 > ${assembly}.bed
 ## now split the reference bed file up into the above prescribed bins
-bedtools makewindows -w ${window} -s ${slide} -g ${assembly}.bed > ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed
+bedtools makewindows -w ${window} -s ${slide} -g ${assembly}.bed  > ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed
 ## get the coverage file (slightly modify by giving a range for the single basepair coverage value) then use bedtools map to overlap with the reference derived window file to create median-averaged bins
 
 ###RUNNING THE LONG-READ ALIGNMENT
-[[ $platform == "ont" ]] && minimap2 --secondary=no -ax map-ont -t ${threads} ${assembly} ${longreads2} | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
-[[ $platform == "pacbio-hifi" ]] && minimap2 --secondary=no -ax map-hifi -t ${threads} ${assembly} ${longreads2} | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
-[[ $platform == "pacbio-clr" ]] && minimap2 --secondary=no -ax map-pb -t ${threads} ${assembly} ${longreads2} | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
+##make temp file directory for the read alignment during sorting
+#mkdir tmp_sort
+#[[ $platform == "ont" ]] && minimap2 --secondary=no -ax map-ont -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -T ./tmp_sort/tmp -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
+#[[ $platform == "pacbio-hifi" ]] && minimap2 --secondary=no -ax map-hifi -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -T ./tmp_sort/tmp -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
+#[[ $platform == "pacbio-clr" ]] && minimap2 --secondary=no -ax map-pb -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -T ./tmp_sort/tmp -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
+[[ $platform == "ont" ]] && minimap2 --secondary=no -ax map-ont -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
+[[ $platform == "pacbio-hifi" ]] && minimap2 --secondary=no -ax map-hifi -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
+[[ $platform == "pacbio-clr" ]] && minimap2 --secondary=no -ax map-pb -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
+
+
+##make sure to remove the temp files
+#rm -r tmp_sort
 
 ## get the coverage
-samtools depth -a -d 0 -@ 4 ./coverage/${prefix}.minimap.sorted.bam | gzip > ./coverage/${prefix}.minimap.sorted.cov.tsv.gz
+samtools depth -a -d 0 -@ 4 ./coverage/${prefix}.minimap.sorted.bam  | gzip > ./coverage/${prefix}.minimap.sorted.cov.tsv.gz
 
 ## calculate the median across the whole genome using the exact basepair
 medianLR=$( zcat ./coverage/${prefix}.minimap.sorted.cov.tsv.gz | awk '{if($3 != "0") print $3}' | sort -n | awk '{ a[i++]=$1} END{x=int((i+1)/2); if(x < (i+1)/2) print (a[x-1]+a[x])/2; else print a[x-1];}' )
@@ -508,6 +621,8 @@ rm ${assembly}.ann
 rm ${assembly}.bwt
 rm ${assembly}.pac
 rm ${assembly}.sa
+##remove read subset used for alignment
+rm longreads.rasusa.fq.gz
 fi
 
 ##set a full path for the shortread data to be read into the R script
@@ -526,9 +641,18 @@ Rscript ./coverage/${prefix}.coverage_plots.R
 fi
 
 
+touch ./coverage/complete.tmp
+##close stream variable if check
+fi
 
 ########################## TELOMERALITY ##########################
+##check if step is to be run based on stream variable
+if [[ ",$stream," == *",step7,"* ]]; then
+[ -e "./telomerality" ] && rm -r ./telomerality
+
+##begin step 7
 echo "$(date +%H:%M) ########## Step 7: Running Telomere search"
+
 mkdir ./telomerality
 #telomererepeat="TTAGGG"
 ##can also label all regions with the canonical telomeric repeat
@@ -556,26 +680,32 @@ cat ./telomerality/telomeres.bed | awk -v contig="$contig" '{if($1 == contig) pr
 cat ./telomerality/telomeres.bed | awk -v contig="$contig" '{if($1 == contig) print}' | tail -n1 | awk -v contig="$contig" -v size="$size" '{if($1 ==contig && (size-$3) <= 0.75*($3-$2)) {print contig"\tend\t"(size-$3)"\t"$2"-"$3"\ttelomeric"; end="noneed"} else if($1 ==contig && (size-$3) > 0.75*($3-$2) && (size-$3) < 5000) {print contig"\tend\t"(size-$3)"\t"$2"-"$3"\tdistant"; end="noneed"}} END{if(end != "noneed") print contig"\tend\tNA\tNA\tabsent"}'
 done >> ./telomerality/telomeres.classification.tsv
 
+touch ./telomerality/complete.tmp
+##close stream variable if check
+fi
 
 ########################## LAST CLEAN-UP ##########################
 ## just removing some index files, links etc
 if [[ $cleanup == "yes" ]]
 then
-rm ${assembly}.fai
+[ -e "${assembly}.fai" ] &&  rm ${assembly}.fai
 fi
+
 
 ########################## SUMMARY STATS ##########################
 
+##begin step 8
 echo "$(date +%H:%M) ########## Step 8: Generating summary statistics file"
+
 ### Create the header for the summary stats file
 if [[ ${sequences} == "scaffolds" ]]
 then
-echo "prefix;assembly;quast_#scaffolds;quast_#scaffolds>10kb;quast_assembly_size;quast_assembly_N50;quast_assembly_N90;quast_largest_contig;BUSCO_db;BUSCO_total;BUSCO_complete;BUSCO_complete_single;BUSCO_fragmented;BUSCO_missing;merqury_kmer_completeness(%);merqury_qv(phred);CRAQ_R-AQI(%);CRAQ_S-AQI(%);coverage_normal(%);telomeric_ends;telomeric_ends(%);T2T_scaffolds" | tr ';' '\t' >  summary_stats.tsv
+echo "prefix;assembly;quast_#scaffolds;quast_#scaffolds>10kb;quast_assembly_size;quast_assembly_N50;quast_assembly_N90;quast_largest_contig;BUSCO_db;BUSCO_total;BUSCO_complete;BUSCO_complete_single;BUSCO_fragmented;BUSCO_missing;merqury_kmer_completeness(%);merqury_qv(phred);CRAQ_R-AQI;CRAQ_S-AQI;coverage_normal(%);telomeric_ends;telomeric_ends(%);T2T_scaffolds" | tr ';' '\t' >  summary_stats.tsv
 fi
 
 if [[ ${sequences} == "contigs" ]]
 then
-echo "prefix;assembly;quast_#contigs;quast_#contigs>10kb;quast_assembly_size;quast_assembly_N50;quast_assembly_N90;quast_largest_contig;BUSCO_db;BUSCO_total;BUSCO_complete;BUSCO_complete_single;BUSCO_fragmented;BUSCO_missing;merqury_kmer_completeness(%);merqury_qv(phred);CRAQ_R-AQI(%);CRAQ_S-AQI(%);coverage_normal(%);telomeric_ends;telomeric_ends(%);T2T_contigs" | tr ';' '\t' >  summary_stats.tsv
+echo "prefix;assembly;quast_#contigs;quast_#contigs>10kb;quast_assembly_size;quast_assembly_N50;quast_assembly_N90;quast_largest_contig;BUSCO_db;BUSCO_total;BUSCO_complete;BUSCO_complete_single;BUSCO_fragmented;BUSCO_missing;merqury_kmer_completeness(%);merqury_qv(phred);CRAQ_R-AQI;CRAQ_S-AQI;coverage_normal(%);telomeric_ends;telomeric_ends(%);T2T_contigs" | tr ';' '\t' >  summary_stats.tsv
 fi
 
 ##assign all the stats variables
@@ -603,6 +733,7 @@ phredval=$( cat ./merqury/${prefix}.merqury.qv | awk '{print $4}' )
 if [[ $phredval == "+inf" ]]
 then
 echo "WARNING: Merqury detected no errors; QV will be estimated using the rule of three"
+genomesize=$( cat ./quast/report.tsv  | awk -F "\t" '{if(NR == 15) print $2}' )
 phredval=$( echo "scale=5; 10 * (l($genomesize)/l(10) - l(3)/l(10))" | bc -l )
 fi
 ##combine both
@@ -636,6 +767,10 @@ telomeralitystat=$(  echo "${telomericends};${t2t}" | tr ';' '\t' )
 ##spit out all the stats and save them to the summary stats file
 echo "${prefix};${assembly2};${quaststat};${buscostat};${merqurystat};${craqstat};${covstat};${telomeralitystat}" | tr ';' '\t' >> summary_stats.tsv
 
+
+##remove complete.tmp files
+rm */complete.tmp
+
 echo "$(date +%H:%M) ######### Summary stats can be found here ${output}/summary_stats.tsv"
-echo "################ All complete; thanks for using PAQman"
+echo "################ All complete; thanks for using PAQman; E noho rā"
 
