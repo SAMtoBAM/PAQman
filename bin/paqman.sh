@@ -107,6 +107,16 @@ case "$key" in
 	meryldb="$2"
 	shift
 	shift
+	;;
+	-mm|--merylmem)
+	merylmem="$2"
+	shift
+	shift
+	;;
+	-mk|--merylkmer)
+	merylkmer="$2"
+	shift
+	shift
 	;;	
 	-lbdb|--localbuscodb)
 	localbuscodb="$2"
@@ -142,7 +152,9 @@ case "$key" in
 	-p | --prefix       Prefix for output (default: name of assembly file (-a) before the fasta suffix)
 	-o | --output       Name of output folder for all results (default: paqman_output)
 	-seq | --sequences	Whether or not to use scaffolds or contigs; provide 'scaffolds' to not break the assembly at N's (default: contigs)
-	-mdb | --meryldb	A precomputed meryl database for your dataset. Generated automatically if not provided.
+	-mdb | --meryldb	A precomputed Meryl database for your dataset. Generated automatically if not provided.
+	-mm | --merylmem	The soft RAM limit in GB used whilst building the Meryl database (default: 10)
+	-mk | --merylkmer	The k-mer size used to build the Meryl database (default: 21)
 	-lbdb | --localbuscodb	A predownloaded busco database for your dataset. Downloaded automatically if not provided.
 	-c | --cleanup      Remove a large number of files produced by each of the tools that can take up a lot of space. Choose between 'yes' or 'no' (default: yes)
 	-h | --help         Print this help message
@@ -343,13 +355,13 @@ echo "NOTE: Creating meryl k-mer database using short-reads"
 ## calculcate the kmer profile of the raw reads before assembly
 ## this profile will be compared to the resulting assembly to calculate completeness, i.e. how many of the good quality kmers are captured in the assembly
 ## here we can use JUST the illumina dataset and always compare to this dataset
-meryl t=${threads} memory=15 k=18 count output reads.meryl ${pair12} ${pair22}
+meryl t=${threads} memory=${merylmem} k=${merylkmer} count output reads.meryl ${pair12} ${pair22}
 
 else 
 
 echo "NOTE: Creating meryl k-mer database using long-reads"
 ##same but instead using the long-read data due to an absence of short reads
-meryl t=${threads} memory=15 k=18 count output reads.meryl ${longreads2} 
+meryl t=${threads} memory=${merylmem} k=${merylkmer} count output reads.meryl ${longreads2} 
 fi
 
 fi
