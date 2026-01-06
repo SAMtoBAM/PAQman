@@ -7,6 +7,7 @@
     project="S288c"
     ##create project directory for all data
     mkdir ${project}
+    cd ${project}
 
     ##set variable for 16 threads
     threads="16"
@@ -50,16 +51,14 @@ _Note: This read dataset was used to assemble GCA_022626425; which is used in th
     SRR="SRR17374240"
     ##download the fastq file
     fasterq-dump ${SRR}
-    ##move into the project folder then compress
-    mv ${SRR}.fastq ${project}/${SRR}.fq
-    gzip ${SRR}.fq
 
     ##downsample the excessive ~800X coverage to 100X
     ##use 12Mb as estimated genome size and therefore 100X this
-    filtlong -t 1200000000 --length_weight 5 ${SRR}.fq.gz | gzip > reads/${SRR}.filtlong100x.fq.gz
+    #filtlong -t 1200000000 --length_weight 5 ${SRR}.fastq | gzip > reads/${SRR}.filtlong100x.fq.gz
+    rasusa reads -b 1200000000 ${SRR}.fastq | gzip > reads/${SRR}.rasusa100x.fq.gz
 
     ##remove the full set of reads just taking up space
-    rm ${SRR}.fq.gz
+    rm ${SRR}.fastq
 
     ##deactivate environment used to get the assemblies and reads
     conda deactivate
@@ -76,10 +75,10 @@ The uses PAQman (see github READme for installation/usage instructions)
     repeat="GGTGTG"
     ##ability for this repeat to detect telomeric ends was manually validated
     ##loop through each assembly and run PAQman
-    ls ${project}/*.fa.gz | while read assembly
+    ls assemblies/*.fa.gz | while read assembly
     do
     sample=$( echo $assembly | awk -F "/" '{print $NF}' | awk -F "." '{print $1}' )
-    time paqman.sh -a ${project}/assemblies/${sample}.fa.gz -l ${project}/reads/${SRR}.filtlong100x.fq.gz -t ${threads} -b ${busco} -p ${sample} -o ${project}/${sample}_paqman -r ${repeat}
+    time paqman.sh -a assemblies/${sample}.fa.gz -l reads/${SRR}.rasusa100x.fq.gz -t ${threads} -b ${busco} -p ${sample} -o ${sample}_paqman -r ${repeat}
     done
 
 
@@ -87,7 +86,7 @@ The uses PAQman (see github READme for installation/usage instructions)
 The uses PAQman (see github READme for installation/usage instructions)
 
     ##create a txt file with a list of paths to the summary files
-    ls ${project}/*_paqman/summary_stats.tsv > ${project}/list_of_summary_files.txt
+    ls *_paqman/summary_stats.tsv > list_of_summary_files.txt
     ##run paqplots for the comparisons
-    paqplots.sh -l ${project}/list_of_summary_files.txt -p ${project} -o ${project}/${project}_paqplot
+    paqplots.sh -l list_of_summary_files.txt -p ${project} -o ${project}_paqplot
   
