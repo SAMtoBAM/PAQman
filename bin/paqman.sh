@@ -120,7 +120,7 @@ case "$key" in
 	merylkmer="$2"
 	shift
 	shift
-	;;
+	;;	
 	-lbdb|--localbuscodb)
 	localbuscodb="$2"
 	shift
@@ -160,8 +160,8 @@ case "$key" in
 	-o | --output       Name of output folder for all results (default: paqman_output)
 	-seq | --sequences	Whether or not to use scaffolds or contigs; provide 'scaffolds' to not break the assembly at N's (default: contigs)
 	-mdb | --meryldb	A precomputed meryl database for your dataset. Generated automatically if not provided.
-	-mm | --merylmem	The soft RAM limit in GB used whilst building the Meryl database (default: 10)
-	-mk | --merylkmer	The k-mer size used to build the Meryl database (default: 21)
+	-mm | --merylmem	The soft RAM limit in GB used whilst building the meryl database (default: 10)
+	-mk | --merylkmer	The k-mer size used to build the meryl database (default: 21)
 	-lbdb | --localbuscodb	A predownloaded busco database for your dataset. Downloaded automatically if not provided.
 	--resume			Resume a incomplete run of PAQman. Incomplete steps will be rerun from scratch.
 	-c | --cleanup      Remove a large number of files produced by each of the tools that can take up a lot of space. Choose between 'yes' or 'no' (default: yes)
@@ -493,7 +493,7 @@ echo "$(date +%H:%M) ########## Step 5a: Downsampling for 50X long-reads for CRA
 genomesize=$( cat ./quast/report.tsv  | awk -F "\t" '{if(NR == 15) print $2}' )
 target=$( echo $genomesize | awk '{print $1*50}' )
 ##now run rasusa with the settings
-#filtlong -t ${target} --length_weight 5 ${longreads2} | gzip > longreads.filtlong50X.fq.gz
+#filtlong -t ${target} --length_weight 5 ${longreads2} | gzip > longreads.filtlong50x.fq.gz
 rasusa reads -b ${target} ${longreads2} | gzip > longreads.rasusa.fq.gz
 ##run craq
 echo "$(date +%H:%M) ########## Step 5b: Running CRAQ"
@@ -548,18 +548,9 @@ bedtools makewindows -w ${window} -s ${slide} -g ${assembly}.bed  > ./coverage/$
 ## get the coverage file (slightly modify by giving a range for the single basepair coverage value) then use bedtools map to overlap with the reference derived window file to create median-averaged bins
 
 ###RUNNING THE LONG-READ ALIGNMENT
-##make temp file directory for the read alignment during sorting
-#mkdir tmp_sort
-#[[ $platform == "ont" ]] && minimap2 --secondary=no -ax map-ont -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -T ./tmp_sort/tmp -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
-#[[ $platform == "pacbio-hifi" ]] && minimap2 --secondary=no -ax map-hifi -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -T ./tmp_sort/tmp -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
-#[[ $platform == "pacbio-clr" ]] && minimap2 --secondary=no -ax map-pb -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -T ./tmp_sort/tmp -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
 [[ $platform == "ont" ]] && minimap2 --secondary=no -ax map-ont -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
 [[ $platform == "pacbio-hifi" ]] && minimap2 --secondary=no -ax map-hifi -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
 [[ $platform == "pacbio-clr" ]] && minimap2 --secondary=no -ax map-pb -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
-
-
-##make sure to remove the temp files
-#rm -r tmp_sort
 
 ## get the coverage
 samtools depth -a -d 0 -@ 4 ./coverage/${prefix}.minimap.sorted.bam  | gzip > ./coverage/${prefix}.minimap.sorted.cov.tsv.gz
