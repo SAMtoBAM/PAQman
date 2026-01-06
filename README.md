@@ -107,8 +107,8 @@ All metrics are detailed below
 | 14 | <b>BUSCO_missing</b> | BUSCOs not identified
 | 15 | <b>merqury_kmer_completeness(%)</b> | A k-mer estimation of completeness
 | 16 | <b>merqury_qv(phred)</b> | A k-mer estimation of the genome wide error rate
-| 17 | <b>CRAQ_R-AQI(%)</b> | Quality measure from 0-100 based on small regional errors
-| 18 | <b>CRAQ_S-AQI(%)</b> | Quality measure from 0-100 based on large structural errors
+| 17 | <b>CRAQ_R-AQI</b> | Quality measure from 0-100 based on small regional errors
+| 18 | <b>CRAQ_S-AQI</b> | Quality measure from 0-100 based on large structural errors
 | 19 | <b>coverage_normal(%)</b> | Percentage of the genome within 2*stdev of the genome wide median
 | 20 | <b>telomeric_ends</b> | Number of contig ends with telomeric repeats
 | 21 | <b>telomeric_ends(%)</b> | Percentage of contig ends with telomeric repeats
