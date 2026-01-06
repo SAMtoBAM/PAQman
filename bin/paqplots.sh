@@ -102,7 +102,7 @@ mkdir ${output}
 
 if [[ ${summary} == "" && ${list} != "" ]]
 then
-echo "prefix;assembly;quast_#contigs;quast_#contigs>10kb;quast_assembly_size;quast_assembly_N50;quast_assembly_N90;quast_largest_contig;BUSCO_db;BUSCO_total;BUSCO_complete;BUSCO_complete_single;BUSCO_fragmented;BUSCO_missing;merqury_kmer_completeness(%);merqury_qv(phred);CRAQ_R-AQI(%);CRAQ_S-AQI(%);coverage_normal(%);telomeric_ends;telomeric_ends(%);T2T_contigs" | tr ';' '\t' > ${output}/combined.summary_stats.tsv
+echo "prefix;assembly;quast_#contigs;quast_#contigs>10kb;quast_assembly_size;quast_assembly_N50;quast_assembly_N90;quast_largest_contig;BUSCO_db;BUSCO_total;BUSCO_complete;BUSCO_complete_single;BUSCO_fragmented;BUSCO_missing;merqury_kmer_completeness(%);merqury_qv(phred);CRAQ_R-AQI;CRAQ_S-AQI;coverage_normal(%);telomeric_ends;telomeric_ends(%);T2T_contigs" | tr ';' '\t' > ${output}/combined.summary_stats.tsv
 cat ${list} | while read file
 do
 tail -n+2 ${file} >> ${output}/combined.summary_stats.tsv

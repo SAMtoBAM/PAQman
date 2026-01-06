@@ -27,6 +27,8 @@ prefix="paqman"
 output="paqman_output"
 sequences="contigs"
 meryldb=""
+merylmem="10"
+merylkmer="21"
 localbuscodb=""
 help="nohelp"
 
@@ -107,6 +109,16 @@ case "$key" in
 	meryldb="$2"
 	shift
 	shift
+	;;
+	-mm|--merylmem)
+	merylmem="$2"
+	shift
+	shift
+	;;
+	-mk|--merylkmer)
+	merylkmer="$2"
+	shift
+	shift
 	;;	
 	-lbdb|--localbuscodb)
 	localbuscodb="$2"
@@ -142,7 +154,9 @@ case "$key" in
 	-p | --prefix       Prefix for output (default: name of assembly file (-a) before the fasta suffix)
 	-o | --output       Name of output folder for all results (default: paqman_output)
 	-seq | --sequences	Whether or not to use scaffolds or contigs; provide 'scaffolds' to not break the assembly at N's (default: contigs)
-	-mdb | --meryldb	A precomputed meryl database for your dataset. Generated automatically if not provided.
+	-mdb | --meryldb	A precomputed Meryl database for your dataset. Generated automatically if not provided.
+	-mm | --merylmem	The soft RAM limit in GB used whilst building the Meryl database (default: 10)
+	-mk | --merylkmer	The k-mer size used to build the Meryl database (default: 21)
 	-lbdb | --localbuscodb	A predownloaded busco database for your dataset. Downloaded automatically if not provided.
 	-c | --cleanup      Remove a large number of files produced by each of the tools that can take up a lot of space. Choose between 'yes' or 'no' (default: yes)
 	-h | --help         Print this help message
@@ -343,13 +357,13 @@ echo "NOTE: Creating meryl k-mer database using short-reads"
 ## calculcate the kmer profile of the raw reads before assembly
 ## this profile will be compared to the resulting assembly to calculate completeness, i.e. how many of the good quality kmers are captured in the assembly
 ## here we can use JUST the illumina dataset and always compare to this dataset
-meryl t=${threads} memory=15 k=18 count output reads.meryl ${pair12} ${pair22}
+meryl t=${threads} memory=${merylmem} k=${merylkmer} count output reads.meryl ${pair12} ${pair22}
 
 else 
 
 echo "NOTE: Creating meryl k-mer database using long-reads"
 ##same but instead using the long-read data due to an absence of short reads
-meryl t=${threads} memory=15 k=18 count output reads.meryl ${longreads2} 
+meryl t=${threads} memory=${merylmem} k=${merylkmer} count output reads.meryl ${longreads2} 
 fi
 
 fi
@@ -392,32 +406,33 @@ echo "$(date +%H:%M) ########## Step 5a: Downsampling for 50X long-reads for CRA
 ## get genome size based on input genome
 genomesize=$( cat ./quast/report.tsv  | awk -F "\t" '{if(NR == 15) print $2}' )
 target=$( echo $genomesize | awk '{print $1*50}' )
-##now run filtlong with the settings
-filtlong -t ${target} --length_weight 5 ${longreads2} | gzip > longreads.filtlong50x.fq.gz
+##now run rasusa with the settings
+#filtlong -t ${target} --length_weight 5 ${longreads2} | gzip > longreads.filtlong50x.fq.gz
+rasusa reads -b ${target} ${longreads2} | gzip > longreads.rasusa.fq.gz
 ##run craq
 echo "$(date +%H:%M) ########## Step 5b: Running CRAQ"
 if [[ $shortreads == "yes" ]]
 then
-[[ $platform == "ont" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -ngs ${pair12},${pair22} -x map-ont --thread ${threads} > craq.log
-[[ $platform == "pacbio-hifi" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -ngs ${pair12},${pair22} -x map-hifi --thread ${threads} > craq.log
-[[ $platform == "pacbio-clr" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -ngs ${pair12},${pair22} -x map-pb --thread ${threads} > craq.log
+[[ $platform == "ont" ]] && craq -D ./craq -g ${assembly} -sms longreads.rasusa.fq.gz -ngs ${pair12},${pair22} -x map-ont --thread ${threads} > craq.log
+[[ $platform == "pacbio-hifi" ]] && craq -D ./craq -g ${assembly} -sms longreads.rasusa.fq.gz -ngs ${pair12},${pair22} -x map-hifi --thread ${threads} > craq.log
+[[ $platform == "pacbio-clr" ]] && craq -D ./craq -g ${assembly} -sms longreads.rasusa.fq.gz -ngs ${pair12},${pair22} -x map-pb --thread ${threads} > craq.log
 mv craq.log craq/
 if [[ $cleanup == "yes" ]]
 then
 rm -r ./craq/SRout
 fi
 else
-[[ $platform == "ont" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -x map-ont --thread ${threads} > craq.log
-[[ $platform == "pacbio-hifi" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -x map-hifi --thread ${threads} > craq.log
-[[ $platform == "pacbio-clr" ]] && craq -D ./craq -g ${assembly} -sms longreads.filtlong50x.fq.gz -x map-pb --thread ${threads} > craq.log
+[[ $platform == "ont" ]] && craq -D ./craq -g ${assembly} -sms longreads.rasusa.fq.gz -x map-ont --thread ${threads} > craq.log
+[[ $platform == "pacbio-hifi" ]] && craq -D ./craq -g ${assembly} -sms longreads.rasusa.fq.gz -x map-hifi --thread ${threads} > craq.log
+[[ $platform == "pacbio-clr" ]] && craq -D ./craq -g ${assembly} -sms longreads.rasusa.fq.gz -x map-pb --thread ${threads} > craq.log
 mv craq.log craq/
 fi
 ## remove large intermediate files
 if [[ $cleanup == "yes" ]]
 then
 rm -r ./craq/LRout
-##remove read subset used for alignment
-rm longreads.filtlong50x.fq.gz
+##remove read subset used for alignments
+#rm longreads.rasusa.fq.gz
 fi
 ## from the output we are just interested in the summary file 'craq/runAQI_out/out_final.Report' for the summary stats (second line from the top is the genome wide average)
 ## for the position of structural errors, 'craq/runAQI_out/strER_out/out_final.CSE.bed'
@@ -444,9 +459,9 @@ bedtools makewindows -w ${window} -s ${slide} -g ${assembly}.bed > ./coverage/${
 ## get the coverage file (slightly modify by giving a range for the single basepair coverage value) then use bedtools map to overlap with the reference derived window file to create median-averaged bins
 
 ###RUNNING THE LONG-READ ALIGNMENT
-[[ $platform == "ont" ]] && minimap2 --secondary=no -ax map-ont -t ${threads} ${assembly} ${longreads2} | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
-[[ $platform == "pacbio-hifi" ]] && minimap2 --secondary=no -ax map-hifi -t ${threads} ${assembly} ${longreads2} | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
-[[ $platform == "pacbio-clr" ]] && minimap2 --secondary=no -ax map-pb -t ${threads} ${assembly} ${longreads2} | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
+[[ $platform == "ont" ]] && minimap2 --secondary=no -ax map-ont -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
+[[ $platform == "pacbio-hifi" ]] && minimap2 --secondary=no -ax map-hifi -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
+[[ $platform == "pacbio-clr" ]] && minimap2 --secondary=no -ax map-pb -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
 
 ## get the coverage
 bedtools genomecov -d -split -ibam ./coverage/${prefix}.minimap.sorted.bam | gzip > ./coverage/${prefix}.minimap.sorted.cov.tsv.gz
@@ -508,6 +523,8 @@ rm ${assembly}.ann
 rm ${assembly}.bwt
 rm ${assembly}.pac
 rm ${assembly}.sa
+##remove read subset used for alignment
+rm longreads.rasusa.fq.gz
 fi
 
 ##set a full path for the shortread data to be read into the R script
@@ -570,12 +587,12 @@ echo "$(date +%H:%M) ########## Step 8: Generating summary statistics file"
 ### Create the header for the summary stats file
 if [[ ${sequences} == "scaffolds" ]]
 then
-echo "prefix;assembly;quast_#scaffolds;quast_#scaffolds>10kb;quast_assembly_size;quast_assembly_N50;quast_assembly_N90;quast_largest_contig;BUSCO_db;BUSCO_total;BUSCO_complete;BUSCO_complete_single;BUSCO_fragmented;BUSCO_missing;merqury_kmer_completeness(%);merqury_qv(phred);CRAQ_R-AQI(%);CRAQ_S-AQI(%);coverage_normal(%);telomeric_ends;telomeric_ends(%);T2T_scaffolds" | tr ';' '\t' >  summary_stats.tsv
+echo "prefix;assembly;quast_#scaffolds;quast_#scaffolds>10kb;quast_assembly_size;quast_assembly_N50;quast_assembly_N90;quast_largest_contig;BUSCO_db;BUSCO_total;BUSCO_complete;BUSCO_complete_single;BUSCO_fragmented;BUSCO_missing;merqury_kmer_completeness(%);merqury_qv(phred);CRAQ_R-AQI;CRAQ_S-AQI;coverage_normal(%);telomeric_ends;telomeric_ends(%);T2T_scaffolds" | tr ';' '\t' >  summary_stats.tsv
 fi
 
 if [[ ${sequences} == "contigs" ]]
 then
-echo "prefix;assembly;quast_#contigs;quast_#contigs>10kb;quast_assembly_size;quast_assembly_N50;quast_assembly_N90;quast_largest_contig;BUSCO_db;BUSCO_total;BUSCO_complete;BUSCO_complete_single;BUSCO_fragmented;BUSCO_missing;merqury_kmer_completeness(%);merqury_qv(phred);CRAQ_R-AQI(%);CRAQ_S-AQI(%);coverage_normal(%);telomeric_ends;telomeric_ends(%);T2T_contigs" | tr ';' '\t' >  summary_stats.tsv
+echo "prefix;assembly;quast_#contigs;quast_#contigs>10kb;quast_assembly_size;quast_assembly_N50;quast_assembly_N90;quast_largest_contig;BUSCO_db;BUSCO_total;BUSCO_complete;BUSCO_complete_single;BUSCO_fragmented;BUSCO_missing;merqury_kmer_completeness(%);merqury_qv(phred);CRAQ_R-AQI;CRAQ_S-AQI;coverage_normal(%);telomeric_ends;telomeric_ends(%);T2T_contigs" | tr ';' '\t' >  summary_stats.tsv
 fi
 
 ##assign all the stats variables

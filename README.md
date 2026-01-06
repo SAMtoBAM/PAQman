@@ -65,8 +65,10 @@ paqman.sh -g assembly.fa -l long-reads.fq.gz -x ont -1 illumina.R1.fq.gz -2 illu
 	-p | --prefix       Prefix for output (default: name of assembly file (-a) before the fasta suffix)
 	-o | --output       Name of output folder for all results (default: paqman_output)
 	-seq | --sequences	Whether or not to use scaffolds or contigs; provide 'scaffolds' to not break the assembly at N's (default: contigs)
-	-mdb | --meryldb	A precomputed meryl database for your dataset. Generated automatically if not provided.
-	-lbdb | --localbuscodb	The path to a pre-downloaded or locally generated busco database for your dataset. Downloaded automatically if not provided.
+	-mdb | --meryldb	A precomputed Meryl database for your dataset. Generated automatically if not provided.
+	-mm | --merylmem	The soft RAM limit in GB used whilst building the Meryl database (default: 10)
+	-mk | --merylkmer	The k-mer size used to build the Meryl database (default: 21)
+	-lbdb | --localbuscodb	A predownloaded busco database for your dataset. Downloaded automatically if not provided.
 	-c | --cleanup      Remove a large number of files produced by each of the tools that can take up a lot of space. Choose between 'yes' or 'no' (default: yes)
 	-h | --help         Print this help message
 ```
@@ -107,8 +109,8 @@ All metrics are detailed below
 | 14 | <b>BUSCO_missing</b> | BUSCOs not identified
 | 15 | <b>merqury_kmer_completeness(%)</b> | A k-mer estimation of completeness
 | 16 | <b>merqury_qv(phred)</b> | A k-mer estimation of the genome wide error rate
-| 17 | <b>CRAQ_R-AQI(%)</b> | Quality measure from 0-100 based on small regional errors
-| 18 | <b>CRAQ_S-AQI(%)</b> | Quality measure from 0-100 based on large structural errors
+| 17 | <b>CRAQ_R-AQI</b> | Quality measure from 0-100 based on small regional errors
+| 18 | <b>CRAQ_S-AQI</b> | Quality measure from 0-100 based on large structural errors
 | 19 | <b>coverage_normal(%)</b> | Percentage of the genome within 2*stdev of the genome wide median
 | 20 | <b>telomeric_ends</b> | Number of contig ends with telomeric repeats
 | 21 | <b>telomeric_ends(%)</b> | Percentage of contig ends with telomeric repeats
@@ -193,10 +195,22 @@ In this example, all stats should be maximised except for contig count hence the
 
 ## Citation example:
 
-“We used PAQman v1.1.0 (O’Donnell et al. 2025) in conjunction with Quast (Mikheenko et al. 2023), BUSCO (Tegenfeldt et al. 2025), Meryl (Miller et al. 2008), Mercury (Rhie et al. 2020), Filtlong (https://github.com/rrwick/Filtlong/), CRAQ (Li et al. 2023), BWA (Li 2013), minimap2 (Li 2018), samtools (Danecek et al. 2021), bedtools (Quinlan and Hall 2010), seqkit (Shen et al. 2016) and ggplot2 (Wickham 2016) to assess and visualize assembly quality.”
+“We used PAQman v1.1.0 (O’Donnell et al. 2025) in conjunction with Quast (Mikheenko et al. 2023), BUSCO (Tegenfeldt et al. 2025), Meryl (Miller et al. 2008), Mercury (Rhie et al. 2020), Rasusa (Hall 2022), CRAQ (Li et al. 2023), BWA (Li 2013), minimap2 (Li 2018), samtools (Danecek et al. 2021), bedtools (Quinlan and Hall 2010), seqkit (Shen et al. 2016) and ggplot2 (Wickham 2016) to assess and visualize assembly quality.”
 
 
 
+
+
+## Common problems:
+
++ **Running out of memory during Meryl run** <br/>
+Although the _--merylmem_ parameter aims to limit RAM usage by Meryl this can overflow (particularly with more threads) <br/>
+Three options could help: <br/>
+1.Try reducing _--merylmem_ <br/>
+2.Try reducing the number of threads <br/>
+3.Reduce the coverage of your raw reads using rasusa (e.g. _rasusa reads -b 100000000 reads.fq  > reads.downsampled.fq_ ; where -b represents the number of bases to keep ) <br/>
+
++ 
 
 
 
