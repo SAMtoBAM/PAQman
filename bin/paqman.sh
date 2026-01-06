@@ -27,6 +27,8 @@ prefix="paqman"
 output="paqman_output"
 sequences="contigs"
 meryldb=""
+merylmem="10"
+merylkmer="21"
 localbuscodb=""
 help="nohelp"
 
