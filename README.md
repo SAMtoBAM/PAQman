@@ -33,6 +33,8 @@ docker pull ghcr.io/samtobam/paqman:latest
 ### Conda installation
 
 ```
+conda config --append channels conda-forge
+conda config --append channels bioconda
 conda config --append channels pwwang
 conda install samtobam::paqman
 ```
@@ -45,8 +47,8 @@ paqman.sh -a path/to/assembly.fa -l path/to/long-reads.fq.gz
 
 
 ```
-paqman.sh -g assembly.fa -l long-reads.fq.gz -x ont -1 illumina.R1.fq.gz -2 illumina.R2.fq.gz -b eukaryota -w 30000 -s 10000 -r TTAGGG -p assembly -o paqman_output -c yes
-
+paqman.sh -a assembly.fa -l long-reads.fq.gz
+	
 	Required inputs:
 	-a | --assembly     Genome assemly in fasta format (*.fa / *.fasta / *.fna) and can be gzipped (*.gz)
 	-l | --longreads    Long reads used for assembly in fastq or fasta format  (*.fa / *.fasta / *.fna / *.fastq / *.fq) and can be gzipped (*.gz)
@@ -69,6 +71,7 @@ paqman.sh -g assembly.fa -l long-reads.fq.gz -x ont -1 illumina.R1.fq.gz -2 illu
 	-mm | --merylmem	The soft RAM limit in GB used whilst building the meryl database (default: 10)
 	-mk | --merylkmer	The k-mer size used to build the meryl database (default: 21)
 	-lbdb | --localbuscodb	A predownloaded busco database for your dataset. Downloaded automatically if not provided.
+	--resume			Resume a incomplete run of PAQman. Incomplete steps will be rerun from scratch.
 	-c | --cleanup      Remove a large number of files produced by each of the tools that can take up a lot of space. Choose between 'yes' or 'no' (default: yes)
 	-h | --help         Print this help message
 ```
