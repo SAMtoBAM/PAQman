@@ -516,7 +516,7 @@ then
 ##index assembly for alignment
 bwa index ${assembly}
 ## align the short reads (filtering for only primary alignments -F 0x100 : removes secondary)
-#bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ 4 -o ./coverage/${prefix}.bwamem.sorted.bam -
+#bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ 4 -o ${prefix}.bwamem.sorted.bam -
 bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ 4 -o ${prefix}.bwamem.sorted.bam
 
 samtools index ${prefix}.bwamem.sorted.bam
@@ -545,7 +545,7 @@ if [[ $cleanup == "yes" ]]
 then
 rm -r ./craq/LRout
 ##remove read subset used for alignments
-#rm longreads.rasusa.fq.gz
+rm longreads.rasusa.fq.gz
 fi
 ## from the output we are just interested in the summary file 'craq/runAQI_out/out_final.Report' for the summary stats (second line from the top is the genome wide average)
 ## for the position of structural errors, 'craq/runAQI_out/strER_out/out_final.CSE.bed'
@@ -593,6 +593,7 @@ if [[ $cleanup == "yes" ]]
 then
 ##remove the alignment file due to size
 rm ${prefix}.minimap.sorted.bam
+rm ${prefix}.minimap.sorted.bam.bai
 ##remove the coverage files looking at everybase pair due to size
 rm ./coverage/${prefix}.minimap.sorted.cov.tsv.gz
 ##remove bed file generated from assembly
@@ -607,7 +608,7 @@ LRpath=$( realpath ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.mi
 if [[ $shortreads == "yes" ]]
 then
 ## get the coverage
-samtools depth -a -d 0 -@ 4 ./coverage/${prefix}.bwamem.sorted.bam | gzip > ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz
+samtools depth -a -d 0 -@ 4 ${prefix}.bwamem.sorted.bam | gzip > ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz
 
 ## calculate the median across the whole genome using the exact basepair
 medianSR=$( zcat ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz | awk '{if($3 != "0") print $3}' | sort -n | awk '{ a[i++]=$1} END{x=int((i+1)/2); if(x < (i+1)/2) print (a[x-1]+a[x])/2; else print a[x-1];}' )
@@ -622,24 +623,17 @@ bedtools map -b - -a ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.be
 
 if [[ $cleanup == "yes" ]]
 then
-##remove the alignment file due to size
-rm ${prefix}.minimap.sorted.bam
-rm ${prefix}.minimap.sorted.bam.bai
-##remove the coverage files looking at everybase pair due to size
-rm ${prefix}.bwamem.sorted.cov.tsv.gz
-if [[ $shortreads == "yes" ]]
-then
+##remove alignments
 rm ${prefix}.bwamem.sorted.bam
 rm ${prefix}.bwamem.sorted.bam.bai
+##remove the coverage files looking at everybase pair due to size
+rm ${prefix}.bwamem.sorted.cov.tsv.gz
 ##remove index files
-[ -e "${assembly}.amb" ] && rm ${assembly}.amb
-[ -e "${assembly}.ann" ] && rm ${assembly}.ann
-[ -e "${assembly}.bwt" ] && rm ${assembly}.bwt
-[ -e "${assembly}.pac" ] && rm ${assembly}.pac
-[ -e "${assembly}.sa" ] && rm ${assembly}.sa
-fi
-##remove read subset used for alignment
-rm longreads.rasusa.fq.gz
+rm ${assembly}.amb
+rm ${assembly}.ann
+rm ${assembly}.bwt
+rm ${assembly}.pac
+rm ${assembly}.sa
 fi
 
 ##set a full path for the shortread data to be read into the R script
@@ -661,6 +655,7 @@ fi
 touch ./coverage/complete.tmp
 ##close stream variable if check
 fi
+
 
 
 ########################## TELOMERALITY ##########################
