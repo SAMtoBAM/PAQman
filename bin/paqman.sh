@@ -493,24 +493,51 @@ echo "$(date +%H:%M) ########## Step 5a: Downsampling for 50X long-reads for CRA
 genomesize=$( cat ./quast/report.tsv  | awk -F "\t" '{if(NR == 15) print $2}' )
 target=$( echo $genomesize | awk '{print $1*50}' )
 ##now run rasusa with the settings
-#filtlong -t ${target} --length_weight 5 ${longreads2} | gzip > longreads.filtlong50x.fq.gz
+#filtlong -t ${target} --length_weight 5 ${longreads2} | gzip > longreads.filtlong50X.fq.gz
 rasusa reads -b ${target} ${longreads2} | gzip > longreads.rasusa.fq.gz
+
+
+###RUNNING THE LONG-READ ALIGNMENT
 ##run craq
-echo "$(date +%H:%M) ########## Step 5b: Running CRAQ"
+echo "$(date +%H:%M) ########## Step 5b: Running read alignment"
+##make temp file directory for the read alignment during sorting
+#mkdir tmp_sort
+#[[ $platform == "ont" ]] && minimap2 --secondary=no -ax map-ont -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -T ./tmp_sort/tmp -@ 4 -o ${prefix}.minimap.sorted.bam -
+#[[ $platform == "pacbio-hifi" ]] && minimap2 --secondary=no -ax map-hifi -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -T ./tmp_sort/tmp -@ 4 -o ${prefix}.minimap.sorted.bam -
+#[[ $platform == "pacbio-clr" ]] && minimap2 --secondary=no -ax map-pb -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -T ./tmp_sort/tmp -@ 4 -o ${prefix}.minimap.sorted.bam -
+[[ $platform == "ont" ]] && minimap2 --secondary=no -ax map-ont -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -o ${prefix}.minimap.sorted.bam -
+[[ $platform == "pacbio-hifi" ]] && minimap2 --secondary=no -ax map-hifi -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -o ${prefix}.minimap.sorted.bam -
+[[ $platform == "pacbio-clr" ]] && minimap2 --secondary=no -ax map-pb -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -o ${prefix}.minimap.sorted.bam -
+
+samtools index ${prefix}.minimap.sorted.bam
+
 if [[ $shortreads == "yes" ]]
 then
-[[ $platform == "ont" ]] && craq -D ./craq -g ${assembly} -sms longreads.rasusa.fq.gz -ngs ${pair12},${pair22} -x map-ont --thread ${threads} > craq.log
-[[ $platform == "pacbio-hifi" ]] && craq -D ./craq -g ${assembly} -sms longreads.rasusa.fq.gz -ngs ${pair12},${pair22} -x map-hifi --thread ${threads} > craq.log
-[[ $platform == "pacbio-clr" ]] && craq -D ./craq -g ${assembly} -sms longreads.rasusa.fq.gz -ngs ${pair12},${pair22} -x map-pb --thread ${threads} > craq.log
+##index assembly for alignment
+bwa index ${assembly}
+## align the short reads (filtering for only primary alignments -F 0x100 : removes secondary)
+#bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ 4 -o ${prefix}.bwamem.sorted.bam -
+bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ 4 -o ${prefix}.bwamem.sorted.bam
+
+samtools index ${prefix}.bwamem.sorted.bam
+fi
+
+##run craq
+echo "$(date +%H:%M) ########## Step 5c: Running CRAQ"
+if [[ $shortreads == "yes" ]]
+then
+[[ $platform == "ont" ]] && craq -D ./craq -g ${assembly} -sms ${prefix}.minimap.sorted.bam -ngs ${prefix}.bwamem.sorted.bam -x map-ont --thread ${threads} > craq.log
+[[ $platform == "pacbio-hifi" ]] && craq -D ./craq -g ${assembly} -sms ${prefix}.minimap.sorted.bam -ngs ${prefix}.bwamem.sorted.bam -x map-hifi --thread ${threads} > craq.log
+[[ $platform == "pacbio-clr" ]] && craq -D ./craq -g ${assembly} -sms ${prefix}.minimap.sorted.bam -ngs ${prefix}.bwamem.sorted.bam -x map-pb --thread ${threads} > craq.log
 mv craq.log craq/
 if [[ $cleanup == "yes" ]]
 then
 rm -r ./craq/SRout
 fi
 else
-[[ $platform == "ont" ]] && craq -D ./craq -g ${assembly} -sms longreads.rasusa.fq.gz -x map-ont --thread ${threads} > craq.log
-[[ $platform == "pacbio-hifi" ]] && craq -D ./craq -g ${assembly} -sms longreads.rasusa.fq.gz -x map-hifi --thread ${threads} > craq.log
-[[ $platform == "pacbio-clr" ]] && craq -D ./craq -g ${assembly} -sms longreads.rasusa.fq.gz -x map-pb --thread ${threads} > craq.log
+[[ $platform == "ont" ]] && craq -D ./craq -g ${assembly} -sms ${prefix}.minimap.sorted.bam -x map-ont --thread ${threads} > craq.log
+[[ $platform == "pacbio-hifi" ]] && craq -D ./craq -g ${assembly} -sms ${prefix}.minimap.sorted.bam -x map-hifi --thread ${threads} > craq.log
+[[ $platform == "pacbio-clr" ]] && craq -D ./craq -g ${assembly} -sms ${prefix}.minimap.sorted.bam -x map-pb --thread ${threads} > craq.log
 mv craq.log craq/
 fi
 ## remove large intermediate files
@@ -518,7 +545,7 @@ if [[ $cleanup == "yes" ]]
 then
 rm -r ./craq/LRout
 ##remove read subset used for alignments
-#rm longreads.rasusa.fq.gz
+rm longreads.rasusa.fq.gz
 fi
 ## from the output we are just interested in the summary file 'craq/runAQI_out/out_final.Report' for the summary stats (second line from the top is the genome wide average)
 ## for the position of structural errors, 'craq/runAQI_out/strER_out/out_final.CSE.bed'
@@ -527,19 +554,18 @@ touch ./craq/complete.tmp
 ##close stream variable if check
 fi
 
+
 ########################## READ COVERAGE ##########################
 ##check if step is to be run based on stream variable
 if [[ ",$stream," == *",step6,"* ]]; then
 [ -e "./coverage" ] && rm -r ./coverage
 
 ##begin step 6
-echo "$(date +%H:%M) ########## Step 6a: Running whole genome read alignment"
+echo "$(date +%H:%M) ########## Step 6a: Analysing whole-genome coverage"
 
 ## using the short-read data we can look at genome wide coverage on the assembly
 ## first index the assembly using the aligner
 mkdir ./coverage
-bwa index ${assembly}
-
 
 ## create a bed file use for binning
 cat ${assembly}.fai | cut -f1-2 > ${assembly}.bed
@@ -547,17 +573,14 @@ cat ${assembly}.fai | cut -f1-2 > ${assembly}.bed
 bedtools makewindows -w ${window} -s ${slide} -g ${assembly}.bed  > ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed
 ## get the coverage file (slightly modify by giving a range for the single basepair coverage value) then use bedtools map to overlap with the reference derived window file to create median-averaged bins
 
-###RUNNING THE LONG-READ ALIGNMENT
-[[ $platform == "ont" ]] && minimap2 --secondary=no -ax map-ont -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
-[[ $platform == "pacbio-hifi" ]] && minimap2 --secondary=no -ax map-hifi -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
-[[ $platform == "pacbio-clr" ]] && minimap2 --secondary=no -ax map-pb -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -o ./coverage/${prefix}.minimap.sorted.bam -
+##make sure to remove the temp files
+#rm -r tmp_sort
 
 ## get the coverage
-samtools depth -a -d 0 -@ 4 ./coverage/${prefix}.minimap.sorted.bam  | gzip > ./coverage/${prefix}.minimap.sorted.cov.tsv.gz
+samtools depth -a -d 0 -@ 4 ${prefix}.minimap.sorted.bam  | gzip > ./coverage/${prefix}.minimap.sorted.cov.tsv.gz
 
 ## calculate the median across the whole genome using the exact basepair
 medianLR=$( zcat ./coverage/${prefix}.minimap.sorted.cov.tsv.gz | awk '{if($3 != "0") print $3}' | sort -n | awk '{ a[i++]=$1} END{x=int((i+1)/2); if(x < (i+1)/2) print (a[x-1]+a[x])/2; else print a[x-1];}' )
-echo "NOTE: A median genome-wide coverage of ${medianLR}X was calculated (using downsampled reads and therefore a max of 50X)"
 ##calculate the binned median coverage and normalise each bin value by the genome wide median coverage
 echo "contig;start;end;coverage_abs;coverage_norm" | tr ';' '\t' > ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv
 #zcat ./coverage/${prefix}.minimap.sorted.cov.tsv.gz  | awk '{print $1"\t"$2"\t"$2"\t"$3}' | bedtools sort |\
@@ -569,7 +592,8 @@ bedtools map -b - -a ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.be
 if [[ $cleanup == "yes" ]]
 then
 ##remove the alignment file due to size
-rm ./coverage/${prefix}.minimap.sorted.bam
+rm ${prefix}.minimap.sorted.bam
+rm ${prefix}.minimap.sorted.bam.bai
 ##remove the coverage files looking at everybase pair due to size
 rm ./coverage/${prefix}.minimap.sorted.cov.tsv.gz
 ##remove bed file generated from assembly
@@ -583,12 +607,8 @@ LRpath=$( realpath ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.mi
 ##only run this if short reads are provided
 if [[ $shortreads == "yes" ]]
 then
-## align the short reads (filtering for only primary alignments -F 0x100 : removes secondary)
-#bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ 4 -o ./coverage/${prefix}.bwamem.sorted.bam -
-bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ 4 -o ./coverage/${prefix}.bwamem.sorted.bam
-
 ## get the coverage
-samtools depth -a -d 0 -@ 4 ./coverage/${prefix}.bwamem.sorted.bam | gzip > ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz
+samtools depth -a -d 0 -@ 4 ${prefix}.bwamem.sorted.bam | gzip > ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz
 
 ## calculate the median across the whole genome using the exact basepair
 medianSR=$( zcat ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz | awk '{if($3 != "0") print $3}' | sort -n | awk '{ a[i++]=$1} END{x=int((i+1)/2); if(x < (i+1)/2) print (a[x-1]+a[x])/2; else print a[x-1];}' )
@@ -603,8 +623,9 @@ bedtools map -b - -a ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.be
 
 if [[ $cleanup == "yes" ]]
 then
-##remove the alignment file due to size
-rm ./coverage/${prefix}.bwamem.sorted.bam
+##remove alignments
+rm ${prefix}.bwamem.sorted.bam
+rm ${prefix}.bwamem.sorted.bam.bai
 ##remove the coverage files looking at everybase pair due to size
 rm ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz
 ##remove index files
@@ -613,8 +634,6 @@ rm ${assembly}.ann
 rm ${assembly}.bwt
 rm ${assembly}.pac
 rm ${assembly}.sa
-##remove read subset used for alignment
-rm longreads.rasusa.fq.gz
 fi
 
 ##set a full path for the shortread data to be read into the R script
@@ -636,6 +655,8 @@ fi
 touch ./coverage/complete.tmp
 ##close stream variable if check
 fi
+
+
 
 ########################## TELOMERALITY ##########################
 ##check if step is to be run based on stream variable
