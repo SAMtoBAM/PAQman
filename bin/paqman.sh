@@ -557,6 +557,7 @@ samtools depth -a -d 0 -@ 4 ./coverage/${prefix}.minimap.sorted.bam  | gzip > ./
 
 ## calculate the median across the whole genome using the exact basepair
 medianLR=$( zcat ./coverage/${prefix}.minimap.sorted.cov.tsv.gz | awk '{if($3 != "0") print $3}' | sort -n | awk '{ a[i++]=$1} END{x=int((i+1)/2); if(x < (i+1)/2) print (a[x-1]+a[x])/2; else print a[x-1];}' )
+echo "NOTE: A median genome-wide coverage of ${medianLR}X was calculated (using downsampled reads and therefore a max of 50X)"
 ##calculate the binned median coverage and normalise each bin value by the genome wide median coverage
 echo "contig;start;end;coverage_abs;coverage_norm" | tr ';' '\t' > ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv
 #zcat ./coverage/${prefix}.minimap.sorted.cov.tsv.gz  | awk '{print $1"\t"$2"\t"$2"\t"$3}' | bedtools sort |\
