@@ -627,7 +627,7 @@ then
 rm ${prefix}.bwamem.sorted.bam
 rm ${prefix}.bwamem.sorted.bam.bai
 ##remove the coverage files looking at everybase pair due to size
-rm ${prefix}.bwamem.sorted.cov.tsv.gz
+rm ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz
 ##remove index files
 rm ${assembly}.amb
 rm ${assembly}.ann
