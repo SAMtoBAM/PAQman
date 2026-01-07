@@ -372,7 +372,7 @@ if [[ ",$stream," == *",step2,"* ]]; then
 ##begin step 2
 echo "$(date +%H:%M) ########## Step 2: Running Quast"
 
-quast -o ./quast ${assembly} > quast.log
+quast -t ${threads} -o ./quast ${assembly} > quast.log
 ##move quast log to quast output folder
 mv quast.log quast/
 ## we are just interested in the summary tsv file 'quast/report.tsv'
