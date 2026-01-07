@@ -210,11 +210,10 @@ In this example, all stats should be maximised except for contig count hence the
 
 ## Common problems:
 
-+ **Running out of memory during meryl run** <br/>
-Although the _--merylmem_ parameter aims to limit RAM usage by meryl this can overflow (particularly with more threads) <br/>
++ **Running out of memory** <br/>
 Three options could help: <br/>
 1.Try reducing _--merylmem_ <br/>
-2.Try reducing the number of threads <br/>
+2.Try increasing the number of threads <br/>
 3.Reduce the coverage of your raw reads using rasusa (e.g. _rasusa reads -b 100000000 reads.fq  > reads.downsampled.fq_ ; where -b represents the number of bases to keep ) <br/>
 
 + 
