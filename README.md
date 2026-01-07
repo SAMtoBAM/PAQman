@@ -213,8 +213,7 @@ In this example, all stats should be maximised except for contig count hence the
 + **Running out of memory** <br/>
 Three options could help: <br/>
 1.Try reducing _--merylmem_ <br/>
-2.Try increasing the number of threads <br/>
-3.Reduce the coverage of your raw reads using rasusa (e.g. _rasusa reads -b 100000000 reads.fq  > reads.downsampled.fq_ ; where -b represents the number of bases to keep ) <br/>
+2.Reduce the coverage of your raw reads using rasusa (e.g. _rasusa reads -b 100000000 reads.fq  > reads.downsampled.fq_ ; where -b represents the number of bases to keep ) <br/>
 
 + 
 
