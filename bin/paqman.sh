@@ -488,7 +488,7 @@ if [[ ",$stream," == *",step5,"* ]]; then
 ##begin step 5
 echo "$(date +%H:%M) ########## Step 5a: Downsampling for 50X long-reads for CRAQ assessment"
 
-## redownsample the dataset for just 50X of the longest as to remove shorter reads from confusing CRAQ
+## redownsample the dataset for just 50X (should be enough evidence for coverage and CRAQ)
 ## get genome size based on input genome
 genomesize=$( cat ./quast/report.tsv  | awk -F "\t" '{if(NR == 15) print $2}' )
 target=$( echo $genomesize | awk '{print $1*50}' )
@@ -566,7 +566,7 @@ if [[ ! -f ${prefix}.minimap.sorted.bam ]]; then
 if [[ ! -f longreads.rasusa.fq.gz ]]; then
 echo "$(date +%H:%M) ########## Step 6y: Re-Downsampling for 50X long-reads for CRAQ assessment"
 
-## redownsample the dataset for just 50X of the longest as to remove shorter reads from confusing CRAQ
+## redownsample the dataset for just 50X (should be enough evidence for coverage and CRAQ)
 ## get genome size based on input genome
 genomesize=$( cat ./quast/report.tsv  | awk -F "\t" '{if(NR == 15) print $2}' )
 target=$( echo $genomesize | awk '{print $1*50}' )
