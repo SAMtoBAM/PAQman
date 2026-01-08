@@ -497,11 +497,9 @@ target=$( echo $genomesize | awk '{print $1*50}' )
 rasusa reads -b ${target} ${longreads2} | gzip > longreads.rasusa.fq.gz
 
 
-###RUNNING THE LONG-READ ALIGNMENT
-##run craq
+###RUNNING THE ALIGNMENT STEPS
 echo "$(date +%H:%M) ########## Step 5b: Running read alignment"
-##make temp file directory for the read alignment during sorting
-#mkdir tmp_sort
+
 #[[ $platform == "ont" ]] && minimap2 --secondary=no -ax map-ont -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -T ./tmp_sort/tmp -@ 4 -o ${prefix}.minimap.sorted.bam -
 #[[ $platform == "pacbio-hifi" ]] && minimap2 --secondary=no -ax map-hifi -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -T ./tmp_sort/tmp -@ 4 -o ${prefix}.minimap.sorted.bam -
 #[[ $platform == "pacbio-clr" ]] && minimap2 --secondary=no -ax map-pb -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -T ./tmp_sort/tmp -@ 4 -o ${prefix}.minimap.sorted.bam -
@@ -559,6 +557,35 @@ fi
 ##check if step is to be run based on stream variable
 if [[ ",$stream," == *",step6,"* ]]; then
 [ -e "./coverage" ] && rm -r ./coverage
+
+
+##check if read alignment has already been done (if not have to re run it; this is if this step has to be resumed after read alignment has been removed)
+if [[ ! -f longreads.rasusa.fq.gz ]]; then
+###RUNNING THE ALIGNMENT STEPS
+echo "$(date +%H:%M) ########## Step 6z: Re-running read alignment"
+
+#[[ $platform == "ont" ]] && minimap2 --secondary=no -ax map-ont -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -T ./tmp_sort/tmp -@ 4 -o ${prefix}.minimap.sorted.bam -
+#[[ $platform == "pacbio-hifi" ]] && minimap2 --secondary=no -ax map-hifi -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -T ./tmp_sort/tmp -@ 4 -o ${prefix}.minimap.sorted.bam -
+#[[ $platform == "pacbio-clr" ]] && minimap2 --secondary=no -ax map-pb -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -T ./tmp_sort/tmp -@ 4 -o ${prefix}.minimap.sorted.bam -
+[[ $platform == "ont" ]] && minimap2 --secondary=no -ax map-ont -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -o ${prefix}.minimap.sorted.bam -
+[[ $platform == "pacbio-hifi" ]] && minimap2 --secondary=no -ax map-hifi -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -o ${prefix}.minimap.sorted.bam -
+[[ $platform == "pacbio-clr" ]] && minimap2 --secondary=no -ax map-pb -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -o ${prefix}.minimap.sorted.bam -
+
+samtools index ${prefix}.minimap.sorted.bam
+
+if [[ $shortreads == "yes" ]]
+then
+##index assembly for alignment
+bwa index ${assembly}
+## align the short reads (filtering for only primary alignments -F 0x100 : removes secondary)
+#bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ 4 -o ${prefix}.bwamem.sorted.bam -
+bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ 4 -o ${prefix}.bwamem.sorted.bam
+
+samtools index ${prefix}.bwamem.sorted.bam
+fi
+
+##stop loop for checking for read alignments
+fi
 
 ##begin step 6
 echo "$(date +%H:%M) ########## Step 6a: Analysing whole-genome coverage"
