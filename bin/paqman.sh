@@ -805,7 +805,7 @@ covSD=$( cat ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.
 covstat=$( cat ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv |awk -v covSD="$covSD" '{if($5 > (1+(2*covSD)) || $5 < (1-(2*covSD))) {deviation=deviation+1}} END{print (1-(deviation/NR))*100}' )
 ##spit out a file with all the regions considered outside the given 2SD range
 echo "contig;start;end;coverage_abs;coverage_norm" | tr ';' '\t' > ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.outside_2SD.tsv
-cat ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv |awk -v covSD="$covSD" '{if($5 >= (1+(2*covSD)) || $5 <= (1-(2*covSD))) {print}}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.outside_2SD.tsv
+tail -n+2 ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv |awk -v covSD="$covSD" '{if($5 >= (1+(2*covSD)) || $5 <= (1-(2*covSD))) {print}}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.outside_2SD.tsv
 
 
 
