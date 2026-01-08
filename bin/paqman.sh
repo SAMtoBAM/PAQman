@@ -490,7 +490,7 @@ echo "$(date +%H:%M) ########## Step 5a: Downsampling for 50X long-reads for CRA
 
 ## redownsample the dataset for just 50X (should be enough evidence for coverage and CRAQ)
 ## get genome size based on input genome
-genomesize=$( cat ./quast/report.tsv  | awk -F "\t" '{if(NR == 15) print $2}' )
+genomesize=$( cat ./quast/report.tsv  | grep "Total length" | head -n1 | cut -f2 )
 target=$( echo $genomesize | awk '{print $1*50}' )
 ##now run rasusa with the settings
 #filtlong -t ${target} --length_weight 5 ${longreads2} | gzip > longreads.filtlong50X.fq.gz
@@ -568,7 +568,7 @@ echo "$(date +%H:%M) ########## Step 6y: Re-Downsampling for 50X long-reads for 
 
 ## redownsample the dataset for just 50X (should be enough evidence for coverage and CRAQ)
 ## get genome size based on input genome
-genomesize=$( cat ./quast/report.tsv  | awk -F "\t" '{if(NR == 16) print $2}' )
+genomesize=$( cat ./quast/report.tsv  | grep "Total length" | head -n1 | cut -f2 )
 target=$( echo $genomesize | awk '{print $1*50}' )
 ##now run rasusa with the settings
 #filtlong -t ${target} --length_weight 5 ${longreads2} | gzip > longreads.filtlong50X.fq.gz
@@ -785,7 +785,7 @@ phredval=$( cat ./merqury/${prefix}.merqury.qv | awk '{print $4}' )
 if [[ $phredval == "+inf" ]]
 then
 echo "WARNING: Merqury detected no errors; QV will be estimated using the rule of three"
-genomesize=$( cat ./quast/report.tsv  | awk -F "\t" '{if(NR == 15) print $2}' )
+genomesize=$( cat ./quast/report.tsv  | grep "Total length" | head -n1 | cut -f2 )
 phredval=$( echo "scale=5; 10 * (l($genomesize)/l(10) - l(3)/l(10))" | bc -l )
 fi
 ##combine both
