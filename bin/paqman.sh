@@ -486,12 +486,12 @@ if [[ ",$stream," == *",step5,"* ]]; then
 [ -e "./craq" ] && rm -r ./craq
 
 ##begin step 5
-echo "$(date +%H:%M) ########## Step 5a: Downsampling for 50X long-reads for CRAQ assessment"
+echo "$(date +%H:%M) ########## Step 5a: Downsampling for 30X long-reads for CRAQ assessment"
 
-## redownsample the dataset for just 50X (should be enough evidence for coverage and CRAQ)
+## redownsample the dataset for just 30X (should be enough evidence for coverage and CRAQ)
 ## get genome size based on input genome
 genomesize=$( cat ./quast/report.tsv  | grep "Total length" | head -n1 | cut -f2 )
-target=$( echo $genomesize | awk '{print $1*50}' )
+target=$( echo $genomesize | awk '{print $1*30}' )
 ##now run rasusa with the settings
 #filtlong -t ${target} --length_weight 5 ${longreads2} | gzip > longreads.filtlong50X.fq.gz
 rasusa reads -b ${target} ${longreads2} | gzip > longreads.rasusa.fq.gz
@@ -564,9 +564,9 @@ if [[ ! -f ${prefix}.minimap.sorted.bam ]]; then
 
 ##check if the downsampled reads are present already (if not downsample again)
 if [[ ! -f longreads.rasusa.fq.gz ]]; then
-echo "$(date +%H:%M) ########## Step 6y: Re-Downsampling for 50X long-reads for CRAQ assessment"
+echo "$(date +%H:%M) ########## Step 6y: Re-Downsampling for 30X long-reads for CRAQ assessment"
 
-## redownsample the dataset for just 50X (should be enough evidence for coverage and CRAQ)
+## redownsample the dataset for just 30X (should be enough evidence for coverage and CRAQ)
 ## get genome size based on input genome
 genomesize=$( cat ./quast/report.tsv  | grep "Total length" | head -n1 | cut -f2 )
 target=$( echo $genomesize | awk '{print $1*50}' )
