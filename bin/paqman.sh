@@ -568,7 +568,7 @@ echo "$(date +%H:%M) ########## Step 6y: Re-Downsampling for 50X long-reads for 
 
 ## redownsample the dataset for just 50X (should be enough evidence for coverage and CRAQ)
 ## get genome size based on input genome
-genomesize=$( cat ./quast/report.tsv  | awk -F "\t" '{if(NR == 15) print $2}' )
+genomesize=$( cat ./quast/report.tsv  | awk -F "\t" '{if(NR == 16) print $2}' )
 target=$( echo $genomesize | awk '{print $1*50}' )
 ##now run rasusa with the settings
 #filtlong -t ${target} --length_weight 5 ${longreads2} | gzip > longreads.filtlong50X.fq.gz
@@ -614,8 +614,6 @@ cat ${assembly}.fai | cut -f1-2 > ${assembly}.bed
 bedtools makewindows -w ${window} -s ${slide} -g ${assembly}.bed  > ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed
 ## get the coverage file (slightly modify by giving a range for the single basepair coverage value) then use bedtools map to overlap with the reference derived window file to create median-averaged bins
 
-##make sure to remove the temp files
-#rm -r tmp_sort
 
 ## get the coverage
 samtools depth -a -d 0 -@ ${threads} ${prefix}.minimap.sorted.bam  | gzip > ./coverage/${prefix}.minimap.sorted.cov.tsv.gz
