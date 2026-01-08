@@ -782,7 +782,7 @@ echo "${prefix};${assembly2};${quaststat};${buscostat};${merqurystat};${craqstat
 
 
 ##remove complete.tmp files
-rm */complete.tmp
+#rm */complete.tmp
 
 echo "$(date +%H:%M) ######### Summary stats can be found here ${output}/summary_stats.tsv"
 echo "################ All complete; thanks for using PAQman; E noho rā"
