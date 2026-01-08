@@ -486,7 +486,7 @@ if [[ ",$stream," == *",step5,"* ]]; then
 [ -e "./craq" ] && rm -r ./craq
 
 ##begin step 5
-echo "$(date +%H:%M) ########## Step 5a: Downsampling for 50X long-reads for CRAQ assessment"
+echo "$(date +%H:%M) ########## Step 5a: Downsampling for 50X long-reads"
 
 ## redownsample the dataset for just 50X (should be enough evidence for coverage and CRAQ)
 ## get genome size based on input genome
