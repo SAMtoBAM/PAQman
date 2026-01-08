@@ -618,7 +618,7 @@ bedtools makewindows -w ${window} -s ${slide} -g ${assembly}.bed  > ./coverage/$
 #rm -r tmp_sort
 
 ## get the coverage
-samtools depth -a -d 0 -@ 4 ${prefix}.minimap.sorted.bam  | gzip > ./coverage/${prefix}.minimap.sorted.cov.tsv.gz
+samtools depth -a -d 0 -@ ${threads} ${prefix}.minimap.sorted.bam  | gzip > ./coverage/${prefix}.minimap.sorted.cov.tsv.gz
 
 ## calculate the median across the whole genome using the exact basepair
 medianLR=$( zcat ./coverage/${prefix}.minimap.sorted.cov.tsv.gz | awk '{if($3 != "0") print $3}' | sort -n | awk '{ a[i++]=$1} END{x=int((i+1)/2); if(x < (i+1)/2) print (a[x-1]+a[x])/2; else print a[x-1];}' )
@@ -649,7 +649,7 @@ LRpath=$( realpath ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.mi
 if [[ $shortreads == "yes" ]]
 then
 ## get the coverage
-samtools depth -a -d 0 -@ 4 ${prefix}.bwamem.sorted.bam | gzip > ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz
+samtools depth -a -d 0 -@ ${threads} ${prefix}.bwamem.sorted.bam | gzip > ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz
 
 ## calculate the median across the whole genome using the exact basepair
 medianSR=$( zcat ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz | awk '{if($3 != "0") print $3}' | sort -n | awk '{ a[i++]=$1} END{x=int((i+1)/2); if(x < (i+1)/2) print (a[x-1]+a[x])/2; else print a[x-1];}' )
