@@ -560,7 +560,21 @@ if [[ ",$stream," == *",step6,"* ]]; then
 
 
 ##check if read alignment has already been done (if not have to re run it; this is if this step has to be resumed after read alignment has been removed)
+if [[ ! -f ${prefix}.minimap.sorted.bam ]]; then
+
+##check if the downsampled reads are present already (if not downsample again)
 if [[ ! -f longreads.rasusa.fq.gz ]]; then
+echo "$(date +%H:%M) ########## Step 6y: Re-Downsampling for 50X long-reads for CRAQ assessment"
+
+## redownsample the dataset for just 50X of the longest as to remove shorter reads from confusing CRAQ
+## get genome size based on input genome
+genomesize=$( cat ./quast/report.tsv  | awk -F "\t" '{if(NR == 15) print $2}' )
+target=$( echo $genomesize | awk '{print $1*50}' )
+##now run rasusa with the settings
+#filtlong -t ${target} --length_weight 5 ${longreads2} | gzip > longreads.filtlong50X.fq.gz
+rasusa reads -b ${target} ${longreads2} | gzip > longreads.rasusa.fq.gz
+
+fi
 ###RUNNING THE ALIGNMENT STEPS
 echo "$(date +%H:%M) ########## Step 6z: Re-running read alignment"
 
