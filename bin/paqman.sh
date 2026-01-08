@@ -619,7 +619,34 @@ bedtools makewindows -w ${window} -s ${slide} -g ${assembly}.bed  > ./coverage/$
 samtools depth -a -d 0 -@ ${threads} ${prefix}.minimap.sorted.bam  | gzip > ./coverage/${prefix}.minimap.sorted.cov.tsv.gz
 
 ## calculate the median across the whole genome using the exact basepair
-medianLR=$( zcat ./coverage/${prefix}.minimap.sorted.cov.tsv.gz | awk '{if($3 != "0") print $3}' | sort -n | awk '{ a[i++]=$1} END{x=int((i+1)/2); if(x < (i+1)/2) print (a[x-1]+a[x])/2; else print a[x-1];}' )
+medianLR=$( gzip -cd ./coverage/${prefix}.minimap.sorted.cov.tsv.gz | awk '
+  $3!=0 {
+    count[$3]++   # histogram: depth → frequency
+    n++           # total number of non-zero positions
+  }
+
+  END {
+    # Median positions (handles odd and even n)
+    mid1 = int((n+1)/2)
+    mid2 = int((n+2)/2)
+
+    # Walk depths in increasing order
+    for (d=0; d<=100000; d++) {
+      c += count[d]
+
+      if (!m1 && c >= mid1)
+        m1 = d
+
+      if (c >= mid2) {
+        m2 = d
+        break
+      }
+    }
+
+    # Average handles even n correctly
+    print (m1 + m2) / 2
+  }
+' )
 ##calculate the binned median coverage and normalise each bin value by the genome wide median coverage
 echo "contig;start;end;coverage_abs;coverage_norm" | tr ';' '\t' > ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv
 #zcat ./coverage/${prefix}.minimap.sorted.cov.tsv.gz  | awk '{print $1"\t"$2"\t"$2"\t"$3}' | bedtools sort |\
@@ -650,7 +677,34 @@ then
 samtools depth -a -d 0 -@ ${threads} ${prefix}.bwamem.sorted.bam | gzip > ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz
 
 ## calculate the median across the whole genome using the exact basepair
-medianSR=$( zcat ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz | awk '{if($3 != "0") print $3}' | sort -n | awk '{ a[i++]=$1} END{x=int((i+1)/2); if(x < (i+1)/2) print (a[x-1]+a[x])/2; else print a[x-1];}' )
+medianSR=$( zcat ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz | awk '
+  $3!=0 {
+    count[$3]++   # histogram: depth → frequency
+    n++           # total number of non-zero positions
+  }
+
+  END {
+    # Median positions (handles odd and even n)
+    mid1 = int((n+1)/2)
+    mid2 = int((n+2)/2)
+
+    # Walk depths in increasing order
+    for (d=0; d<=100000; d++) {
+      c += count[d]
+
+      if (!m1 && c >= mid1)
+        m1 = d
+
+      if (c >= mid2) {
+        m2 = d
+        break
+      }
+    }
+
+    # Average handles even n correctly
+    print (m1 + m2) / 2
+  }
+' )
 ##calculate the binned median coverage and normalise each bin value by the genome wide median coverage
 echo "contig;start;end;coverage_abs;coverage_norm" | tr ';' '\t' > ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.coverage_normalised.tsv
 #zcat ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz  | awk '{print $1"\t"$2"\t"$2"\t"$3}' | bedtools sort |\
