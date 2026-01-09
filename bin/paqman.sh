@@ -27,8 +27,8 @@ prefix="paqman"
 output="paqman_output"
 sequences="contigs"
 meryldb=""
-merylmem="10"
-merylkmer="21"
+merylmem="15"
+merylkmer="18"
 localbuscodb=""
 resume="no"
 help="nohelp"
@@ -488,10 +488,10 @@ if [[ ",$stream," == *",step5,"* ]]; then
 ##begin step 5
 echo "$(date +%H:%M) ########## Step 5a: Downsampling for 50X long-reads"
 
-## redownsample the dataset for just 50X (should be enough evidence for coverage and CRAQ)
+## redownsample the dataset for just 30X (should be enough evidence for coverage and CRAQ)
 ## get genome size based on input genome
 genomesize=$( cat ./quast/report.tsv  | grep "Total length" | head -n1 | cut -f2 )
-target=$( echo $genomesize | awk '{print $1*50}' )
+target=$( echo $genomesize | awk '{print $1*30}' )
 ##now run rasusa with the settings
 #filtlong -t ${target} --length_weight 5 ${longreads2} | gzip > longreads.filtlong50X.fq.gz
 rasusa reads -b ${target} ${longreads2} | gzip > longreads.rasusa.fq.gz
@@ -503,9 +503,9 @@ echo "$(date +%H:%M) ########## Step 5b: Running read alignment"
 #[[ $platform == "ont" ]] && minimap2 --secondary=no -ax map-ont -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -T ./tmp_sort/tmp -@ 4 -o ${prefix}.minimap.sorted.bam -
 #[[ $platform == "pacbio-hifi" ]] && minimap2 --secondary=no -ax map-hifi -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -T ./tmp_sort/tmp -@ 4 -o ${prefix}.minimap.sorted.bam -
 #[[ $platform == "pacbio-clr" ]] && minimap2 --secondary=no -ax map-pb -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -T ./tmp_sort/tmp -@ 4 -o ${prefix}.minimap.sorted.bam -
-[[ $platform == "ont" ]] && minimap2 --secondary=no -ax map-ont -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -o ${prefix}.minimap.sorted.bam -
-[[ $platform == "pacbio-hifi" ]] && minimap2 --secondary=no -ax map-hifi -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -o ${prefix}.minimap.sorted.bam -
-[[ $platform == "pacbio-clr" ]] && minimap2 --secondary=no -ax map-pb -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -o ${prefix}.minimap.sorted.bam -
+[[ $platform == "ont" ]] && minimap2 --secondary=no -ax map-ont -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -m 2G -o ${prefix}.minimap.sorted.bam -
+[[ $platform == "pacbio-hifi" ]] && minimap2 --secondary=no -ax map-hifi -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -m 2G -o ${prefix}.minimap.sorted.bam -
+[[ $platform == "pacbio-clr" ]] && minimap2 --secondary=no -ax map-pb -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -m 2G -o ${prefix}.minimap.sorted.bam -
 
 samtools index ${prefix}.minimap.sorted.bam
 
@@ -514,8 +514,8 @@ then
 ##index assembly for alignment
 bwa index ${assembly}
 ## align the short reads (filtering for only primary alignments -F 0x100 : removes secondary)
-#bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ 4 -o ${prefix}.bwamem.sorted.bam -
-bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ 4 -o ${prefix}.bwamem.sorted.bam
+#bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ 4 -m 2G -o ${prefix}.bwamem.sorted.bam -
+bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ 4 -m 2G -o ${prefix}.bwamem.sorted.bam
 
 samtools index ${prefix}.bwamem.sorted.bam
 fi
@@ -564,9 +564,9 @@ if [[ ! -f ${prefix}.minimap.sorted.bam ]]; then
 
 ##check if the downsampled reads are present already (if not downsample again)
 if [[ ! -f longreads.rasusa.fq.gz ]]; then
-echo "$(date +%H:%M) ########## Step 6y: Re-Downsampling for 50X long-reads for CRAQ assessment"
+echo "$(date +%H:%M) ########## Step 6y: Re-Downsampling for 30X long-reads for CRAQ assessment"
 
-## redownsample the dataset for just 50X (should be enough evidence for coverage and CRAQ)
+## redownsample the dataset for just 30X (should be enough evidence for coverage and CRAQ)
 ## get genome size based on input genome
 genomesize=$( cat ./quast/report.tsv  | grep "Total length" | head -n1 | cut -f2 )
 target=$( echo $genomesize | awk '{print $1*50}' )
@@ -581,9 +581,9 @@ echo "$(date +%H:%M) ########## Step 6z: Re-running read alignment"
 #[[ $platform == "ont" ]] && minimap2 --secondary=no -ax map-ont -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -T ./tmp_sort/tmp -@ 4 -o ${prefix}.minimap.sorted.bam -
 #[[ $platform == "pacbio-hifi" ]] && minimap2 --secondary=no -ax map-hifi -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -T ./tmp_sort/tmp -@ 4 -o ${prefix}.minimap.sorted.bam -
 #[[ $platform == "pacbio-clr" ]] && minimap2 --secondary=no -ax map-pb -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -T ./tmp_sort/tmp -@ 4 -o ${prefix}.minimap.sorted.bam -
-[[ $platform == "ont" ]] && minimap2 --secondary=no -ax map-ont -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -o ${prefix}.minimap.sorted.bam -
-[[ $platform == "pacbio-hifi" ]] && minimap2 --secondary=no -ax map-hifi -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -o ${prefix}.minimap.sorted.bam -
-[[ $platform == "pacbio-clr" ]] && minimap2 --secondary=no -ax map-pb -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -o ${prefix}.minimap.sorted.bam -
+[[ $platform == "ont" ]] && minimap2 --secondary=no -ax map-ont -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -m 2G -o ${prefix}.minimap.sorted.bam -
+[[ $platform == "pacbio-hifi" ]] && minimap2 --secondary=no -ax map-hifi -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -m 2G -o ${prefix}.minimap.sorted.bam -
+[[ $platform == "pacbio-clr" ]] && minimap2 --secondary=no -ax map-pb -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -m 2G -o ${prefix}.minimap.sorted.bam -
 
 samtools index ${prefix}.minimap.sorted.bam
 
@@ -592,8 +592,8 @@ then
 ##index assembly for alignment
 bwa index ${assembly}
 ## align the short reads (filtering for only primary alignments -F 0x100 : removes secondary)
-#bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ 4 -o ${prefix}.bwamem.sorted.bam -
-bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ 4 -o ${prefix}.bwamem.sorted.bam
+#bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ 4 -m 2G -o ${prefix}.bwamem.sorted.bam -
+bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ 4 -m 2G -o ${prefix}.bwamem.sorted.bam
 
 samtools index ${prefix}.bwamem.sorted.bam
 fi
@@ -616,17 +616,25 @@ bedtools makewindows -w ${window} -s ${slide} -g ${assembly}.bed  > ./coverage/$
 
 
 ## get the coverage
-samtools depth -a -d 0 -@ ${threads} ${prefix}.minimap.sorted.bam  | gzip > ./coverage/${prefix}.minimap.sorted.cov.tsv.gz
+#samtools depth -a -d 0 -@ ${threads} ${prefix}.minimap.sorted.bam  | gzip > ./coverage/${prefix}.minimap.sorted.cov.tsv.gz
+mosdepth --fast-mode -m -b ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed -t ${threads} ${prefix} ${prefix}.minimap.sorted.bam
+rm ${prefix}.per-base.bed.*
+mv *mosdepth* coverage/
+rm ${prefix}.regions.bed.gz.csi
+zcat ${prefix}.regions.bed.gz | sed 's/\.00$//g' > coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.tsv
+rm ${prefix}.regions.bed.gz
 
 ## calculate the median across the whole genome using the exact basepair
-medianLR=$( zcat ./coverage/${prefix}.minimap.sorted.cov.tsv.gz | awk '{if($3 != "0") print $3}' | sort -n | awk '{ a[i++]=$1} END{x=int((i+1)/2); if(x < (i+1)/2) print (a[x-1]+a[x])/2; else print a[x-1];}' )
+medianLR=$( cat ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.tsv | awk '{if($4 != "0") print $4}' | sort -n | awk '{ a[i++]=$1} END{x=int((i+1)/2); if(x < (i+1)/2) print (a[x-1]+a[x])/2; else print a[x-1];}' )
+
 ##calculate the binned median coverage and normalise each bin value by the genome wide median coverage
 echo "contig;start;end;coverage_abs;coverage_norm" | tr ';' '\t' > ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv
 #zcat ./coverage/${prefix}.minimap.sorted.cov.tsv.gz  | awk '{print $1"\t"$2"\t"$2"\t"$3}' | bedtools sort |\
 #bedtools map -b - -a ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed -c 4 -o median | awk -v median="$medianLR" '{print $0"\t"$4/median}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv
 ##removed bedtools sort step (stopped working and output would be blank)
-zcat ./coverage/${prefix}.minimap.sorted.cov.tsv.gz  | awk '{print $1"\t"$2"\t"$2"\t"$3}' |\
-bedtools map -b - -a ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed -c 4 -o median | awk -v median="$medianLR" '{print $0"\t"$4/median}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv
+#zcat ./coverage/${prefix}.minimap.sorted.cov.tsv.gz  | awk '{print $1"\t"$2"\t"$2"\t"$3}' |\
+#bedtools map -b - -a ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed -c 4 -o median | awk -v median="$medianLR" '{print $0"\t"$4/median}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv
+cat ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.tsv | awk -v median="$medianLR" '{print $0"\t"$4/median}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv
 
 if [[ $cleanup == "yes" ]]
 then
@@ -634,7 +642,7 @@ then
 rm ${prefix}.minimap.sorted.bam
 rm ${prefix}.minimap.sorted.bam.bai
 ##remove the coverage files looking at everybase pair due to size
-rm ./coverage/${prefix}.minimap.sorted.cov.tsv.gz
+rm ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.tsv
 ##remove bed file generated from assembly
 rm ${assembly}.bed
 fi
@@ -647,17 +655,25 @@ LRpath=$( realpath ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.mi
 if [[ $shortreads == "yes" ]]
 then
 ## get the coverage
-samtools depth -a -d 0 -@ ${threads} ${prefix}.bwamem.sorted.bam | gzip > ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz
+#samtools depth -a -d 0 -@ ${threads} ${prefix}.bwamem.sorted.bam  | gzip > ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz
+mosdepth --fast-mode -m -b ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed -t ${threads} ${prefix} ${prefix}.bwamem.sorted.bam
+rm ${prefix}.per-base.bed.*
+mv *mosdepth* coverage/
+rm ${prefix}.regions.bed.gz.csi
+zcat ${prefix}.regions.bed.gz | sed 's/\.00$//g' > coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.tsv
+rm ${prefix}.regions.bed.gz
 
 ## calculate the median across the whole genome using the exact basepair
-medianSR=$( zcat ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz | awk '{if($3 != "0") print $3}' | sort -n | awk '{ a[i++]=$1} END{x=int((i+1)/2); if(x < (i+1)/2) print (a[x-1]+a[x])/2; else print a[x-1];}' )
+medianSR=$( cat ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.tsv | awk '{if($4 != "0") print $4}' | sort -n | awk '{ a[i++]=$1} END{x=int((i+1)/2); if(x < (i+1)/2) print (a[x-1]+a[x])/2; else print a[x-1];}' )
+
 ##calculate the binned median coverage and normalise each bin value by the genome wide median coverage
 echo "contig;start;end;coverage_abs;coverage_norm" | tr ';' '\t' > ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.coverage_normalised.tsv
 #zcat ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz  | awk '{print $1"\t"$2"\t"$2"\t"$3}' | bedtools sort |\
-#bedtools map -b - -a ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed -c 4 -o median | awk -v median="$medianSR" '{print $0"\t"$4/median}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.coverage_normalised.tsv
+#bedtools map -b - -a ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed -c 4 -o median | awk -v median="$medianLR" '{print $0"\t"$4/median}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.coverage_normalised.tsv
 ##removed bedtools sort step (stopped working and output would be blank)
-zcat ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz  | awk '{print $1"\t"$2"\t"$2"\t"$3}' |\
-bedtools map -b - -a ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed -c 4 -o median | awk -v median="$medianSR" '{print $0"\t"$4/median}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.coverage_normalised.tsv
+#zcat ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz  | awk '{print $1"\t"$2"\t"$2"\t"$3}' |\
+#bedtools map -b - -a ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed -c 4 -o median | awk -v median="$medianLR" '{print $0"\t"$4/median}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.coverage_normalised.tsv
+cat ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.tsv | awk -v median="$medianLR" '{print $0"\t"$4/median}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.coverage_normalised.tsv
 
 
 if [[ $cleanup == "yes" ]]
@@ -666,7 +682,7 @@ then
 rm ${prefix}.bwamem.sorted.bam
 rm ${prefix}.bwamem.sorted.bam.bai
 ##remove the coverage files looking at everybase pair due to size
-rm ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz
+rm ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.tsv
 ##remove index files
 rm ${assembly}.amb
 rm ${assembly}.ann
