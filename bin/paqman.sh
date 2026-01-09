@@ -240,6 +240,9 @@ fi
 ##check that the options are proper
 [[ $sequences != "contigs" && $sequences != "scaffolds" ]] && echo "ERROR: --sequences option neither 'contigs' (default) or 'scaffolds'" && exit
 [[ $platform != "ont" && $platform != "pacbio-hifi" && $platform != "pacbio-clr" ]] && echo "ERROR: --platform option needs to be 'ont' (default) or 'pacbio-hifi' or 'pacbio-clr'" && exit
+[[ ! "$threads" =~ ^[0-9]+$ ]] && echo "ERROR: --threads option need to be a number" && exit
+[[ ! "$window" =~ ^[0-9]+$ ]] && echo "ERROR: --window option need to be a number" && exit
+[[ ! "$slide" =~ ^[0-9]+$ ]] && echo "ERROR: --slide option need to be a number" && exit
 [[ ! "$coveragemax" =~ ^[0-9]+$ ]] && echo "ERROR: --coveragemax option need to be a number" && exit
 [[ $cleanup != "yes" && $cleanup != "no" ]] && echo "ERROR: --cleanup option neither 'yes' (default) or 'no'" && exit
 
