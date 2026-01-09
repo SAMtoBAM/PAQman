@@ -740,13 +740,71 @@ seqkit locate -j ${threads} --ignore-case -p "${telomererepeat}" ${assembly} | t
 ##classified will be categorical telomeric/distant/absent
 echo "contig;edge;distance_to_edge;closest_coords;classified" | tr ';' '\t' > ./telomerality/telomeres.classification.tsv
 
-cut -f1-2 "${assembly}.fai" | while read contig size
+awk -F "\t" '{print $1"\t"$2}' "${assembly}.fai" | while read contig size
 do
-contig=$( echo "${line}" | awk '{print $1}' )
-size=$( echo "${line}" | awk '{print $2}' )
-cat ./telomerality/telomeres.bed | awk -v contig="$contig" '{if($1 == contig) print}' | head -n1 | awk -v contig="$contig" '{if($1 ==contig && $2 <= 0.75*($3-$2)) {print contig"\tbeginning\t"$2"\t"$2"-"$3"\ttelomeric"; end="noneed"} else if($1 ==contig && $2 > 0.75*($3-$2) && $2 < 5000) {print contig"\tbeginning\t"$2"\t"$2"-"$3"\tdistant"; end="noneed"}} END{if(end != "noneed") print contig"\tbeginning\tNA\tNA\tabsent"}'
-cat ./telomerality/telomeres.bed | awk -v contig="$contig" '{if($1 == contig) print}' | tail -n1 | awk -v contig="$contig" -v size="$size" '{if($1 ==contig && (size-$3) <= 0.75*($3-$2)) {print contig"\tend\t"(size-$3)"\t"$2"-"$3"\ttelomeric"; end="noneed"} else if($1 ==contig && (size-$3) > 0.75*($3-$2) && (size-$3) < 5000) {print contig"\tend\t"(size-$3)"\t"$2"-"$3"\tdistant"; end="noneed"}} END{if(end != "noneed") print contig"\tend\tNA\tNA\tabsent"}'
+#awk -v contig="$contig" '{if($1 == contig) print}' ./telomerality/telomeres.bed | head -n1 | awk -v contig="$contig" '{if($1 ==contig && $2 <= 0.75*($3-$2)) {print contig"\tbeginning\t"$2"\t"$2"-"$3"\ttelomeric"; end="noneed"} else if($1 ==contig && $2 > 0.75*($3-$2) && $2 < 5000) {print contig"\tbeginning\t"$2"\t"$2"-"$3"\tdistant"; end="noneed"}} END{if(end != "noneed") print contig"\tbeginning\tNA\tNA\tabsent"}'
+#awk -v contig="$contig" '{if($1 == contig) print}' ./telomerality/telomeres.bed | tail -n1 | awk -v contig="$contig" -v size="$size" '{if($1 ==contig && (size-$3) <= 0.75*($3-$2)) {print contig"\tend\t"(size-$3)"\t"$2"-"$3"\ttelomeric"; end="noneed"} else if($1 ==contig && (size-$3) > 0.75*($3-$2) && (size-$3) < 5000) {print contig"\tend\t"(size-$3)"\t"$2"-"$3"\tdistant"; end="noneed"}} END{if(end != "noneed") print contig"\tend\tNA\tNA\tabsent"}'
+    awk -v contig="$contig" '
+    $1 == contig {
+        if (!seen || $2 < min) {
+            min=$2
+            line=$0
+            seen=1
+        }
+    }
+    END {
+        if (seen) print line
+    }
+' ./telomerality/telomeres.bed |
+awk -v contig="$contig" '
+    {
+        printed=0
+        if ($2 <= 0.75*($3-$2)) {
+            print contig "\tbeginning\t" $2 "\t" $2 "-" $3 "\ttelomeric"
+            printed=1
+        }
+        else if ($2 > 0.75*($3-$2) && $2 < 5000) {
+            print contig "\tbeginning\t" $2 "\t" $2 "-" $3 "\tdistant"
+            printed=1
+        }
+    }
+    END {
+        if (!printed)
+            print contig "\tbeginning\tNA\tNA\tabsent"
+    }'
+
+    awk -v contig="$contig" '
+    $1 == contig {
+        if (!seen || $3 > max) {
+            max=$3
+            line=$0
+            seen=1
+        }
+    }
+    END {
+        if (seen) print line
+    }
+' ./telomerality/telomeres.bed |
+awk -v contig="$contig" -v size="$size" '
+    {
+        printed=0
+        dist = size - $3
+        if (dist <= 0.75*($3-$2)) {
+            print contig "\tend\t" dist "\t" $2 "-" $3 "\ttelomeric"
+            printed=1
+        }
+        else if (dist > 0.75*($3-$2) && dist < 5000) {
+            print contig "\tend\t" dist "\t" $2 "-" $3 "\tdistant"
+            printed=1
+        }
+    }
+    END {
+        if (!printed)
+            print contig "\tend\tNA\tNA\tabsent"
+    }
+'
 done >> ./telomerality/telomeres.classification.tsv
+
 
 touch ./telomerality/complete.tmp
 ##close stream variable if check
