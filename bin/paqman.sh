@@ -162,7 +162,7 @@ case "$key" in
 	Optional parameters:
 	-w | --window       Number of basepairs for window averaging for coverage (default: 30000)
 	-s | --slide        Number of basepairs for the window to slide for coverage (default: 10000)
-	-cm | --coveragemax	The amount of downsampled read coverage ([-cm]*genome-size) used for both CRAQ and mapping-coverage calculations (default: 30)
+	-cm | --coveragemax	The amount of downsampled read coverage ([-cm]*genome-size) used for both CRAQ and mapping-coverage calculations. Set 0 to skip (default: 30)
 	-p | --prefix       Prefix for output (default: name of assembly file (-a) before the fasta suffix)
 	-o | --output       Name of output folder for all results (default: paqman_output)
 	-seq | --sequences	Whether or not to use scaffolds or contigs; provide 'scaffolds' to not break the assembly at N's (default: contigs)
@@ -496,8 +496,17 @@ fi
 if [[ ",$stream," == *",step5,"* ]]; then
 [ -e "./craq" ] && rm -r ./craq
 
+##check if coveragemax parameter has been set to 0 to skip the downsampling
+##if so just make a symbolic link
+if [[ "${coveragemax}" == "0" ]]
+then
+echo "$(date +%H:%M) ########## Step 5a: SKIPPING Downsampling of long-reads"
+
+ln -s ${longreads2} longreads.rasusa.fq.gz
+
+else
 ##begin step 5
-echo "$(date +%H:%M) ########## Step 5a: Downsampling for 50X long-reads"
+echo "$(date +%H:%M) ########## Step 5a: Downsampling for ${coveragemax}X long-reads"
 
 ## redownsample the dataset for just 30X (should be enough evidence for coverage and CRAQ)
 ## get genome size based on input genome
@@ -507,6 +516,7 @@ target=$( echo $genomesize | awk -v coveragemax="$coveragemax" '{print $1*covera
 #filtlong -t ${target} --length_weight 5 ${longreads2} | gzip > longreads.filtlong50X.fq.gz
 rasusa reads -b ${target} ${longreads2} | gzip > longreads.rasusa.fq.gz
 
+fi
 
 ###RUNNING THE ALIGNMENT STEPS
 echo "$(date +%H:%M) ########## Step 5b: Running read alignment"
