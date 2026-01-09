@@ -616,44 +616,25 @@ bedtools makewindows -w ${window} -s ${slide} -g ${assembly}.bed  > ./coverage/$
 
 
 ## get the coverage
-samtools depth -a -d 0 -@ ${threads} ${prefix}.minimap.sorted.bam  | gzip > ./coverage/${prefix}.minimap.sorted.cov.tsv.gz
+#samtools depth -a -d 0 -@ ${threads} ${prefix}.minimap.sorted.bam  | gzip > ./coverage/${prefix}.minimap.sorted.cov.tsv.gz
+mosdepth --fast-mode -m -b ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed -t ${threads} ${prefix} ${prefix}.minimap.sorted.bam
+rm ${prefix}.per-base.bed.*
+mv *mosdepth* coverage/
+rm ${prefix}.regions.bed.gz.csi
+zcat ${prefix}.regions.bed.gz | sed 's/\.00$//g' > coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.tsv
+rm ${prefix}.regions.bed.gz
 
 ## calculate the median across the whole genome using the exact basepair
-medianLR=$( gzip -cd ./coverage/${prefix}.minimap.sorted.cov.tsv.gz | awk '
-  $3!=0 {
-    count[$3]++   # histogram: depth → frequency
-    n++           # total number of non-zero positions
-  }
+medianLR=$( cat ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.tsv | awk '{if($4 != "0") print $4}' | sort -n | awk '{ a[i++]=$1} END{x=int((i+1)/2); if(x < (i+1)/2) print (a[x-1]+a[x])/2; else print a[x-1];}' )
 
-  END {
-    # Median positions (handles odd and even n)
-    mid1 = int((n+1)/2)
-    mid2 = int((n+2)/2)
-
-    # Walk depths in increasing order
-    for (d=0; d<=100000; d++) {
-      c += count[d]
-
-      if (!m1 && c >= mid1)
-        m1 = d
-
-      if (c >= mid2) {
-        m2 = d
-        break
-      }
-    }
-
-    # Average handles even n correctly
-    print (m1 + m2) / 2
-  }
-' )
 ##calculate the binned median coverage and normalise each bin value by the genome wide median coverage
 echo "contig;start;end;coverage_abs;coverage_norm" | tr ';' '\t' > ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv
 #zcat ./coverage/${prefix}.minimap.sorted.cov.tsv.gz  | awk '{print $1"\t"$2"\t"$2"\t"$3}' | bedtools sort |\
 #bedtools map -b - -a ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed -c 4 -o median | awk -v median="$medianLR" '{print $0"\t"$4/median}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv
 ##removed bedtools sort step (stopped working and output would be blank)
-zcat ./coverage/${prefix}.minimap.sorted.cov.tsv.gz  | awk '{print $1"\t"$2"\t"$2"\t"$3}' |\
-bedtools map -b - -a ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed -c 4 -o median | awk -v median="$medianLR" '{print $0"\t"$4/median}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv
+#zcat ./coverage/${prefix}.minimap.sorted.cov.tsv.gz  | awk '{print $1"\t"$2"\t"$2"\t"$3}' |\
+#bedtools map -b - -a ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed -c 4 -o median | awk -v median="$medianLR" '{print $0"\t"$4/median}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv
+cat ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.tsv | awk -v median="$medianLR" '{print $0"\t"$4/median}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.coverage_normalised.tsv
 
 if [[ $cleanup == "yes" ]]
 then
@@ -661,7 +642,7 @@ then
 rm ${prefix}.minimap.sorted.bam
 rm ${prefix}.minimap.sorted.bam.bai
 ##remove the coverage files looking at everybase pair due to size
-rm ./coverage/${prefix}.minimap.sorted.cov.tsv.gz
+rm ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.minimap.tsv
 ##remove bed file generated from assembly
 rm ${assembly}.bed
 fi
@@ -674,44 +655,25 @@ LRpath=$( realpath ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.mi
 if [[ $shortreads == "yes" ]]
 then
 ## get the coverage
-samtools depth -a -d 0 -@ ${threads} ${prefix}.bwamem.sorted.bam | gzip > ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz
+#samtools depth -a -d 0 -@ ${threads} ${prefix}.bwamem.sorted.bam  | gzip > ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz
+mosdepth --fast-mode -m -b ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed -t ${threads} ${prefix} ${prefix}.bwamem.sorted.bam
+rm ${prefix}.per-base.bed.*
+mv *mosdepth* coverage/
+rm ${prefix}.regions.bed.gz.csi
+zcat ${prefix}.regions.bed.gz | sed 's/\.00$//g' > coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.tsv
+rm ${prefix}.regions.bed.gz
 
 ## calculate the median across the whole genome using the exact basepair
-medianSR=$( zcat ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz | awk '
-  $3!=0 {
-    count[$3]++   # histogram: depth → frequency
-    n++           # total number of non-zero positions
-  }
+medianSR=$( cat ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.tsv | awk '{if($4 != "0") print $4}' | sort -n | awk '{ a[i++]=$1} END{x=int((i+1)/2); if(x < (i+1)/2) print (a[x-1]+a[x])/2; else print a[x-1];}' )
 
-  END {
-    # Median positions (handles odd and even n)
-    mid1 = int((n+1)/2)
-    mid2 = int((n+2)/2)
-
-    # Walk depths in increasing order
-    for (d=0; d<=100000; d++) {
-      c += count[d]
-
-      if (!m1 && c >= mid1)
-        m1 = d
-
-      if (c >= mid2) {
-        m2 = d
-        break
-      }
-    }
-
-    # Average handles even n correctly
-    print (m1 + m2) / 2
-  }
-' )
 ##calculate the binned median coverage and normalise each bin value by the genome wide median coverage
 echo "contig;start;end;coverage_abs;coverage_norm" | tr ';' '\t' > ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.coverage_normalised.tsv
 #zcat ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz  | awk '{print $1"\t"$2"\t"$2"\t"$3}' | bedtools sort |\
-#bedtools map -b - -a ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed -c 4 -o median | awk -v median="$medianSR" '{print $0"\t"$4/median}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.coverage_normalised.tsv
+#bedtools map -b - -a ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed -c 4 -o median | awk -v median="$medianLR" '{print $0"\t"$4/median}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.coverage_normalised.tsv
 ##removed bedtools sort step (stopped working and output would be blank)
-zcat ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz  | awk '{print $1"\t"$2"\t"$2"\t"$3}' |\
-bedtools map -b - -a ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed -c 4 -o median | awk -v median="$medianSR" '{print $0"\t"$4/median}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.coverage_normalised.tsv
+#zcat ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz  | awk '{print $1"\t"$2"\t"$2"\t"$3}' |\
+#bedtools map -b - -a ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed -c 4 -o median | awk -v median="$medianLR" '{print $0"\t"$4/median}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.coverage_normalised.tsv
+cat ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.tsv | awk -v median="$medianLR" '{print $0"\t"$4/median}' >> ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.coverage_normalised.tsv
 
 
 if [[ $cleanup == "yes" ]]
@@ -720,7 +682,7 @@ then
 rm ${prefix}.bwamem.sorted.bam
 rm ${prefix}.bwamem.sorted.bam.bai
 ##remove the coverage files looking at everybase pair due to size
-rm ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz
+rm ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.bwamem.tsv
 ##remove index files
 rm ${assembly}.amb
 rm ${assembly}.ann
