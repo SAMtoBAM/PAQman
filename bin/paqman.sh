@@ -22,6 +22,7 @@ buscodb="eukaryota"
 threads="1"
 window="30000"
 slide="10000"
+coveragemax="30"
 telomererepeat="TTAGGG"
 prefix="paqman"
 output="paqman_output"
@@ -83,6 +84,11 @@ case "$key" in
 	;;
 	-s|--slide)
 	slide="$2"
+	shift
+	shift
+	;;
+	-cm|--coveragemax)
+	coveragemax="$2"
 	shift
 	shift
 	;;
@@ -156,6 +162,7 @@ case "$key" in
 	Optional parameters:
 	-w | --window       Number of basepairs for window averaging for coverage (default: 30000)
 	-s | --slide        Number of basepairs for the window to slide for coverage (default: 10000)
+	-cm | --coveragemax	The amount of downsampled read coverage ([-cm]*genome-size) used for both CRAQ and mapping-coverage calculations (default: 30)
 	-p | --prefix       Prefix for output (default: name of assembly file (-a) before the fasta suffix)
 	-o | --output       Name of output folder for all results (default: paqman_output)
 	-seq | --sequences	Whether or not to use scaffolds or contigs; provide 'scaffolds' to not break the assembly at N's (default: contigs)
@@ -233,6 +240,7 @@ fi
 ##check that the options are proper
 [[ $sequences != "contigs" && $sequences != "scaffolds" ]] && echo "ERROR: --sequences option neither 'contigs' (default) or 'scaffolds'" && exit
 [[ $platform != "ont" && $platform != "pacbio-hifi" && $platform != "pacbio-clr" ]] && echo "ERROR: --platform option needs to be 'ont' (default) or 'pacbio-hifi' or 'pacbio-clr'" && exit
+[[ ! "$coveragemax" =~ ^[0-9]+$ ]] && echo "ERROR: --coveragemax option need to be a number" && exit
 [[ $cleanup != "yes" && $cleanup != "no" ]] && echo "ERROR: --cleanup option neither 'yes' (default) or 'no'" && exit
 
 [[ -d "${output}" && $resume == "no" ]] && echo "ERROR: output folder already exists (use --resume to restart run from last step)" && exit
@@ -491,7 +499,7 @@ echo "$(date +%H:%M) ########## Step 5a: Downsampling for 50X long-reads"
 ## redownsample the dataset for just 30X (should be enough evidence for coverage and CRAQ)
 ## get genome size based on input genome
 genomesize=$( cat ./quast/report.tsv  | grep "Total length" | head -n1 | cut -f2 )
-target=$( echo $genomesize | awk '{print $1*30}' )
+target=$( echo $genomesize | awk -v coveragemax="$coveragemax" '{print $1*coveragemax}' )
 ##now run rasusa with the settings
 #filtlong -t ${target} --length_weight 5 ${longreads2} | gzip > longreads.filtlong50X.fq.gz
 rasusa reads -b ${target} ${longreads2} | gzip > longreads.rasusa.fq.gz
