@@ -740,7 +740,7 @@ seqkit locate -j ${threads} --ignore-case -p "${telomererepeat}" ${assembly} | t
 ##classified will be categorical telomeric/distant/absent
 echo "contig;edge;distance_to_edge;closest_coords;classified" | tr ';' '\t' > ./telomerality/telomeres.classification.tsv
 
-cat ${assembly}.fai | cut -f1-2 | while read line
+cut -f1-2 "${assembly}.fai" | while read contig size
 do
 contig=$( echo "${line}" | awk '{print $1}' )
 size=$( echo "${line}" | awk '{print $2}' )
