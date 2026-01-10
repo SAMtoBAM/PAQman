@@ -121,4 +121,9 @@ The uses PAQman (see github READme for installation/usage instructions)
     ls *_paqman/summary_stats.tsv > list_of_summary_files.txt
     ##run paqplots for the comparisons
     time paqplots.sh -l list_of_summary_files.txt -p ${project} -o ${project}_paqplot
-  
+
+
+
+ <p align="center" >
+    <img src="https://github.com/SAMtoBAM/PAQman/blob/main/figures/figures/figure3.paqplot_example.Nipponbare_alone.svg" width=70%>
+</p>
