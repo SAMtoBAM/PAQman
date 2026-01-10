@@ -145,14 +145,15 @@ The uses PAQman (see github READme for installation/usage instructions)
     #conda create -n paqman samtobam::paqman
     conda activate paqman
     
-    ##PAQman options specific for humans is only the busco database ('-b tetrapoda') (didn't use a more specific dataset as the number of busco genes grows substatially)
+    ##PAQman options specific for humans is the busco database ('-b tetrapoda') (didn't use a more specific dataset as the number of busco genes grows substatially)
+    ##and setting coveragemax to 0 so to skip the downsampling since that has already been done/the coverage is below 30X already
     busco="tetrapoda"
     ##telomeric repeat is the default for humans
     ##loop through each assembly and run PAQman
     ls assemblies/*.fa.gz | while read assembly
     do
     sample=$( echo $assembly | awk -F "/" '{print $NF}' | awk -F "." '{print $1}' )
-    time paqman.sh -a ${assembly} -l reads/pacbio/SRR9087XXX.pacbio.fq.gz -t ${threads} -b ${busco} -p ${sample} -o ${project}/${sample}_paqman
+    time paqman.sh -a ${assembly} -l reads/pacbio/SRR9087XXX.pacbio.fq.gz -t ${threads} -b ${busco} -p ${sample} -o ${project}/${sample}_paqman --coveragemax 0
     done
 
 
