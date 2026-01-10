@@ -125,5 +125,5 @@ The uses PAQman (see github READme for installation/usage instructions)
 
 
  <p align="center" >
-    <img src="https://github.com/SAMtoBAM/PAQman/blob/main/figures/figures/figure3.paqplot_example.Nipponbare_alone.svg" width=70%>
+    <img src="https://github.com/SAMtoBAM/PAQman/blob/main/figures/figure3.paqplot_example.Nipponbare_alone.svg" width=70%>
 </p>
