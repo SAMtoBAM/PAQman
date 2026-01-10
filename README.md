@@ -51,7 +51,7 @@ paqman.sh -a path/to/assembly.fa -l path/to/long-reads.fq.gz
 
 
 ```
-paqman.sh -a assembly.fa -l long-reads.fq.gz
+	paqman.sh -a assembly.fa -l long-reads.fq.gz
 	
 	Required inputs:
 	-a | --assembly     Genome assemly in fasta format (*.fa / *.fasta / *.fna) and can be gzipped (*.gz)
@@ -68,6 +68,7 @@ paqman.sh -a assembly.fa -l long-reads.fq.gz
 	Optional parameters:
 	-w | --window       Number of basepairs for window averaging for coverage (default: 30000)
 	-s | --slide        Number of basepairs for the window to slide for coverage (default: 10000)
+	-cm | --coveragemax	The amount of downsampled read coverage ([-cm]*genome-size) used for both CRAQ and mapping-coverage calculations (default: 30)
 	-p | --prefix       Prefix for output (default: name of assembly file (-a) before the fasta suffix)
 	-o | --output       Name of output folder for all results (default: paqman_output)
 	-seq | --sequences	Whether or not to use scaffolds or contigs; provide 'scaffolds' to not break the assembly at N's (default: contigs)
