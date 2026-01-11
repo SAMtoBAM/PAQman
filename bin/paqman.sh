@@ -254,6 +254,11 @@ window2=$( echo $window | awk '{print $0/1000}' )
 ## distance for the window to move before recalculating the window (in bp)
 slide2=$( echo $slide | awk '{print $0/1000}' )
 
+##set alternative threads for samtools sorting
+##-@ parameter is additional threads to use above one so just setting threads-1
+threadssort=$((threads - 1))
+
+
 
 ##############################################################
 #################### BEGINNING EVALUATION ####################
@@ -524,9 +529,9 @@ echo "$(date +%H:%M) ########## Step 5b: Running read alignment"
 #[[ $platform == "ont" ]] && minimap2 --secondary=no -ax map-ont -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -T ./tmp_sort/tmp -@ 4 -o ${prefix}.minimap.sorted.bam -
 #[[ $platform == "pacbio-hifi" ]] && minimap2 --secondary=no -ax map-hifi -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -T ./tmp_sort/tmp -@ 4 -o ${prefix}.minimap.sorted.bam -
 #[[ $platform == "pacbio-clr" ]] && minimap2 --secondary=no -ax map-pb -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -T ./tmp_sort/tmp -@ 4 -o ${prefix}.minimap.sorted.bam -
-[[ $platform == "ont" ]] && minimap2 --secondary=no -ax map-ont -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -m 2G -o ${prefix}.minimap.sorted.bam -
-[[ $platform == "pacbio-hifi" ]] && minimap2 --secondary=no -ax map-hifi -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -m 2G -o ${prefix}.minimap.sorted.bam -
-[[ $platform == "pacbio-clr" ]] && minimap2 --secondary=no -ax map-pb -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -m 2G -o ${prefix}.minimap.sorted.bam -
+[[ $platform == "ont" ]] && minimap2 --secondary=no -ax map-ont -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ ${threadssort} -m 1G -o ${prefix}.minimap.sorted.bam -
+[[ $platform == "pacbio-hifi" ]] && minimap2 --secondary=no -ax map-hifi -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ ${threadssort} -m 1G -o ${prefix}.minimap.sorted.bam -
+[[ $platform == "pacbio-clr" ]] && minimap2 --secondary=no -ax map-pb -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ ${threadssort} -m 1G -o ${prefix}.minimap.sorted.bam -
 
 samtools index ${prefix}.minimap.sorted.bam
 
@@ -535,8 +540,8 @@ then
 ##index assembly for alignment
 bwa index ${assembly}
 ## align the short reads (filtering for only primary alignments -F 0x100 : removes secondary)
-#bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ 4 -m 2G -o ${prefix}.bwamem.sorted.bam -
-bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ 4 -m 2G -o ${prefix}.bwamem.sorted.bam
+#bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ ${threadssort} -m 1G -o ${prefix}.bwamem.sorted.bam -
+bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ ${threadssort} -m 1G -o ${prefix}.bwamem.sorted.bam
 
 samtools index ${prefix}.bwamem.sorted.bam
 fi
@@ -602,9 +607,9 @@ echo "$(date +%H:%M) ########## Step 6z: Re-running read alignment"
 #[[ $platform == "ont" ]] && minimap2 --secondary=no -ax map-ont -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -T ./tmp_sort/tmp -@ 4 -o ${prefix}.minimap.sorted.bam -
 #[[ $platform == "pacbio-hifi" ]] && minimap2 --secondary=no -ax map-hifi -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -T ./tmp_sort/tmp -@ 4 -o ${prefix}.minimap.sorted.bam -
 #[[ $platform == "pacbio-clr" ]] && minimap2 --secondary=no -ax map-pb -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -T ./tmp_sort/tmp -@ 4 -o ${prefix}.minimap.sorted.bam -
-[[ $platform == "ont" ]] && minimap2 --secondary=no -ax map-ont -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -m 2G -o ${prefix}.minimap.sorted.bam -
-[[ $platform == "pacbio-hifi" ]] && minimap2 --secondary=no -ax map-hifi -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -m 2G -o ${prefix}.minimap.sorted.bam -
-[[ $platform == "pacbio-clr" ]] && minimap2 --secondary=no -ax map-pb -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ 4 -m 2G -o ${prefix}.minimap.sorted.bam -
+[[ $platform == "ont" ]] && minimap2 --secondary=no -ax map-ont -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ ${threadssort} -m 1G -o ${prefix}.minimap.sorted.bam -
+[[ $platform == "pacbio-hifi" ]] && minimap2 --secondary=no -ax map-hifi -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ ${threadssort} -m 1G -o ${prefix}.minimap.sorted.bam -
+[[ $platform == "pacbio-clr" ]] && minimap2 --secondary=no -ax map-pb -t ${threads} ${assembly} longreads.rasusa.fq.gz | samtools sort -@ ${threadssort} -m 1G -o ${prefix}.minimap.sorted.bam -
 
 samtools index ${prefix}.minimap.sorted.bam
 
@@ -613,8 +618,8 @@ then
 ##index assembly for alignment
 bwa index ${assembly}
 ## align the short reads (filtering for only primary alignments -F 0x100 : removes secondary)
-#bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ 4 -m 2G -o ${prefix}.bwamem.sorted.bam -
-bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ 4 -m 2G -o ${prefix}.bwamem.sorted.bam
+#bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ ${threadssort} -m 1G -o ${prefix}.bwamem.sorted.bam -
+bwa mem -t ${threads} ${assembly} ${pair12} ${pair22} | samtools sort -@ ${threadssort} -m 1G -o ${prefix}.bwamem.sorted.bam
 
 samtools index ${prefix}.bwamem.sorted.bam
 fi
