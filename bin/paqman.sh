@@ -474,18 +474,20 @@ echo "$(date +%H:%M) ########## Step 4b: Running Merqury"
 mkdir ./merqury
 if [[ $meryldb != "" ]]
 then
-merqury.sh ${meryldbpath} ${assembly} ${prefix}.merqury
+merqury.sh ${meryldbpath} ${assembly} ${prefix}.merqury &> merqury.stdout
 else
-merqury.sh reads.meryl ${assembly} ${prefix}.merqury
+merqury.sh reads.meryl ${assembly} ${prefix}.merqury &> merqury.stdout
 fi
 ## just want to keep these two output files with important stats on error rate and completeness (respectively)
 mv ${prefix}.merqury.qv ./merqury/
 mv ${prefix}.merqury.completeness.stats ./merqury/
+mv merqury.stdout ./merqury/
 if [ -f "${prefix}.merqury.spectra-asm.fl.png" ] ; then mv ${prefix}.merqury.*.png ./merqury/ ; fi
 if [ -f "${prefix}.merqury.${prefix}.spectra-cn.fl.png" ] ; then mv ${prefix}.merqury.${prefix}.*.png ./merqury/ ; fi
 mv logs merqury/ 
 if [ -f "${prefix}.merqury.spectra-asm.hist" ] ; then mv ${prefix}.merqury.*.hist ./merqury/ ; fi
 if [ -f "${prefix}.merqury.${prefix}.qv" ] ; then mv ${prefix}.merqury.${prefix}.qv ./merqury/ ; fi
+
 
 
 if [[ $cleanup == "yes" ]]
