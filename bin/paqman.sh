@@ -407,9 +407,11 @@ echo "$(date +%H:%M) ########## Step 3: Running BUSCO"
 
 if [[ $localbuscodb != "" ]]
 then
-busco -i ${assembly} -o ./busco --offline  -l ${localbuscodbpath} --mode genome -c ${threads} > busco.log
+#busco -i ${assembly} -o ./busco --offline  -l ${localbuscodbpath} --mode genome -c ${threads} > busco.log
+compleasm run -a ${assembly} -o ./busco -t ${threads} -L ${localbuscodbpath} > busco.log
 else
-busco -i ${assembly} -o ./busco  -l ${buscodb} --mode genome -c ${threads} > busco.log
+#busco -i ${assembly} -o ./busco  -l ${buscodb} --mode genome -c ${threads} > busco.log
+compleasm run -a ${assembly} -o ./busco -t ${threads} -l ${buscodb} > busco.log
 fi
 ##move log to busco output folder
 mv busco.log busco/
