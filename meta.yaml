@@ -9,7 +9,7 @@ source:
 build:
   number: 0 # Increment with each new build
   scripts:
-    - python=3.8.*
+    - python=3.9.*
     - bin/paqman
     - bash post-link.sh
 
