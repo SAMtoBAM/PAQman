@@ -69,6 +69,7 @@ paqman.sh -a path/to/assembly.fa -l path/to/long-reads.fq.gz
 	-w | --window       Number of basepairs for window averaging for coverage (default: 30000)
 	-s | --slide        Number of basepairs for the window to slide for coverage (default: 10000)
 	-cm | --coveragemax	The amount of downsampled read coverage ([-cm]*genome-size) used for both CRAQ and mapping-coverage calculations. Set 0 to skip (default: 30)
+	-sm | --sortmem		The max GB of RAM allowed for each thread (equal to --threads) used for alignment sorting (default: 1)
 	-p | --prefix       Prefix for output (default: name of assembly file (-a) before the fasta suffix)
 	-o | --output       Name of output folder for all results (default: paqman_output)
 	-seq | --sequences	Whether or not to use scaffolds or contigs; provide 'scaffolds' to not break the assembly at N's (default: contigs)
