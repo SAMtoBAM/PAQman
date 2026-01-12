@@ -51,7 +51,7 @@ These assembly GCA_002884485.1 was assembled much earlier than the T2T assemblie
     ls ncbi_dataset/data/ | grep -v json | while read genome
     do
     genome2=$( echo $genome | sed 's/_//g' | awk -F "." '{print $1}'  )
-    cat ncbi_dataset/data/$genome/$genome*.fna | bgzip --threads ${threads} > assemblies/${genome2}.fa
+    cat ncbi_dataset/data/$genome/$genome*.fna | gzip --threads ${threads} > assemblies/${genome2}.fa
     done
     mv ncbi_dataset/data/*jso* ./
     rm -r ncbi_dataset
@@ -92,7 +92,7 @@ The dataset was manually determined from the detailed website _https://github.co
     rm -r SRR9087600
     
     ##compress all output together
-    cat *.fastq | bgzip --threads ${threads} > reads/pacbio/SRR9087XXX.pacbio.fq.gz
+    cat *.fastq | gzip --threads ${threads} > reads/pacbio/SRR9087XXX.pacbio.fq.gz
     ##remove uncompressed
     rm *.fastq
 
@@ -118,7 +118,7 @@ The dataset was manually determined from the detailed website _https://github.co
     
     ##using the latest (and easily available) set of basecalled reads, therefore the highest quality; here the 'rel8'
     ##however we don't need all 100X+; therefore we will unzip as we download, and select only reads >7.5kb in length and only until we reach ~25X which is about the same as the pacbio data
-    wget -qO- https://s3-us-west-2.amazonaws.com/human-pangenomics/T2T/CHM13/nanopore/rel8-guppy-5.0.7/reads.fastq.gz | gunzip -c | seqkit seq -m 7500 | seqkit head -l 75000000000 | bgzip --threads ${threads} > reads/ont/rel8.25X_subset.ont.fq.gz
+    wget -qO- https://s3-us-west-2.amazonaws.com/human-pangenomics/T2T/CHM13/nanopore/rel8-guppy-5.0.7/reads.fastq.gz | gunzip -c | seqkit seq -m 7500 | seqkit head -l 75000000000 | gzip --threads ${threads} > reads/ont/rel8.25X_subset.ont.fq.gz
 
 
         ##get stats on the dataset quickly
