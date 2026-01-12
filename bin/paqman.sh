@@ -408,10 +408,10 @@ echo "$(date +%H:%M) ########## Step 3: Running BUSCO"
 if [[ $localbuscodb != "" ]]
 then
 #busco -i ${assembly} -o ./busco --offline  -l ${localbuscodbpath} --mode genome -c ${threads} > busco.log
-compleasm run -a ${assembly} -o ./busco -t ${threads} -L ${localbuscodbpath} > busco.log
+compleasm run -a ${assembly} -o ./busco -t ${threads} -L ${localbuscodbpath} &> busco.log
 else
 #busco -i ${assembly} -o ./busco  -l ${buscodb} --mode genome -c ${threads} > busco.log
-compleasm run -a ${assembly} -o ./busco -t ${threads} -l ${buscodb} > busco.log
+compleasm run -a ${assembly} -o ./busco -t ${threads} -l ${buscodb} &> busco.log
 fi
 ##move log to busco output folder
 mv busco.log busco/
@@ -419,12 +419,13 @@ mv busco.log busco/
 if [[ $cleanup == "yes" ]]
 then
 ##remove output from busco that takes a lot of space
-rm -r ./busco/run_${buscodb}*/*_output
-rm -r ./busco/run_${buscodb}*/busco_sequences
-rm -r ./busco/logs
-[ -e "./busco/tmp" ] && rm -r ./busco/tmp
+#rm -r ./busco/run_${buscodb}*/*_output
+#rm -r ./busco/run_${buscodb}*/busco_sequences
+#rm -r ./busco/logs
+rm -r ./busco/${buscodb}*
+#[ -e "./busco/tmp" ] && rm -r ./busco/tmp
 ##remove the downloaded busco database
-[ -e "./busco_downloads" ] &&  rm -r busco_downloads
+#[ -e "./busco_downloads" ] &&  rm -r busco_downloads
 fi
 ## we are just interested in the summary txt file 'busco/short_summary.*.txt'
 
@@ -875,8 +876,33 @@ quaststat=$( cat ./quast/report.tsv | awk -F "\t" '{if(NR == 5 || NR == 14 || NR
 
 ## BUSCO
 ## get the information of interest out of the summary file (busco_db;total;complete;complete_singlecopy;fragmented;missing) and place in variable "buscostat"
-buscostat=$( cat ./busco/short_summary.specific.*.busco.txt | grep "The lineage\|Complete BUSCOs\|Complete and single\|Fragmented BUSCOs\|Missing BUSCOs\|Total BUSCO" | sed 's/# The lineage dataset is: //g' | awk '{line=line";"$1} END{print line}' | sed 's/^;//' | tr ';' '\t' | awk '{print $1"\t"$6"\t"$2"\t"$3"\t"$4"\t"$5}' )
+#buscostat=$( cat ./busco/short_summary.specific.*.busco.txt | grep "The lineage\|Complete BUSCOs\|Complete and single\|Fragmented BUSCOs\|Missing BUSCOs\|Total BUSCO" | sed 's/# The lineage dataset is: //g' | awk '{line=line";"$1} END{print line}' | sed 's/^;//' | tr ';' '\t' | awk '{print $1"\t"$6"\t"$2"\t"$3"\t"$4"\t"$5}' )
+buscostat=$( awk '
+/^## lineage:/ {
+    # If we already processed one lineage, print it
+    if (lineage != "") {
+        print lineage "\t" N "\t" (S+D) "\t" S "\t" (F+I) "\t" M
+    }
 
+    # Reset for new block
+    lineage = $3
+    S=D=F=I=M=N=0
+}
+
+/^S:/ { S = $2 }
+/^D:/ { D = $2 }
+/^F:/ { F = $2 }
+/^I:/ { I = $2 }
+/^M:/ { M = $2 }
+/^N:/ { N = $1; sub(/^N:/, "", N) }
+
+END {
+    # Print last block
+    if (lineage != "") {
+        print lineage "\t" N "\t" (S+D) "\t" S "\t" (F+I) "\t" M
+    }
+}
+' input.txt  )
 
 ## Merqury
 ## get the information of interest out of the two summary files (the kmer completeness percentage and the phred value for error rate) and place in variable "merqurystat"
