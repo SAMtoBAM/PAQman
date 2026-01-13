@@ -904,7 +904,17 @@ merqurystat=$( echo "${completeness};${phredval}" | tr ';' '\t' )
 
 ## CRAQ
 ## get the information of interest out of the summary file (just the final percentages for local and structural concordance) and place in variable "craqstat"
-craqstat=$( cat ./craq/runAQI_out/out_final.Report | head -n3 | tail -n1 | awk -F "\t" '{print $6$7}' | tr '(' '\t' | tr ')' '\t' | awk '{print $2"\t"$4}' )
+#craqstat=$( cat ./craq/runAQI_out/out_final.Report | head -n3 | tail -n1 | awk -F "\t" '{print $6$7}' | tr '(' '\t' | tr ')' '\t' | awk '{print $2"\t"$4}' )
+craqstat=$( awk -F'\t' '
+NR==3 {
+  match($6, /\(([0-9.eE+-]+)\)/, a)
+  match($7, /\(([0-9.eE+-]+)\)/, b)
+  if (a[1] && b[1])
+    print a[1] "\t" b[1]
+  else
+    print "NA\tNA"
+  exit
+}' ./craq/runAQI_out/out_final.Report )
 
 ## Coverage
 ## calculate the proportion of the windows (sits in for genome proportion) with a median coverage less than times the standard deviation away from the median
