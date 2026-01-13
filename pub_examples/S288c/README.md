@@ -19,7 +19,7 @@ The S288c assemblies were manually picked (GCA_000146045, GCA_002057635, GCA_016
 These 5 assemblies were all assembled with long read technology
 
     ##create conda environment for the prefetch/download and compression
-    #conda create -n ncbi_datasets htslib conda-forge::ncbi-datasets-cli seqkit bioconda::sra-tools
+    #conda create -n ncbi_datasets htslib conda-forge::ncbi-datasets-cli seqkit bioconda::sra-tools conda-forge::pigz
     conda activate ncbi_datasets
 
 
@@ -36,7 +36,7 @@ These 5 assemblies were all assembled with long read technology
     ls ncbi_dataset/data/ | grep -v json | while read genome
     do
     genome2=$( echo $genome | sed 's/_//' | awk -F "." '{print $1}')
-    cat ncbi_dataset/data/$genome/$genome*.fna | gzip > ${project}/assemblies/$genome2.fa.gz
+    cat ncbi_dataset/data/$genome/$genome*.fna | pigz -p ${threads} > ${project}/assemblies/$genome2.fa.gz
     done
  
 
@@ -54,8 +54,8 @@ _Note: This read dataset was used to assemble GCA_022626425; which is used in th
 
     ##downsample the excessive ~800X coverage to 100X
     ##use 12Mb as estimated genome size and therefore 100X this
-    #filtlong -t 1200000000 --length_weight 5 ${SRR}.fastq | gzip > reads/${SRR}.filtlong100x.fq.gz
-    rasusa reads -b 1200000000 ${SRR}.fastq | gzip > reads/${SRR}.rasusa100x.fq.gz
+    #filtlong -t 1200000000 --length_weight 5 ${SRR}.fastq | pigz -p ${threads} > reads/${SRR}.filtlong100x.fq.gz
+    rasusa reads -b 1200000000 ${SRR}.fastq | pigz -p ${threads} > reads/${SRR}.rasusa100x.fq.gz
 
     ##remove the full set of reads just taking up space
     rm ${SRR}.fastq

@@ -528,8 +528,8 @@ echo "$(date +%H:%M) ########## Step 5a: Downsampling for ${coveragemax}X long-r
 genomesize=$( cat ./quast/report.tsv  | grep "Total length" | head -n1 | cut -f2 )
 target=$( echo $genomesize | awk -v coveragemax="$coveragemax" '{print $1*coveragemax}' )
 ##now run rasusa with the settings
-#filtlong -t ${target} --length_weight 5 ${longreads2} | gzip > longreads.filtlong50X.fq.gz
-rasusa reads -b ${target} ${longreads2} | gzip > longreads.rasusa.fq.gz
+#filtlong -t ${target} --length_weight 5 ${longreads2} | pigz -p ${threads} > longreads.filtlong50X.fq.gz
+rasusa reads -b ${target} ${longreads2} | pigz -p ${threads} > longreads.rasusa.fq.gz
 
 fi
 
@@ -607,8 +607,8 @@ echo "$(date +%H:%M) ########## Step 6y: Re-Downsampling for 30X long-reads for 
 genomesize=$( cat ./quast/report.tsv  | grep "Total length" | head -n1 | cut -f2 )
 target=$( echo $genomesize | awk '{print $1*50}' )
 ##now run rasusa with the settings
-#filtlong -t ${target} --length_weight 5 ${longreads2} | gzip > longreads.filtlong50X.fq.gz
-rasusa reads -b ${target} ${longreads2} | gzip > longreads.rasusa.fq.gz
+#filtlong -t ${target} --length_weight 5 ${longreads2} | pigz -p ${threads} > longreads.filtlong50X.fq.gz
+rasusa reads -b ${target} ${longreads2} | pigz -p ${threads} > longreads.rasusa.fq.gz
 
 fi
 ###RUNNING THE ALIGNMENT STEPS
@@ -652,7 +652,7 @@ bedtools makewindows -w ${window} -s ${slide} -g ${assembly}.bed  > ./coverage/$
 
 
 ## get the coverage
-#samtools depth -a -d 0 -@ ${threads} ${prefix}.minimap.sorted.bam  | gzip > ./coverage/${prefix}.minimap.sorted.cov.tsv.gz
+#samtools depth -a -d 0 -@ ${threads} ${prefix}.minimap.sorted.bam  | pigz -p ${threads} > ./coverage/${prefix}.minimap.sorted.cov.tsv.gz
 mosdepth --fast-mode -m -b ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed -t ${threads} ${prefix} ${prefix}.minimap.sorted.bam
 rm ${prefix}.per-base.bed.*
 mv *mosdepth* coverage/
@@ -691,7 +691,7 @@ LRpath=$( realpath ./coverage/${prefix}.${window2}kbwindow_${slide2}kbsliding.mi
 if [[ $shortreads == "yes" ]]
 then
 ## get the coverage
-#samtools depth -a -d 0 -@ ${threads} ${prefix}.bwamem.sorted.bam  | gzip > ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz
+#samtools depth -a -d 0 -@ ${threads} ${prefix}.bwamem.sorted.bam  | pigz -p ${threads} > ./coverage/${prefix}.bwamem.sorted.cov.tsv.gz
 mosdepth --fast-mode -m -b ./coverage/${prefix}.${window2}kbwindow_${slide2}kbslide.bed -t ${threads} ${prefix} ${prefix}.bwamem.sorted.bam
 rm ${prefix}.per-base.bed.*
 mv *mosdepth* coverage/

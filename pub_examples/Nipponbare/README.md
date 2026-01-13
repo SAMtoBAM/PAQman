@@ -16,7 +16,7 @@ Primarily using data from the T2T-Nipponbare project https://doi.org/10.1016/j.m
 Going to use a total of 5 assemblies for Nipponbare; 1 from the T2T project and the rest from earlier versions from NCBI including the default reference <br/>
 
     ##create conda environment for the download of assemblies, and both prefetch/download and compression of reads
-    #conda create -n ncbi_datasets htslib conda-forge::ncbi-datasets-cli seqkit bioconda::sra-tools bioconda::longreadsum
+    #conda create -n ncbi_datasets htslib conda-forge::ncbi-datasets-cli seqkit bioconda::sra-tools bioconda::longreadsum conda-forge::pigz
     conda activate ncbi_datasets
     
     mkdir assemblies
@@ -32,7 +32,7 @@ These assemblies contain all semi-contiguous releases of Nipponbare assemblies; 
     ls ncbi_dataset/data/ | grep -v json | while read genome
     do
     genome2=$( echo $genome | sed 's/_//g' | awk -F "." '{print $1}'  )
-    cat ncbi_dataset/data/$genome/$genome*.fna | gzip > assemblies/${genome2}.fa
+    cat ncbi_dataset/data/$genome/$genome*.fna | pigz -p ${threads} > assemblies/${genome2}.fa
     done
     mv ncbi_dataset/data/*jso* ./
     rm -r ncbi_dataset
@@ -55,7 +55,7 @@ Downloaded both the PacBio HiFi and ONT reads from the T2T assembly project
     
     ##compress all output together
     mv SRR25241090.fastq reads/pacbio/SRR25241090.pacbio.fq
-    gzip reads/pacbio/SRR25241090.pacbio.fq
+    pigz -p ${threads} reads/pacbio/SRR25241090.pacbio.fq
 
     ##get stats on the dataset quickly
     longreadsum fq -t ${threads} -i reads/pacbio/SRR25241090.pacbio.fq.gz -o reads/pacbio/SRR25241090.stats
@@ -82,7 +82,7 @@ Downloaded both the PacBio HiFi and ONT reads from the T2T assembly project
     
     ##compress all output together
     #mv SRR25241091.fastq reads/ont/SRR25241091.ont.fq
-    #gzip reads/ont/SRR25241091.ont.fq
+    #pigz -p ${threads} reads/ont/SRR25241091.ont.fq
 
     ##get stats on the dataset quickly
     #longreadsum fq -t ${threads} -i reads/ont/SRR25241091.ont.fq.gz -o reads/ont/SRR25241091.stats
