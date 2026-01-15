@@ -61,7 +61,7 @@ paqman.sh -a path/to/assembly.fa -l path/to/long-reads.fq.gz
 	-x | --platform     Long-read technology to determine mapping mapping parameters. Choose between 'ont' or 'pacbio-hifi' or 'pacbio-clr' (default: ont)
 	-b | --buscodb      Name of BUSCO database to be used (default: eukaryota)
 	-t | --threads      Number of threads for tools that accept this option (default: 1)
-	-r | --repeat       Telomeric repeat pattern (default: TTAGGG)
+	-r | --telomererepeat	Telomeric repeat pattern (default: TTAGGG)
  	-1 | --pair1        Paired end illumina reads in fastq format; first pair. Used by Merqury, CRAQ and coverage analysis (Recommended). Can be gzipped (*.gz)
 	-2 | --pair2        Paired end illumina reads in fastq format; second pair. Used by Merqury, CRAQ and coverage analysis (Recommended). Can be gzipped (*.gz)
 	
@@ -160,7 +160,7 @@ Can find all the coordinates for telomeric regions (including interstitial) in t
    <b>absent</b>: >5kb from the end or no repeats identified in contig <br/>
 Can find these classifications (and coordinates/distance from edge etc) for each contig end in the tsv file with explanatory header: 'telomerality/telomeres.classification.tsv' <br/>
 
-Note: For the option -r (--repeat); although some repeats are not exact this can still work as the detection scheme allows for inexact repeats. For example 'GGTGTG' works very well for <i>S. cerevisiae</i>, which usually is represented as T(G)*1-3.
+Note: For the option -r (--telomererepeat); although some repeats are not exact this can still work as the detection scheme allows for inexact repeats. For example 'GGTGTG' works very well for <i>S. cerevisiae</i>, which usually is represented as T(G)*1-3.
 
 ***
 
