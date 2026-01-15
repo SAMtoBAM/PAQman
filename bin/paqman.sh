@@ -161,7 +161,7 @@ case "$key" in
 	-x | --platform     Long-read technology to determine mapping mapping parameters. Choose between 'ont' or 'pacbio-hifi' or 'pacbio-clr' (default: ont)
 	-b | --buscodb      Name of BUSCO database to be used (default: eukaryota)
 	-t | --threads      Number of threads for tools that accept this option (default: 1)
-	-r | --telomererepeat       Telomeric repeat pattern (default: TTAGGG)
+	-r | --telomererepeat	Telomeric repeat pattern (default: TTAGGG)
  	-1 | --pair1        Paired end illumina reads in fastq format; first pair. Used by Merqury, CRAQ and coverage analysis (Recommended). Can be gzipped (*.gz)
 	-2 | --pair2        Paired end illumina reads in fastq format; second pair. Used by Merqury, CRAQ and coverage analysis (Recommended). Can be gzipped (*.gz)
 	
