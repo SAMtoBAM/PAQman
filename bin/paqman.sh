@@ -174,8 +174,8 @@ case "$key" in
 	-o | --output       Name of output folder for all results (default: paqman_output)
 	-seq | --sequences	Whether or not to use scaffolds or contigs; provide 'scaffolds' to not break the assembly at N's (default: contigs)
 	-mdb | --meryldb	A precomputed meryl database for your dataset. Generated automatically if not provided.
-	-mm | --merylmem	The soft RAM limit in GB used whilst building the meryl database (default: 10)
-	-mk | --merylkmer	The k-mer size used to build the meryl database (default: 21)
+	-mm | --merylmem	The soft RAM limit in GB used whilst building the meryl database (default: 15)
+	-mk | --merylkmer	The k-mer size used to build the meryl database (default: 18)
 	-lbdb | --localbuscodb	A predownloaded busco database for your dataset. Downloaded automatically if not provided.
 	--resume			Resume a incomplete run of PAQman. Incomplete steps will be rerun from scratch.
 	-c | --cleanup      Remove a large number of files produced by each of the tools that can take up a lot of space. Choose between 'yes' or 'no' (default: yes)
