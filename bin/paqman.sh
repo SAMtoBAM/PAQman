@@ -161,7 +161,7 @@ case "$key" in
 	-x | --platform     Long-read technology to determine mapping mapping parameters. Choose between 'ont' or 'pacbio-hifi' or 'pacbio-clr' (default: ont)
 	-b | --buscodb      Name of BUSCO database to be used (default: eukaryota)
 	-t | --threads      Number of threads for tools that accept this option (default: 1)
-	-r | --repeat       Telomeric repeat pattern (default: TTAGGG)
+	-r | --telomererepeat	Telomeric repeat pattern (default: TTAGGG)
  	-1 | --pair1        Paired end illumina reads in fastq format; first pair. Used by Merqury, CRAQ and coverage analysis (Recommended). Can be gzipped (*.gz)
 	-2 | --pair2        Paired end illumina reads in fastq format; second pair. Used by Merqury, CRAQ and coverage analysis (Recommended). Can be gzipped (*.gz)
 	
@@ -758,13 +758,13 @@ if [[ ",$stream," == *",step7,"* ]]; then
 echo "$(date +%H:%M) ########## Step 7: Running Telomere search"
 
 mkdir ./telomerality
-#telomererepeat="TTAGGG"
+#="TTAGGG"
 ##can also label all regions with the canonical telomeric repeat
 ##use seqkit to locate the position of the canonical repeat then merge all those locations with a buffer of 7bp incase one repeat is off and export a bed file
-repeatsize=$( echo $telomererepeat | awk '{print length($1)+1}' )
-minrepeatsize=$( echo $telomererepeat | awk '{print length($1)*2}' )
+repeatsize=$( echo $ | awk '{print length($1)+1}' )
+minrepeatsize=$( echo $ | awk '{print length($1)*2}' )
 echo "contig;start;end;sense" | tr ';' '\t' > ./telomerality/telomeres.bed
-seqkit locate -j ${threads} --ignore-case -p "${telomererepeat}" ${assembly} | tail -n+2 | awk '{print $1"\t"$5"\t"$6"\t"$4}' | sort -k1,1 -k2,2n | bedtools merge -d ${repeatsize} -c 4 -o distinct -i - | awk -v minrepeatsize="$minrepeatsize" '{if($3-$2 > minrepeatsize) print}' | awk -F "," '{print $1}' >> ./telomerality/telomeres.bed
+seqkit locate -j ${threads} --ignore-case -p "${}" ${assembly} | tail -n+2 | awk '{print $1"\t"$5"\t"$6"\t"$4}' | sort -k1,1 -k2,2n | bedtools merge -d ${repeatsize} -c 4 -o distinct -i - | awk -v minrepeatsize="$minrepeatsize" '{if($3-$2 > minrepeatsize) print}' | awk -F "," '{print $1}' >> ./telomerality/telomeres.bed
 
 ##now summarise per chromosome if the ends have telomeric repeats
 ##the classification for presence will if the identified telomeric region is at max 75% its own length away from the assembled end
