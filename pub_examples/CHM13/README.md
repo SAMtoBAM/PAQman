@@ -165,3 +165,6 @@ The uses PAQman (see github READme for installation/usage instructions)
     ##run paqplots for the comparisons
     time paqplots.sh -l list_of_summary_files.txt -p ${project} -o ${project}_paqplot
   
+ <p align="center" >
+    <img src="https://github.com/SAMtoBAM/PAQman/blob/main/figures/figure4.paqplot_example.CHM13_alone.svg" width=70%>
+</p>
