@@ -111,7 +111,7 @@ The dataset was manually determined from the detailed website _https://github.co
     ##so we have the expected ~24X coverage and 10kb read length
     
 
-### 2.B ONT reads
+### 2.B ONT reads NOT USING
 
     ##ONT fastq reads
     mkdir reads/ont
