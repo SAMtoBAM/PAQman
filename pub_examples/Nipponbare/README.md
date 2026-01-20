@@ -12,13 +12,14 @@ Primarily using data from the T2T-Nipponbare project https://doi.org/10.1016/j.m
 
     threads="16"
 
+    ##set up and activate conda environment
+    ##inlcudes paqman plus tools/mibs for the download of assemblies, and both prefetch/download and compression of reads
+    conda create -n paqman htslib conda-forge::ncbi-datasets-cli seqkit bioconda::sra-tools bioconda::longreadsum conda-forge::pigz samtobam::paqman
+    conda activate paqman
+
 ## 1. Download assemblies
 Going to use a total of 5 assemblies for Nipponbare; 1 from the T2T project and the rest from earlier versions from NCBI including the default reference <br/>
-
-    ##create conda environment for the download of assemblies, and both prefetch/download and compression of reads
-    #conda create -n ncbi_datasets htslib conda-forge::ncbi-datasets-cli seqkit bioconda::sra-tools bioconda::longreadsum conda-forge::pigz
-    conda activate ncbi_datasets
-    
+   
     mkdir assemblies
 
 ### 1.A Nipponbare assemblies
@@ -39,13 +40,11 @@ These assemblies contain all semi-contiguous releases of Nipponbare assemblies; 
     rm README.md
     rm md5sum.txt
 
-## 2. Download a set of reads
+## 2. Download a set of PacBio HiFi reads
 Downloaded both the PacBio HiFi and ONT reads from the T2T assembly project
 
     mkdir reads
 
-### 2.A PacBio HiFi reads
-    
     ##pacbio download (using prefetch due to size and number of files)
     mkdir reads/pacbio
     
@@ -71,37 +70,8 @@ Downloaded both the PacBio HiFi and ONT reads from the T2T assembly project
 
     ##so we have ~85X coverage and 18kb read length    
 
-### 2.B ONT reads (NOT USED)
-
-    ##pacbio download (using prefetch due to size and number of files)
-    #mkdir reads/ont
-    
-    #prefetch --max-size 100G SRR25241091
-    #fasterq-dump -e ${threads} SRR25241091/SRR25241091.sra
-    #rm -r SRR25241091
-    
-    ##compress all output together
-    #mv SRR25241091.fastq reads/ont/SRR25241091.ont.fq
-    #pigz -p ${threads} reads/ont/SRR25241091.ont.fq
-
-    ##get stats on the dataset quickly
-    #longreadsum fq -t ${threads} -i reads/ont/SRR25241091.ont.fq.gz -o reads/ont/SRR25241091.stats
-
-    ##longreadsum output
-    #
-
-    ##so we have ~XXX coverage and XXkb read length  
-    
-    ##get out of environment for getting the raw reads
-    conda deactivate
-    
-
 ## 3. Run PAQman on all assemblies
-The uses PAQman (see github READme for installation/usage instructions)
 
-    #conda create -n paqman samtobam::paqman
-    conda activate paqman
-    
     ##PAQman options specific for rice include the busco database ('-b poales') and the telomeric repeat (-r TTTAGGG)
     busco="poaceae"
     repeat="TTTAGGG"
