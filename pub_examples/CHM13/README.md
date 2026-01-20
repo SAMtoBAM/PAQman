@@ -130,10 +130,7 @@ These assemblies contain all publically released T2T versions including the most
     #GC%	41.79
 
     ##so we have the expected ~24X coverage and ana average 39kb read length
-    
-    ##get out of environment for getting the assemblies and reads
-    conda deactivate
-    
+   
 
 ## 3. Run PAQman on all assemblies
 The uses PAQman (see github READme for installation/usage instructions)
