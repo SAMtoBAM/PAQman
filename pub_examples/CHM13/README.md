@@ -10,16 +10,17 @@ Primarily using data from the T2T-CHM13 github https://github.com/marbl/CHM13
     mkdir ${project}
     cd ${project}
 
-    threads="16"
+    threads="64"
+
+    ##set up and activate conda environment
+    ##inlcudes paqman plus tools/mibs for the download of assemblies, and both prefetch/download and compression of reads
+    conda create -n paqman htslib conda-forge::ncbi-datasets-cli seqkit bioconda::sra-tools bioconda::longreadsum conda-forge::pigz samtobam::paqman
+    conda activate paqman
+    
 
 ## 1. Download assemblies
-Going to use a total of 6 assemblies for CHM13; 4 from the T2T-CHM13 project and another two that were generated earlier using long-reads and are available on NCBI <br/>
-The two additional NCBI assemblies are to show a much less contiguous assembly quality relative to the latest possibilities
+Going to use a total of 5 assemblies for CHM13; 4 from the T2T-CHM13 project and another one that was generated earlier using long-reads and is available on NCBI <br/>
 
-    ##create conda environment for the download of assemblies, and both prefetch/download and compression of reads
-    #conda create -n ncbi_datasets htslib conda-forge::ncbi-datasets-cli seqkit bioconda::sra-tools bioconda::longreadsum conda-forge::pigz
-    conda activate ncbi_datasets
-    
     mkdir assemblies
 
 ### 1.A T2T-CHM13 assemblies
@@ -39,10 +40,7 @@ These assemblies contain all publically released T2T versions including the most
     wget https://s3-us-west-2.amazonaws.com/human-pangenomics/T2T/CHM13/assemblies/chm13.draft_v0.7.fasta.gz
     mv chm13.draft_v0.7.fasta.gz assemblies/CHM13v0_7.fa.gz
 
-    
-
-### 2.B Other publically available CHM13 assemblies using long-reads
-These assembly GCA_002884485.1 was assembled much earlier than the T2T assemblies
+### 2.B Other publically available CHM13 assembly generated using long-reads
 
     ##download two other earlier reference quality, long-read assemblies for CHM13
     datasets download genome accession --assembly-source GenBank GCA_002884485.1
@@ -60,8 +58,6 @@ These assembly GCA_002884485.1 was assembled much earlier than the T2T assemblie
 
 
 ## 2. Download a set of reads
-This download uses `wget` <br/>
-The dataset was manually determined from the detailed website _https://github.com/marbl/CHM13/blob/master/Sequencing_data.md_ 
 
     mkdir reads
 
@@ -142,9 +138,6 @@ The dataset was manually determined from the detailed website _https://github.co
 ## 3. Run PAQman on all assemblies
 The uses PAQman (see github READme for installation/usage instructions)
 
-    #conda create -n paqman samtobam::paqman
-    conda activate paqman
-    
     ##PAQman options specific for humans is the busco database ('-b tetrapoda') (didn't use a more specific dataset as the number of busco genes grows substatially)
     ##and setting coveragemax to 0 so to skip the downsampling since that has already been done/the coverage is below 30X already
     busco="tetrapoda"
