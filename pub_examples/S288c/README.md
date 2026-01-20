@@ -12,16 +12,14 @@
     ##set variable for 16 threads
     threads="16"
 
+    ##set up and activate conda environment
+    ##inlcudes paqman plus tools/mibs for the download of assemblies, and both prefetch/download and compression of reads
+    conda create -n paqman htslib conda-forge::ncbi-datasets-cli seqkit bioconda::sra-tools bioconda::longreadsum conda-forge::pigz samtobam::paqman
+    conda activate paqman
 
 ## 1. Download assemblies
-This download used the ncbi-datasets-cli datasets tool (easily installed with conda: `conda install conda-forge::ncbi-datasets-cli`) <br/>
 The S288c assemblies were manually picked (GCA_000146045, GCA_002057635, GCA_016858165, GCA_022626425, GCA_902192305) <br/>
 These 5 assemblies were all assembled with long read technology
-
-    ##create conda environment for the prefetch/download and compression
-    #conda create -n ncbi_datasets htslib conda-forge::ncbi-datasets-cli seqkit bioconda::sra-tools conda-forge::pigz
-    conda activate ncbi_datasets
-
 
     mkdir assemblies/
     
@@ -39,9 +37,7 @@ These 5 assemblies were all assembled with long read technology
     cat ncbi_dataset/data/$genome/$genome*.fna | pigz -p ${threads} > ${project}/assemblies/$genome2.fa.gz
     done
  
-
 ## 2. Download a set of raw Oxford nanopore reads
-This download uses the sra-toolkit (easily installed with conda: `conda install bioconda::sra-tools`) <br/>
 The dataset was manually determined, selecting a recent, high coverage and reasonably long read dataset (SRR17374240) <br/>
 _Note: This read dataset was used to assemble GCA_022626425; which is used in this evaluation_
 
@@ -60,16 +56,10 @@ _Note: This read dataset was used to assemble GCA_022626425; which is used in th
     ##remove the full set of reads just taking up space
     rm ${SRR}.fastq
 
-    ##deactivate environment used to get the assemblies and reads
-    conda deactivate
-
 
 ## 3. Run PAQman on all assemblies
 The uses PAQman (see github READme for installation/usage instructions)
 
-    #conda create -n paqman samtobam::paqman
-    conda activate paqman
-        
     ##PAQman options specific for cerevisiae include the busco database ('-b saccharomycetaceae') and the telomeric repeat (-r GGTGTG)
     busco="saccharomycetaceae"
     repeat="GGTGTG"
