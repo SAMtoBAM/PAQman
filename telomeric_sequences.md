@@ -5,7 +5,7 @@ PLEASE FEEL FREE TO PUSH ADDITIONS IF YOU CONFIRM THE DETECTION
 
 ## Yeast
 _Saccharomyces cerevisiae_ = "GGTGTG" or "TG{1,3}TG{1,3}" <br/>
-_Schizosaccharomyces japonicus_ = "T{0,1}A{2,4}C{2,4}T{0,1}A{1,2}GAC" or "G[TG][CG]T{2,3}A"
+_Schizosaccharomyces japonicus_ = "T{0,1}A{2,4}C{2,4}T{0,1}A{1,2}GAC" or "G[TG][CG]T{2,3}A" <br/>
 _Candida albicans_ = "ACTTCTTGGTGTACGGATGTCTA"
 
 ## Filamentous fungi
