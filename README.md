@@ -61,7 +61,7 @@ paqman.sh -a path/to/assembly.fa -l path/to/long-reads.fq.gz
 	-x | --platform     Long-read technology to determine mapping mapping parameters. Choose between 'ont' or 'pacbio-hifi' or 'pacbio-clr' (default: ont)
 	-b | --buscodb      Name of BUSCO database to be used (default: eukaryota)
 	-t | --threads      Number of threads for tools that accept this option (default: 1)
-	-r | --telomererepeat	Telomeric repeat pattern (default: TTAGGG)
+	-r | --telomererepeat	Exact or regular expression of a telomeric repeat pattern (default: TTAGGG)
  	-1 | --pair1        Paired end illumina reads in fastq format; first pair. Used by Merqury, CRAQ and coverage analysis (Recommended). Can be gzipped (*.gz)
 	-2 | --pair2        Paired end illumina reads in fastq format; second pair. Used by Merqury, CRAQ and coverage analysis (Recommended). Can be gzipped (*.gz)
 	
@@ -150,9 +150,9 @@ Either just click the link and download it directly you right click the link and
 <i>*I am using the term to describe stats about how many of the assembled contig have reached telomere sequences giving confidence of structural completeness at contig ends in repeat regions </i><br/>
 Telomerality is calculated using a few simple steps specific to PAQman <br/>
 
-1. All exact single repeats are identified (seqkit locate --ignore-case -p ${telomererepeat}) <br/>
-2. Coordinates of single repeats are merged if withint 7 bp (allowing for 1 repeat to deviate mildly) <br/>
-3. Only keep regions where at least two consecutive repeats were found (i.e. only keep region > 2\*repeat length) <br/>
+1. Either exact single repeats or regular expression are used to identify telomeric sequences ( seqkit locate --ignore-case -r -p "\"${telomererepeat}\"" ) <br/>
+2. The coordinates of each identified repeat are merged if within repeat-length-1 bp (allowing for 1 repeat to deviate mildly) <br/>
+3. Only keep regions where at least two consecutive repeats were found (i.e. only keep region > 2\*repeat-length) <br/>
 Can find all the coordinates for telomeric regions (including interstitial) in the bed file with explanatory header: 'telomerality/telomeres.bed' <br/>
 4. Contig ends are labelled in 3 ways <br/>
    <b>telomeric</b>: Coordinates for a telomeric repeat are at least within 0.75\*length from the end (e.g. a 100 bp long telomeric repeat region with within 75bp of a contig end) <br/>
@@ -160,7 +160,7 @@ Can find all the coordinates for telomeric regions (including interstitial) in t
    <b>absent</b>: >5kb from the end or no repeats identified in contig <br/>
 Can find these classifications (and coordinates/distance from edge etc) for each contig end in the tsv file with explanatory header: 'telomerality/telomeres.classification.tsv' <br/>
 
-Note: For the option -r (--telomererepeat); although some repeats are not exact this can still work as the detection scheme allows for inexact repeats. For example 'GGTGTG' works very well for <i>S. cerevisiae</i>, which usually is represented as T(G)*1-3.
+Note: For the option -r (--telomererepeat); see telomeric_sequences.md for examples of known working repeats (and add to it for your species if you find a working sequence!)
 
 ***
 
