@@ -204,8 +204,9 @@ In this example, all stats should be maximised except for contig count hence the
 
 ## Citation example:
 
-“We used PAQman v1.1.0 (O’Donnell et al. 2025) in conjunction with Quast (Mikheenko et al. 2023), BUSCO (Tegenfeldt et al. 2025), meryl (Miller et al. 2008), Mercury (Rhie et al. 2020), Rasusa (Hall 2022), CRAQ (Li et al. 2023), BWA (Li 2013), minimap2 (Li 2018), samtools (Danecek et al. 2021), mosdepth (Pedersen and Quinlan 2018), bedtools (Quinlan and Hall 2010), seqkit (Shen et al. 2016) and ggplot2 (Wickham 2016) to assess and visualize assembly quality.”
-
+PAQman has many dependencies that are stand-alone programs in their own right. <br/>
+Please cite both this manuscript in addition to its core dependencies. For example: <br/>
+'We used PAQman v1.2.0 (O’Donnell et al. 2025) in conjunction with Quast v5.3.0 (Mikheenko et al. 2023), BUSCO v6.0.0 (Tegenfeldt et al. 2025), meryl v1.3 (Miller et al. 2008), Mercury v1.3 (Rhie et al. 2020), Rasusa 2.2.2 (Hall 2022), CRAQ v1.0.9 (Li et al. 2023), BWA v0.7.19 (Li 2013), minimap2 v2.30 (Li 2018), samtools v1.22.1 (Danecek et al. 2021), mosdepth v0.3.12 (Pedersen and Quinlan 2018), bedtools v2.31.1 (Quinlan and Hall 2010), seqkit v2.10.0 (Shen et al. 2016) and ggplot2 v3.5.2 (Wickham 2016) to assess and visualize assembly quality'
 
 
 
