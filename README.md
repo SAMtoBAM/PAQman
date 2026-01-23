@@ -148,9 +148,13 @@ Either just click the link and download it directly you right click the link and
 ## *Telomerality:
 
 <i>*I am using the term to describe stats about how many of the assembled contig have reached telomere sequences giving confidence of structural completeness at contig ends in repeat regions </i><br/>
+If you are unaware of the repeat for your species; you can use [TeloBase](https://shinyapps.biodata.ceitec.cz/TeloBase/) to look for likely repeats <br/>. 
+However TeloBase only stores exact matches of telomeric repeats and does not account for degenerate repeats such as TG{1,3} <br/>
+Therefore we are building out a database of varified Telomeric repeats/regular expression for species [here](https://github.com/SAMtoBAM/PAQman/blob/main/telomeric_sequences.md). Please consider contributing. 
+
 Telomerality is calculated using a few simple steps specific to PAQman <br/>
 
-1. Either exact single repeats or regular expression are used to identify telomeric sequences ( seqkit locate --ignore-case -r -p "\"${telomererepeat}\"" ) <br/>
+1. Either exact single repeats or regular expressions are used to identify telomeric sequences ( seqkit locate --ignore-case -r -p "\"${telomererepeat}\"" ) <br/>
 2. The coordinates of each identified repeat are merged if within repeat-length-1 bp (allowing for 1 repeat to deviate mildly) <br/>
 3. Only keep regions where at least two consecutive repeats were found (i.e. only keep region > 2\*repeat-length) <br/>
 Can find all the coordinates for telomeric regions (including interstitial) in the bed file with explanatory header: 'telomerality/telomeres.bed' <br/>
