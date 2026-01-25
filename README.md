@@ -148,11 +148,11 @@ Either just click the link and download it directly you right click the link and
 ## *Telomerality:
 
 <i>*I am using the term to describe stats about how many of the assembled contig have reached telomere sequences giving confidence of structural completeness at contig ends in repeat regions </i><br/>
-If you are unaware of the repeat for your species; you can use [TeloBase](https://shinyapps.biodata.ceitec.cz/TeloBase/) to look for likely repeats <br/>. 
-However TeloBase only stores exact matches of telomeric repeats and does not account for degenerate repeats such as TG{1,3} <br/>
-Therefore we are building out a database of varified Telomeric repeats/regular expression for species [here](https://github.com/SAMtoBAM/PAQman/blob/main/telomeric_sequences.md). Please consider contributing. 
+If you are unaware of the repeat for your species (_--telomererepeat_); you can use [TeloBase](https://shinyapps.biodata.ceitec.cz/TeloBase/) to look for likely repeats. <br/> 
+However, TeloBase only stores exact matches of telomeric repeats and does not account for degenerate repeats such as TG{1,3} <br/>
+Therefore we are building out a database of verified Telomeric repeats/regular expression for species [here](https://github.com/SAMtoBAM/PAQman/blob/main/telomeric_sequences.md). Please consider contributing. 
 
-Telomerality is calculated using a few simple steps specific to PAQman <br/>
+PAQman calculates Telomerality using a few simple steps <br/>
 
 1. Either exact single repeats or regular expressions are used to identify telomeric sequences ( seqkit locate --ignore-case -r -p "\"${telomererepeat}\"" ) <br/>
 2. The coordinates of each identified repeat are merged if within repeat-length-1 bp (allowing for 1 repeat to deviate mildly) <br/>
@@ -163,8 +163,6 @@ Can find all the coordinates for telomeric regions (including interstitial) in t
    <b>distant</b>: >0.75\*length bp away but within 5kb <br/>
    <b>absent</b>: >5kb from the end or no repeats identified in contig <br/>
 Can find these classifications (and coordinates/distance from edge etc) for each contig end in the tsv file with explanatory header: 'telomerality/telomeres.classification.tsv' <br/>
-
-Note: For the option -r (--telomererepeat); see telomeric_sequences.md for examples of known working repeats (and add to it for your species if you find a working sequence!)
 
 ***
 
@@ -222,7 +220,8 @@ Three options could help: <br/>
 1.Try reducing _--merylmem_ <br/>
 2.Reduce the coverage of your raw reads using rasusa (e.g. _rasusa reads -b 100000000 reads.fq  > reads.downsampled.fq_ ; where -b represents the number of bases to keep ) <br/>
 
-+ 
++ **Telomeric ends are not being detected but many are labelled as containing 'distant' repeats** <br/>
+In general we have found that if many contig ends are labelled as 'distant' this can mean that the telomeric repeat sequence (_--telomererepeat_) does not account for some variation seen in reality. It is therefore helpful to visually inspect these ends to see if an alternate repeat and/or regular expression could help. <br/>
 
 
 
