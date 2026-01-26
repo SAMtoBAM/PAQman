@@ -1,6 +1,6 @@
 # Telomeric sequence strings/regex to use for different species
 
-These basic strings have been confirmed by us and users to detect telomeres in assemblies/chromosomes manually verified to contains telomeric ends.
+These basic strings have been confirmed by us and users to detect telomeres in assemblies/chromosomes manually verified to contains telomeric ends. <br/>
 PLEASE FEEL FREE TO PUSH ADDITIONS IF YOU CONFIRM THE DETECTION
 
 ## Yeast
