@@ -131,8 +131,8 @@ All metrics are detailed below
 
 To find the best appropriate BUSCO dataset for your assembly you can refer to [here](https://busco.ezlab.org/busco_userguide.html#obtain-busco) <br/>
 Or run `busco --list-datasets` <br/>
-PAQman will automatically download (then delete) the BUSCO database provided by '--buscodb'; however this can therefore add time to each subsequent run <br/>
-Therefore if you intend to run PAQman on many assemblies with the same BUSCO database we recommend you download the database once and provide the folder to PAQman using (--localbuscodb) <br/>
+PAQman will automatically download (then delete) the BUSCO database requested (_--buscodb_); however this can therefore add time to each subsequent run <br/>
+Therefore if you intend to run PAQman on many assemblies with the same BUSCO database we recommend you download the database once and provide the folder to PAQman (_--localbuscodb_) <br/>
 To download a local database you must first identify the lineage/dataset you want then navigate to this [website](https://busco-data.ezlab.org/v5/data/lineages/) and find the latest version <br/>
 Either just click the link and download it directly you right click the link and 'copy link' then use wget on the link path:
 
