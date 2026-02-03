@@ -7,10 +7,10 @@ Please push additions/open issues if you have any confirmed repeats and share th
 | -------------- | ------- | ------- | ---------------- |
 | Yeast | _Saccharomyces cerevisiae_ | GGTGTG | TG{1,3}TG{1,3} |
 | Yeast | _Schizosaccharomyces japonicus_ | T{0,1}A{2,4}C{2,4}T{0,1}A{1,2}GAC | G[TG][CG]T{2,3}A |
-| Yeast | _Candida albicans_ | ACTTCTTGGTGTACGGATGTCTA | TG{1,3}TG{1,3} |
+| Yeast | _Candida albicans_ | ACTTCTTGGTGTACGGATGTCTA | |
 |  |  |  |  |
 | Filamentous fungi | _Fusarium_ | TTAGGG |  |
-| Filamentous fungi | _Magnaportha/Pyricularia_ | TTAGGG |  |
+| Filamentous fungi | _Magnaporthe/Pyricularia_ | TTAGGG |  |
 |  |  |  |  |
 | Animal | Human | TTAGGG |  |
 |  |  |  |  |
