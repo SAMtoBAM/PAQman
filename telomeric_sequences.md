@@ -15,3 +15,6 @@ Please push additions/open issues if you have any confirmed repeats and share th
 | Animal | Human | TTAGGG |  |
 |  |  |  |  |
 | Plants | _Oryza sativa_ | TTTAGGG |  |
+|  |  |  |  |
+| Algae | _Chlamydomonas reinhardtii_ | TTTTAGGG |  |
+
