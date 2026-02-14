@@ -10,7 +10,7 @@
 
 ***
 
-PAQman combines a set of excellent tools (and PAQman scripts) for a reference-free and comprehensive evaluation of genome assemblies. [O'Donnell et al., 2025. _biorxiv_](https://doi.org/10.1101/2025.09.11.675652) <br/>
+PAQman combines a set of excellent tools (and PAQman scripts) for a reference-free and comprehensive evaluation of genome assemblies. [O'Donnell _et al_., 2026](https://doi.org/10.1093/g3journal/jkag034) <br/>
 
 PAQman evaluates 7 important features: <br/>
 Contiguity ([QUAST](http://dx.doi.org/10.1093/nar/gkad406)) <br/>
@@ -18,7 +18,7 @@ Gene Content ([BUSCO](https://doi.org/10.1093/nar/gkae987)) <br/>
 Completeness ([Merqury](https://doi.org/10.1186/s13059-020-02134-9))<br/>
 Error rate ([Merqury](https://doi.org/10.1186/s13059-020-02134-9))<br/>
 Correctness ([CRAQ](https://doi.org/10.1038/s41467-023-42336-w))<br/>
-Coverage (PAQman (with use of [bwa](https://doi.org/10.48550/arXiv.1303.3997)/[minimap2](https://doi.org/10.1093/bioinformatics/bty191) + [samtools](https://doi.org/10.1093/bioinformatics/btp352) + [bedtools](https://doi.org/10.1093/bioinformatics/btq033)))<br/>
+Coverage (PAQman (with use of [bwa](https://doi.org/10.48550/arXiv.1303.3997)/[minimap2](https://doi.org/10.1093/bioinformatics/bty191) + [mosdepth](https://doi.org/10.1093/bioinformatics/btx699) + [bedtools](https://doi.org/10.1093/bioinformatics/btq033)))<br/>
 Telomerality* (PAQman (with use of [seqtk](https://github.com/lh3/seqtk) + [bedtools](https://doi.org/10.1093/bioinformatics/btq033))) <br/>
 <i>PAQman is clearly built upon the back of the tools in brackets so please cite them; see section 'Citation example' below</i>
 
