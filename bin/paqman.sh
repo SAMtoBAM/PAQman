@@ -6,7 +6,6 @@ version="v1.2.0"
 LRcoverageRpath=$( which coverage_plots.template_LR.R )
 LRSRcoverageRpath=$( which coverage_plots.template_SR_and_LR.R )
 
-
 ##############################################################
 ##################### SETTING VARIABLES ######################
 ##############################################################
