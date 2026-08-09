@@ -7,6 +7,8 @@
 [![Anaconda_platforms](https://anaconda.org/samtobam/paqman/badges/platforms.svg)](https://anaconda.org/samtobam/paqman)
 [![Anaconda_downloads](https://anaconda.org/samtobam/paqman/badges/downloads.svg)](https://anaconda.org/samtobam/paqman)
 [![Anaconda-Server Badge](https://anaconda.org/samtobam/paqman/badges/latest_release_date.svg)](https://anaconda.org/samtobam/paqman)
+![Docker Pulls](https://ghcr-badge.elias.eu.org/shield/samtobam/paqman)
+
 
 ***
 
