@@ -85,6 +85,21 @@ done
 [[ $summary != "" ]] && summarypath=$( realpath ${summary} )
 
 
+
+##check that the headers in all the summary files are the same or if they are a mixture
+types=$(while read -r f; do
+    head -n1 "$f" |
+        tr '\t' '\n' |
+        grep -Eio 'contigs|scaffolds'
+done < "$list" | sort -u)
+
+if [[ $(echo "$types" | wc -l) -ne 1 ]]; then
+    echo "ERROR: mixture of 'contigs' and 'scaffolds' headers found. Please only compare assemblies run in PAQman using the same --seq parameter" 
+    exit 
+fi
+
+sequences="$types"
+
 ##############################################################
 #################### BEGINNING PAQman-plots ####################
 ##############################################################
@@ -92,7 +107,6 @@ echo "###################################################################"
 echo "################## PAQman: Starting PAQman-plots ##################"
 echo "###################################################################"
 echo "################## PAQman: Step 1a: Collecting stats from summary files"
-
 
 ## assembly evaluations
 mkdir ${output}
@@ -102,7 +116,7 @@ mkdir ${output}
 
 if [[ ${summary} == "" && ${list} != "" ]]
 then
-echo "prefix;assembly;quast_#contigs;quast_#contigs>10kb;quast_assembly_size;quast_assembly_N50;quast_assembly_N90;quast_largest_contig;BUSCO_db;BUSCO_total;BUSCO_complete;BUSCO_complete_single;BUSCO_fragmented;BUSCO_missing;merqury_kmer_completeness(%);merqury_qv(phred);CRAQ_R-AQI;CRAQ_S-AQI;coverage_normal(%);telomeric_ends;telomeric_ends(%);T2T_contigs" | tr ';' '\t' > ${output}/combined.summary_stats.tsv
+echo "prefix;assembly;quast_#${sequences};quast_#${sequences}>10kb;quast_assembly_size;quast_assembly_N50;quast_assembly_N90;quast_largest_contig;BUSCO_db;BUSCO_total;BUSCO_complete;BUSCO_complete_single;BUSCO_fragmented;BUSCO_missing;merqury_kmer_completeness(%);merqury_qv(phred);CRAQ_R-AQI;CRAQ_S-AQI;coverage_normal(%);telomeric_ends;telomeric_ends(%);T2T_${sequences}" | tr ';' '\t' > ${output}/combined.summary_stats.tsv
 cat ${list} | while read file
 do
 tail -n+2 ${file} >> ${output}/combined.summary_stats.tsv
