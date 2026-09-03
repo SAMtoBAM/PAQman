@@ -45,6 +45,15 @@ library(ggradar)
 ### read in summary stats data
 comparisons=read.csv(file="PATHTOSUMMARY", sep='\t', header=T, check.names=FALSE)
 
+
+##check whether the headers contain scaffolds or contigs and set a variable
+assembly_type <- if ("quast_#contigs" %in% names(comparisons)) {
+  "contigs"
+} else {
+  "scaffolds"
+}
+
+
 ##place a combination of the strain and assembly name as the row name
 #rownames(comparisons)=paste(comparisons$strain, comparisons$assembly, sep = "-")
 
@@ -93,7 +102,24 @@ names(comparisonsrad) = gsub(pattern = "\\(", replacement = " \\(", x = names(co
 absplot1=ggradar(comparisonsrad, axis.label.size = 3, legend.text.size = 6, legend.position = "left", group.point.size = 3 , group.line.width = 1, gridline.mid.colour = "grey", grid.label.size = 5, background.circle.colour = "grey90", gridline.mid.linetype = 8 , gridline.max.linetype = 8, grid.max = 100.1, grid.mid=50,  values.radar = c("", "50%", ""))+scale_color_aaas()+coord_cartesian(clip = "off")+theme(plot.margin = margin(0, 5, 0, 5, 'cm'))
 
 ##now set up for the lollipop plots
-comparisonsdot=subset(comparisons, select = c("label", "quast_#contigs", "quast_#contigs>10kb", "quast_assembly_size", "quast_assembly_N50", "quast_assembly_N90", "quast_largest_contig", "merqury_qv(phred)", "telomeric_ends", "T2T_contigs"))
+#comparisonsdot=subset(comparisons, select = c("label", "quast_#contigs", "quast_#contigs>10kb", "quast_assembly_size", "quast_assembly_N50", "quast_assembly_N90", "quast_largest_contig", "merqury_qv(phred)", "telomeric_ends", "T2T_contigs"))
+comparisonsdot <- subset(
+  comparisons,
+  select = c(
+    "label",
+    paste0("quast_#", assembly_type),
+    paste0("quast_#", assembly_type, ">10kb"),
+    "quast_assembly_size",
+    "quast_assembly_N50",
+    "quast_assembly_N90",
+    "quast_largest_contig",
+    "merqury_qv(phred)",
+    "telomeric_ends",
+    paste0("T2T_", assembly_type)
+  )
+)
+
+
 #comparisonsdot=comparisons[ , c(25, 3, 4, 5, 6, 7, 8, 16, 20, 22), FALSE]
 ##remove some of the naming conventions as the labels are too big with them
 names(comparisonsdot) = gsub(pattern = "merqury_", replacement = "", x = names(comparisonsdot))
@@ -133,7 +159,25 @@ ggsave(filename = "PATHTOOUTPUT.raw_values.svg", plot = absplot3,
 ## coverage_normal(%)
 ## telomeric_ends
 ## T2T_contigs
-comparisonstemp1=subset(comparisons, select = c("quast_assembly_size", "quast_assembly_N50", "quast_#contigs", "merqury_qv(phred)", "merqury_kmer_completeness(%)", "CRAQ_R-AQI", "CRAQ_S-AQI", "coverage_normal(%)", "telomeric_ends", "T2T_contigs", "BUSCO_complete(%)", "BUSCO_complete_single(%)"))
+#comparisonstemp1=subset(comparisons, select = c("quast_assembly_size", "quast_assembly_N50", "quast_#contigs", "merqury_qv(phred)", "merqury_kmer_completeness(%)", "CRAQ_R-AQI", "CRAQ_S-AQI", "coverage_normal(%)", "telomeric_ends", "T2T_contigs", "BUSCO_complete(%)", "BUSCO_complete_single(%)"))
+comparisonstemp1 <- subset(
+  comparisons,
+  select = c(
+    "quast_assembly_size",
+    "quast_assembly_N50",
+    paste0("quast_#", assembly_type),
+    "merqury_qv(phred)",
+    "merqury_kmer_completeness(%)",
+    "CRAQ_R-AQI",
+    "CRAQ_S-AQI",
+    "coverage_normal(%)",
+    "telomeric_ends",
+    paste0("T2T_", assembly_type),
+    "BUSCO_complete(%)",
+    "BUSCO_complete_single(%)"
+  )
+)
+
 #comparisonstemp1=comparisons[ , c(5, 6, 3, 15, 16, 17, 18, 19, 20, 22, 23, 24), FALSE]
 ##remove some of the naming conventions as the labels are too big with them
 names(comparisonstemp1) = gsub(pattern = "merqury_", replacement = "", x = names(comparisonstemp1))
