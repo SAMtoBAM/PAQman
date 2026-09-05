@@ -87,6 +87,9 @@ done
 
 
 ##check that the headers in all the summary files are the same or if they are a mixture
+if [[ ${summary} == "" && ${list} != "" ]]
+then
+
 types=$(while read -r f; do
     head -n1 "$f" |
         tr '\t' '\n' |
@@ -99,6 +102,9 @@ if [[ $(echo "$types" | wc -l) -ne 1 ]]; then
 fi
 
 sequences="$types"
+
+fi
+
 
 ##############################################################
 #################### BEGINNING PAQman-plots ####################
